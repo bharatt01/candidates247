@@ -8,7 +8,7 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
   
-const CandidateForm = () => {
+const CompleteProfile = () => {
   const [skills, setSkills] = useState([]);
   const [skillInput, setSkillInput] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -384,4 +384,4 @@ const handleSubmit = async (e) => {
   );
 };
 
-export default CandidateForm;
+export default CompleteProfile;
