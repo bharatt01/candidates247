@@ -16,19 +16,10 @@ const ForCandidates = () => {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [roleTitle, setRoleTitle] = useState("");
-  const [experience, setExperience] = useState("");
-  const [location, setLocation] = useState("");
-  const [phone, setPhone] = useState("");
-  const [skills, setSkills] = useState([]);
   const [skillInput, setSkillInput] = useState("");
   const [submitting, setSubmitting] = useState(false);
-
-  const addSkill = () => {
-    if (skillInput.trim() && !skills.includes(skillInput.trim())) {
-      setSkills([...skills, skillInput.trim()]);
-      setSkillInput("");
-    }
-  };
+const [phone, setPhone] = useState("");
+  
 
 const handleSignup = async (e) => {
   e.preventDefault();
@@ -91,172 +82,171 @@ const handleSignup = async (e) => {
   const inputClass =
     "w-full px-4 py-2.5 rounded-lg bg-muted/30 text-foreground placeholder:text-muted-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm transition-all";
 
-  return (
-    <div className="min-h-screen bg-background relative">
-      <div className="mesh-gradient" />
-    
+return (
+  <div className="min-h-screen bg-background flex items-center justify-center px-4 relative">
+    <div className="mesh-gradient" />
 
-      <div className="relative z-10 max-w-lg mx-auto px-6 py-12">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass-card p-8"
-        >
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-foreground mb-1">
-              For Candidates
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              {mode === "signup"
-                ? "Quick onboarding — get discovered by top companies."
-                : "Sign in to your candidate account."}
-            </p>
-          </div>
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="w-full max-w-md relative z-10"
+    >
+      {/* Card */}
+      <div className="backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl rounded-2xl p-8">
 
-          <div className="flex gap-2 mb-6">
-            <button
-              onClick={() => setMode("signup")}
-              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all btn-haptic ${
-                mode === "signup"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted/40 text-muted-foreground border border-border"
-              }`}
+        {/* Header */}
+        <div className="mb-8 text-center">
+          <h1 className="text-2xl font-semibold text-foreground">
+            {mode === "signup" ? "Create Account" : "Welcome Back"}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {mode === "signup"
+              ? "Start your journey with top companies"
+              : "Login to continue your journey"}
+          </p>
+        </div>
+
+        {/* Toggle */}
+        <div className="flex bg-muted/40 p-1 rounded-xl mb-6">
+          <button
+            onClick={() => setMode("signup")}
+            className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
+              mode === "signup"
+                ? "bg-primary text-white shadow"
+                : "text-muted-foreground"
+            }`}
+          >
+            Sign Up
+          </button>
+          <button
+            onClick={() => setMode("login")}
+            className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
+              mode === "login"
+                ? "bg-primary text-white shadow"
+                : "text-muted-foreground"
+            }`}
+          >
+            Log In
+          </button>
+        </div>
+
+        {/* Forms */}
+        {mode === "login" ? (
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email address"
+                className="w-full px-4 py-3 rounded-xl bg-muted/30 border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
+              />
+            </div>
+
+            <div>
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                className="w-full px-4 py-3 rounded-xl bg-muted/30 border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
+              />
+            </div>
+
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              type="submit"
+              disabled={submitting}
+              className="w-full py-3 rounded-xl font-medium bg-primary text-white hover:opacity-90 transition disabled:opacity-50"
             >
-              <UserPlus size={14} className="inline mr-1.5" /> Sign Up
-            </button>
-
-            <button
-              onClick={() => setMode("login")}
-              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all btn-haptic ${
-                mode === "login"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted/40 text-muted-foreground border border-border"
-              }`}
-            >
-              <LogIn size={14} className="inline mr-1.5" /> Log In
-            </button>
-          </div>
-
-          {mode === "login" ? (
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@email.com"
-                  className={inputClass}
-                />
-              </div>
-
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className={inputClass}
-                />
-              </div>
-
-              <motion.button
-                whileTap={{ scale: 0.97 }}
-                type="submit"
-                disabled={submitting}
-                className="w-full py-3 rounded-lg text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors btn-haptic disabled:opacity-50"
-              >
-                {submitting ? "Signing in..." : "Sign In"}
-              </motion.button>
-            </form>
-          ) : (
-            <form onSubmit={handleSignup} className="space-y-4">
+              {submitting ? "Signing in..." : "Sign In"}
+            </motion.button>
+          </form>
+        ) : (
+          <form onSubmit={handleSignup} className="space-y-4">
             
-              {/* Full signup form remains exactly same */}
-                <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider">Full Name</label>
-                <input type="text" required value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="John Doe" className={inputClass} />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider">Email</label>
-                  <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@email.com" className={inputClass} />
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider">Password</label>
-                  <input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className={inputClass} />
-                </div>
-              </div>
+            <input
+              type="text"
+              required
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              placeholder="Full name"
+              className="w-full px-4 py-3 rounded-xl bg-muted/30 border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
+            />
 
-              <div className="pt-2 border-t border-border">
-                <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-3">Quick Onboarding</p>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider">Role</label>
-                    <div className="relative">
-                      <Briefcase size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                      <input type="text" required value={roleTitle} onChange={(e) => setRoleTitle(e.target.value)} placeholder="Frontend Dev" className={`${inputClass} pl-9`} />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider">Experience</label>
-                    <input type="number" min={0} max={30} value={experience} onChange={(e) => setExperience(e.target.value)} placeholder="Years" className={inputClass} />
-                  </div>
-                </div>
-              </div>
+            <div className="grid grid-cols-2 gap-3">
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email"
+                className="w-full px-4 py-3 rounded-xl bg-muted/30 border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
+              />
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider">Location</label>
-                  <div className="relative">
-                    <MapPin size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                    <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Bengaluru" className={`${inputClass} pl-9`} />
-                  </div>
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider">Phone</label>
-                  <div className="relative">
-                    <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                    <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+91 98765 43210" className={`${inputClass} pl-9`} />
-                  </div>
-                </div>
-              </div>
+              <input
+                type="password"
+                required
+                minLength={6}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                className="w-full px-4 py-3 rounded-xl bg-muted/30 border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
+              />
+            </div>
 
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider">Skills</label>
-                <div className="flex gap-2 mb-2">
-                  <input type="text" value={skillInput} onChange={(e) => setSkillInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())} placeholder="Add a skill..." className="flex-1 px-4 py-2.5 rounded-lg bg-muted/30 text-foreground placeholder:text-muted-foreground border border-border focus:border-secondary focus:ring-1 focus:ring-secondary outline-none text-sm transition-all" />
-                  <button type="button" onClick={addSkill} className="px-3 py-2.5 rounded-lg btn-haptic text-secondary bg-secondary/10 border border-secondary/20 hover:bg-secondary/15 transition-colors">
-                    <Plus size={16} />
-                  </button>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {skills.map((skill) => (
-                    <span key={skill} className="glow-tag-cyan flex items-center gap-1.5">
-                      {skill}
-                      <button type="button" onClick={() => setSkills(skills.filter((s) => s !== skill))} className="hover:text-foreground"><X size={12} /></button>
-                    </span>
-                  ))}
-                </div>
-              </div>
+            {/* Role */}
+            <div className="relative">
+              <Briefcase
+                size={16}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+              />
+              <input
+                type="text"
+                required
+                value={roleTitle}
+                onChange={(e) => setRoleTitle(e.target.value)}
+                placeholder="Your role (e.g. Frontend Developer)"
+                className="w-full pl-10 pr-4 py-3 rounded-xl bg-muted/30 border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
+              />
+            </div>
 
-              <motion.button whileTap={{ scale: 0.97 }} type="submit" disabled={submitting} className="w-full py-3 rounded-lg text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors btn-haptic disabled:opacity-50">
-                {submitting ? "Creating account..." : "Create Account & Join"}
-              </motion.button>
-              {/* (No logic removed, no UI removed) */}
-            </form>
-          )}
-        </motion.div>
+            {/* Phone */}
+            <div className="relative">
+              <Phone
+                size={16}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+              />
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, "");
+                  if (value.length <= 10) setPhone(value);
+                }}
+                placeholder="Phone number"
+                maxLength={10}
+                className="w-full pl-10 pr-4 py-3 rounded-xl bg-muted/30 border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
+                required
+              />
+            </div>
+
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              type="submit"
+              disabled={submitting}
+              className="w-full py-3 rounded-xl font-medium bg-primary text-white hover:opacity-90 transition disabled:opacity-50"
+            >
+              {submitting ? "Creating account..." : "Create Account"}
+            </motion.button>
+          </form>
+        )}
       </div>
-    </div>
-  );
+    </motion.div>
+  </div>
+);
 };
 
 export default ForCandidates;

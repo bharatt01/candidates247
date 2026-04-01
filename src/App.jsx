@@ -21,6 +21,7 @@ import CandidateDetails from "./pages/CandidateDetails";
 import SuperAdminLogin from "./pages/SuperAdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
+import ScrollToTop from "./components/ScrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ export default function App() {
         <Toaster />
         <Sonner />
         <BrowserRouter>
+        <ScrollToTop />
           <AuthProvider>
             <Navbar />
             <AnimatePresence mode="wait">
