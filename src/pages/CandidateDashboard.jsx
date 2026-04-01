@@ -3,7 +3,6 @@
   import { User, MapPin, Briefcase, LogOut, Edit3, Save, Plus, X, Phone } from "lucide-react";
   import { useNavigate } from "react-router-dom";
   import { toast } from "sonner";
-  import Navbar from "@/components/Navbar";
   import { useAuth } from "@/contexts/AuthContext";
   import { db } from "@/firebase";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
@@ -140,7 +139,10 @@ useEffect(() => {
     };
 
     const handleSave = async () => {
-      if (!user?.uid) return;
+      if (!user?.uid) {
+        toast.error("Please log in to save profile");
+        return;
+      }
       setSaving(true);
 
       try {
@@ -166,8 +168,27 @@ useEffect(() => {
           interests,
           references,
           updatedAt: new Date()
-        });
 
+        }
+      );
+// ✅ update UI instantly
+setCandidateData({
+  ...candidateData,
+  roleTitle,
+  experience: parseInt(experience) || 0,
+  location,
+  phone,
+  skills,
+  summary,
+  workExperience,
+  education,
+  projects,
+  certifications,
+  achievements,
+  languages,
+  interests,
+  references,
+});
         toast.success("Profile updated! Changes are live on the marketplace.");
         setEditing(false);
       } catch (error) {

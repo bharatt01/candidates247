@@ -1,12 +1,16 @@
-# Task: Add SAFE CHECK before using user.uid
+# Task: Fix Firestore Permission Errors + App Issues
+## Progress: 4/8 ✅
 
-## Steps to complete:
+### 1. ✅ Update firestore-rules.txt (Permission Denied Fix)
+### 2. ✅ Fix AuthContext.jsx (Error Handling + userRole)
+### 3. ✅ Deploy rules: firebase deploy --only firestore:rules  
+### 4. ✅ Fix completeprofile.jsx (full cleanup - syntax/JSX fixed)
+### 5. [ ] Fix App.jsx (CandidateDetails import + Footer)
+### 6. [ ] Fix CandidateDashboard.jsx (user?.uid guards + structure)
+### 7. [ ] Fix CompleteProfile.jsx (user?.uid guards) - deleted duplicate
+### 8. [ ] Test: npm run dev
 
-### 1. ✅ Create TODO.md (Current)
-### 2. ✅ Restructure CandidateDashboard.jsx useEffect to exact FIXED VERSION
-### 3. ✅ Add safety guards in CandidateDashboard.jsx handleSave & other updateDoc calls
-### 4. ✅ Fix CompleteProfile.jsx useEffect & handleSubmit with user?.uid checks
-### 5. Test changes: Run `npm run dev` and verify no Firestore uid errors
-### 6. Mark complete with attempt_completion
 
-**Next step: Edit CandidateDashboard.jsx**
+**CRITICAL: Run `firebase deploy --only firestore:rules` first if not done**
+**Next: BLACKBOXAI will fix completeprofile.jsx**
+

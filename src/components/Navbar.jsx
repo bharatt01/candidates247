@@ -13,7 +13,7 @@ const Navbar = () => {
         { label: "About Us", path: "/about" },
       ]
     : [
-        { label: "Homeee", path: "/" },
+        { label: "Home", path: "/" },
         { label: "For Candidates", path: "/for-candidates" },
         { label: "For Companies", path: "/for-companies" },
         { label: "About Us", path: "/about" },

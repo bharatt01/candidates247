@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { MapPin, Briefcase, Plus, X, LogIn, UserPlus, Phone } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import Navbar from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { db, auth } from "@/firebase";
 import { doc, setDoc } from "firebase/firestore";

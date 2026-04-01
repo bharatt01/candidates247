@@ -1,130 +1,110 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import { auth, db } from "@/firebase";
-import {
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut as firebaseSignOut
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { 
+  getAuth, 
+  onAuthStateChanged, 
+  signInWithEmailAndPassword, 
+  signOut,
+  createUserWithEmailAndPassword
 } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { toast } from "sonner";
+import { 
+  doc, 
+  onSnapshot, 
+  getFirestore,
+  setDoc
+} from "firebase/firestore";
+import { app } from "@/firebase";
 
-const AuthContext = createContext(undefined);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const AuthContext = createContext();
+
+export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        try {
-          const userRef = doc(db, "users", firebaseUser.uid);
-          const userDoc = await getDoc(userRef);
+    let unsubscribeSnapshot = null;
 
-          if (userDoc.exists()) {
-            const data = userDoc.data();
+    const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
 
-            setUser({
-              uid: firebaseUser.uid,   // ✅ FIXED (was id)
-              email: firebaseUser.email,
-              fullName: data.fullName || "",
-              role: data.role || null
-            });
-
-          } else {
-            // Create new user document if not exists
-            const userData = {
-              email: firebaseUser.email,
-              role: null,
-              fullName: "",
-              createdAt: new Date()
-            };
-
-            await setDoc(userRef, userData);
-
-            setUser({
-              uid: firebaseUser.uid,
-              email: firebaseUser.email,
-              ...userData
-            });
-          }
-
-        } catch (error) {
-          console.error("Auth fetch error:", error);
-          setUser(null);
-        }
-      } else {
-        setUser(null);
+      if (!currentUser) {
+        setUserData(null);
+        setLoading(false);
+        return;
       }
 
-      setLoading(false);
+      // 🔥 Listen to user document
+      const userDocRef = doc(db, "users", currentUser.uid);
+
+      unsubscribeSnapshot = onSnapshot(
+        userDocRef,
+        (docSnap) => {
+          if (docSnap.exists()) {
+            setUserData(docSnap.data());
+          } else {
+            setUserData(null);
+          }
+          setLoading(false);
+        },
+        (error) => {
+          console.error("Firestore snapshot error:", error);
+          setLoading(false);
+        }
+      );
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribeSnapshot) unsubscribeSnapshot();
+    };
   }, []);
 
-  // 🔐 LOGIN
+  // ✅ SIGN UP
+  const signUp = async (email, password, extraData = {}) => {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+
+    // 🔥 Create user document
+    await setDoc(doc(db, "users", cred.user.uid), {
+      email,
+      role: extraData.role || "user",
+      fullName: extraData.fullName || "",
+      createdAt: new Date(),
+      updatedAt: new Date()
+    });
+
+    return cred;
+  };
+
+  // ✅ SIGN IN
   const signIn = async (email, password) => {
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      toast.success("Signed in successfully");
-    } catch (error) {
-      toast.error(error.message);
-      throw error;
-    }
+    return signInWithEmailAndPassword(auth, email, password);
   };
 
-  // 🆕 SIGNUP
-  const signUp = async (email, password, userData) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const uid = userCredential.user.uid;
-
-      await setDoc(doc(db, "users", uid), {
-        email,
-        role: userData.role,
-        fullName: userData.fullName || "",
-        createdAt: new Date()
-      });
-
-      toast.success("Account created successfully");
-    } catch (error) {
-      console.error("Signup error:", error);
-      toast.error(`Signup failed: ${error.message}`);
-      throw error;
-    }
-  };
-
-  // 🚪 LOGOUT
+  // ✅ LOGOUT
   const logout = async () => {
-    try {
-      await firebaseSignOut(auth);
-      toast.success("Signed out successfully");
-    } catch (error) {
-      toast.error(error.message);
-      throw error;
-    }
+    return signOut(auth);
+  };
+
+  const userRole = userData?.role;
+
+  const value = {
+    user,
+    userData,
+    userRole,
+    signUp,
+    signIn,
+    logout,
+    loading,
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        signIn,
-        signUp,
-        logout
-      }}
-    >
-      {children}
+    <AuthContext.Provider value={value}>
+      {!loading && children}
     </AuthContext.Provider>
   );
-};
-
-// 🔗 HOOK
-export const useAuth = () => {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
-  return ctx;
 };

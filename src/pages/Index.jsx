@@ -10,7 +10,6 @@ import FilterSidebar from "@/components/FilterSidebar";
 import ShoppingCart from "@/components/ShoppingCart";
 import TrendingRoles from "@/components/TrendingRoles";
 import SkeletonCard from "@/components/SkeletonCard";
-import Navbar from "@/components/Navbar";
 import usePurchases from "../hooks/usePurchases";
 import { useAuth } from "../contexts/AuthContext";
 import { toast } from "sonner";
