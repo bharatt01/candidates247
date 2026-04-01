@@ -9,7 +9,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar"; 
 // import Footer from "@/components/PremiumFooter"; // Missing file - commented out
 import Index from "./pages/Index";
-import CompleteProfile from "./pages/completeprofile"; 
+import CompleteProfile from "./pages/CompleteProfile"; 
 
 import About from "./pages/About";
 import ForCandidates from "./pages/ForCandidates";
