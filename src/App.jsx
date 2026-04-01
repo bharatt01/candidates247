@@ -7,7 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar"; 
-// import Footer from "@/components/PremiumFooter"; // Missing file - commented out
+import Footer from "../src/components/PremiumFooter"
 import Index from "./pages/Index";
 import CompleteProfile from "./pages/CompleteProfile"; 
 
@@ -50,7 +50,7 @@ export default function App() {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </AnimatePresence>
-            {/* <Footer /> Commented out - missing file */}
+    <Footer /> {/* Uncomment when PremiumFooter is created */}
           </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>
