@@ -63,188 +63,218 @@ const CompanyDashboard = () => {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-background relative">
+return (
+  <div className="min-h-screen bg-background flex">
+
+    {/* 🔥 SIDEBAR */}
+    <div className="hidden md:flex w-64 flex-col border-r border-border bg-background/60 backdrop-blur-xl p-6">
+      <h2 className="text-xl font-bold text-foreground mb-8">
+        🚀 HireFlow
+      </h2>
+
+      <nav className="space-y-2">
+        <Link className="block px-3 py-2 rounded-lg bg-primary/10 text-primary text-sm font-medium">
+          Dashboard
+        </Link>
+        <Link to="/" className="block px-3 py-2 rounded-lg text-muted-foreground hover:bg-muted text-sm">
+          Browse Candidates
+        </Link>
+        <Link to="/subscription" className="block px-3 py-2 rounded-lg text-muted-foreground hover:bg-muted text-sm">
+          Subscription
+        </Link>
+      </nav>
+
+      <div className="mt-auto text-xs text-muted-foreground">
+        © 2026 HireFlow
+      </div>
+    </div>
+
+    {/* 🔥 MAIN */}
+    <div className="flex-1 relative">
       <div className="mesh-gradient" />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6 py-10">
+      <div className="relative z-10 max-w-7xl mx-auto px-5 md:px-8 py-8">
 
-        {/* HEADER */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        {/* 🔥 HEADER */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">
-              {companyData?.company_name || "Company Dashboard"}
+            <h1 className="text-2xl md:text-4xl font-bold text-foreground">
+              Dashboard
             </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Manage your hiring and unlock top candidates
+            <p className="text-muted-foreground text-sm">
+              Welcome back, {companyData?.company_name || "Company"} 👋
             </p>
+          </div>
+
+          <Link
+            to="/"
+            className="px-4 py-2 bg-primary text-white rounded-lg text-sm hover:scale-[1.05] transition"
+          >
+            Browse Talent
+          </Link>
+        </div>
+
+        {/* 🔥 STATS GRID */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+
+          {/* TOTAL UNLOCKED */}
+          <div className="glass-card p-5">
+            <p className="text-xs text-muted-foreground mb-1">Unlocked</p>
+            <h3 className="text-2xl font-bold">{purchasedCandidates.length}</h3>
+          </div>
+
+          {/* REMAINING */}
+          <div className="glass-card p-5">
+            <p className="text-xs text-muted-foreground mb-1">Remaining</p>
+            <h3 className="text-2xl font-bold">{remainingQuota}</h3>
+          </div>
+
+          {/* PLAN */}
+          <div className="glass-card p-5">
+            <p className="text-xs text-muted-foreground mb-1">Plan</p>
+            <h3 className="text-lg font-semibold">
+              {subscription?.plan || "Free"}
+            </h3>
+          </div>
+
+          {/* STATUS */}
+          <div className="glass-card p-5">
+            <p className="text-xs text-muted-foreground mb-1">Status</p>
+            <span className={`text-xs px-2 py-1 rounded-full ${
+              hasActiveSubscription
+                ? "bg-green-500/20 text-green-600"
+                : "bg-red-500/20 text-red-500"
+            }`}>
+              {hasActiveSubscription ? "Active" : "Inactive"}
+            </span>
           </div>
         </div>
 
-        {/* TOP CARDS */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
+        {/* 🔥 SUBSCRIPTION PROGRESS */}
+        <div className="glass-card p-6 mb-10">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold">Usage Overview</h3>
+            <Crown size={16} className="text-primary" />
+          </div>
 
-          {/* SUBSCRIPTION */}
-          <div className="glass-card p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Crown className="text-primary" size={18} />
-              <h2 className="text-sm font-semibold text-foreground">
-                Subscription
-              </h2>
-            </div>
-
-            {hasActiveSubscription && subscription ? (
-              <>
-                <p className="text-lg font-semibold text-foreground">
-                  {subscription.plan}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  ₹{subscription.amount_rupees}
-                </p>
-
-                <div className="mt-4">
-                  <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                    <span>Usage</span>
-                    <span>
-                      {subscription.resumes_used}/{subscription.resume_limit}
-                    </span>
-                  </div>
-
-                  <div className="w-full h-2 bg-muted rounded-full">
-                    <div
-                      className="h-full bg-primary rounded-full"
-                      style={{
-                        width: `${
-                          (subscription.resumes_used /
-                            subscription.resume_limit) *
-                          100
-                        }%`,
-                      }}
-                    />
-                  </div>
-
-                  <p className="text-xs text-muted-foreground mt-2">
-                    {remainingQuota} unlocks remaining
-                  </p>
-                </div>
-              </>
-            ) : (
-              <div className="text-center mt-4">
-                <p className="text-sm text-muted-foreground mb-3">
-                  No active subscription
-                </p>
-                <Link
-                  to="/subscription"
-                  className="px-4 py-2 bg-primary text-white text-sm rounded-lg"
-                >
-                  Upgrade Plan
-                </Link>
+          {hasActiveSubscription && subscription ? (
+            <>
+              <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                <span>{subscription.plan}</span>
+                <span>
+                  {subscription.resumes_used}/{subscription.resume_limit}
+                </span>
               </div>
-            )}
-          </div>
 
-          {/* BROWSE */}
-          <div className="glass-card p-6 text-center">
-            <Search size={26} className="text-primary mb-3 mx-auto" />
-            <h3 className="text-sm font-semibold text-foreground">
-              Browse Candidates
-            </h3>
-            <p className="text-xs text-muted-foreground mb-4">
-              Explore talent pool instantly
-            </p>
-            <Link
-              to="/"
-              className="px-4 py-2 bg-primary text-white text-sm rounded-lg"
-            >
-              Start Browsing
-            </Link>
-          </div>
-
-          {/* STATS */}
-          <div className="glass-card p-6 text-center">
-            <Users size={26} className="text-secondary mb-3 mx-auto" />
-            <h3 className="text-sm font-semibold text-foreground">
-              Unlocked Profiles
-            </h3>
-            <p className="text-3xl font-bold text-foreground mt-1">
-              {purchasedCandidates.length}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              candidates unlocked
-            </p>
-          </div>
+              <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-primary rounded-full transition-all"
+                  style={{
+                    width: `${
+                      (subscription.resumes_used /
+                        subscription.resume_limit) *
+                      100
+                    }%`,
+                  }}
+                />
+              </div>
+            </>
+          ) : (
+            <div className="text-center mt-3">
+              <p className="text-sm text-muted-foreground mb-3">
+                No active plan
+              </p>
+              <Link
+                to="/subscription"
+                className="px-4 py-2 bg-primary text-white rounded-lg text-sm"
+              >
+                Upgrade Now
+              </Link>
+            </div>
+          )}
         </div>
 
-        {/* CANDIDATES */}
+        {/* 🔥 CANDIDATES */}
         <div>
-          <h2 className="text-sm font-semibold text-foreground mb-4">
-            Unlocked Candidates
-          </h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-sm font-semibold">Unlocked Candidates</h2>
+            <span className="text-xs text-muted-foreground">
+              {purchasedCandidates.length} total
+            </span>
+          </div>
 
           {purchasedCandidates.length === 0 ? (
-            <div className="glass-card p-8 text-center">
-              <p className="text-sm text-muted-foreground mb-4">
-                You haven't unlocked any candidates yet
+            <div className="glass-card p-10 text-center">
+              <h3 className="text-lg font-semibold mb-2">
+                No candidates unlocked yet 🚀
+              </h3>
+              <p className="text-sm text-muted-foreground mb-5">
+                Start exploring talent and unlock profiles
               </p>
               <Link
                 to="/"
-                className="px-4 py-2 bg-primary text-white rounded-lg text-sm"
+                className="px-5 py-2 bg-primary text-white rounded-lg text-sm"
               >
                 Browse Candidates
               </Link>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 gap-5">
-             {[...new Map(purchasedCandidates.map(c => [c.id, c])).values()].map((c) => (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+              {[...new Map(purchasedCandidates.map(c => [c.id, c])).values()].map((c) => (
                 <Link
                   key={c.id}
-                  to={`/candidate/${c.id}`}
-                  className="glass-card p-5 flex flex-col justify-between hover:scale-[1.02] transition-all"
+                  to={`/candidate/${c.candidateId || c.id}`}
+                  className="glass-card p-5 hover:shadow-xl hover:-translate-y-1 transition-all group"
                 >
-                  <div>
-                    <h3 className="text-base font-semibold text-foreground">
+                  {/* NAME */}
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-semibold text-foreground group-hover:text-primary">
                       {c.name || "Candidate"}
                     </h3>
-
-                    <div className="text-xs text-muted-foreground mt-1 space-y-1">
-                      <p className="flex items-center gap-2">
-                        <Briefcase size={12} /> {c.role || "Not specified"}
-                      </p>
-                      <p className="flex items-center gap-2">
-                        <MapPin size={12} /> {c.location || "Unknown"} ·{" "}
-                        {c.experience || 0} yrs
-                      </p>
-                    </div>
-
-                    <div className="flex flex-wrap gap-1.5 mt-3">
-                      {(c.skills || []).map((s, i) => (
-                        <span key={i} className="glow-tag text-[11px]">
-                          {s}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="mt-4 border-t border-border pt-3">
-                    <p className="flex items-center gap-2 text-sm">
-                      <Phone size={12} /> {c.phone || "Not provided"}
-                    </p>
-                    <p className="flex items-center gap-2 text-sm">
-                      <Mail size={12} /> {c.email || "Not provided"}
-                    </p>
-
-                    <span className="text-xs bg-green-500/20 text-green-600 px-2 py-1 rounded-full mt-2 inline-block">
+                    <span className="text-[10px] bg-green-500/20 text-green-600 px-2 py-1 rounded-full">
                       Unlocked
                     </span>
                   </div>
+
+                  {/* INFO */}
+                  <p className="text-xs text-muted-foreground flex items-center gap-2">
+                    <Briefcase size={12} /> {c.role || "Role not set"}
+                  </p>
+
+                  <p className="text-xs text-muted-foreground flex items-center gap-2 mt-1">
+                    <MapPin size={12} /> {c.location || "Unknown"} • {c.experience || 0} yrs
+                  </p>
+
+                  {/* SKILLS */}
+                  <div className="flex flex-wrap gap-1 mt-3">
+                    {(c.skills || []).slice(0, 3).map((s, i) => (
+                      <span key={i} className="glow-tag text-[10px]">
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* CONTACT */}
+                  <div className="mt-4 border-t border-border pt-3 text-xs space-y-1">
+                    <p className="flex items-center gap-2">
+                      <Phone size={12} /> {c.phone || "N/A"}
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <Mail size={12} /> {c.email || "N/A"}
+                    </p>
+                  </div>
                 </Link>
               ))}
+
             </div>
           )}
         </div>
+
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default CompanyDashboard;

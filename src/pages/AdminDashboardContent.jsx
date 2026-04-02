@@ -110,198 +110,169 @@ const AdminDashboardContent = () => {
   if (loading) return <p className="p-6">Loading...</p>;
 
   return (
-    <div className="min-h-screen bg-background px-6 py-10">
-      <div className="max-w-6xl mx-auto space-y-8">
+ <div className="min-h-screen bg-gradient-to-tr from-gray-900 via-gray-800 to-gray-900 text-white px-6 py-10">
+  <div className="max-w-7xl mx-auto space-y-8">
 
-        {/* HEADER */}
-        <div className="flex flex-col md:flex-row justify-between gap-4">
-          <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+    {/* HEADER */}
+    <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+      <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+      <input
+        type="text"
+        placeholder="Search..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="w-full md:w-72 px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+      />
+    </div>
 
-          <input
-            type="text"
-            placeholder="Search..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="px-4 py-2 rounded-lg bg-muted/30 border border-border outline-none text-sm"
-          />
-        </div>
-
-        {/* 🔥 STATS */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="glass-card p-5 text-center">
-            <p className="text-xs text-muted-foreground">Revenue</p>
-            <h2 className="text-xl font-bold">₹{revenue}</h2>
-          </div>
-
-          <div className="glass-card p-5 text-center">
-            <p className="text-xs text-muted-foreground">Active Companies</p>
-            <h2 className="text-xl font-bold">{stats.activeSubs}</h2>
-          </div>
-
-          <div className="glass-card p-5 text-center">
-            <p className="text-xs text-muted-foreground">Pending</p>
-            <h2 className="text-xl font-bold">{pendingSubscriptions.length}</h2>
-          </div>
-
-          <div className="glass-card p-5 text-center">
-            <p className="text-xs text-muted-foreground">Candidates</p>
-            <h2 className="text-xl font-bold">{stats.candidates}</h2>
-          </div>
-        </div>
-
-        {/* TABS */}
-        <div className="flex gap-2 bg-muted/40 p-1 rounded-xl w-fit">
-          {["subscriptions", "companies", "candidates"].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-lg text-sm capitalize ${
-                activeTab === tab
-                  ? "bg-primary text-white"
-                  : "text-muted-foreground"
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-
-        {/* 🔥 PENDING */}
-        {activeTab === "subscriptions" && (
-          <div className="grid md:grid-cols-2 gap-6">
-            {pendingSubscriptions.map((sub) => (
-              <motion.div
-                key={sub.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="glass-card p-6 space-y-3"
-              >
-                <h3 className="text-lg font-semibold">
-                  {sub.company_name}
-                </h3>
-
-                <p className="text-sm text-muted-foreground">
-                  {sub.company_email}
-                </p>
-
-                <p className="text-sm">Plan: {sub.plan}</p>
-
-                <p className="text-xs text-yellow-500 flex items-center gap-1">
-                  <Clock size={12} /> Pending
-                </p>
-
-                <div className="flex gap-3 mt-4">
-                  <button
-                    onClick={() => approveSubscription(sub)}
-                    disabled={approving}
-                    className="flex-1 py-2 bg-green-600 text-white rounded-lg"
-                  >
-                    Approve
-                  </button>
-
-                  <button
-                    onClick={() => rejectSubscription(sub)}
-                    className="flex-1 py-2 bg-red-600 text-white rounded-lg"
-                  >
-                    Reject
-                  </button>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
-
-        {/* 🔥 ACTIVE COMPANIES */}
-        {activeTab === "companies" && (
-          <div className="grid md:grid-cols-2 gap-5">
-            {activeSubscriptions.map((sub) => {
-              const remaining =
-                (sub.resume_limit || 0) - (sub.resumes_used || 0);
-
-              const expired =
-                sub.expiry_date?.toDate() < new Date();
-
-              return (
-                <div key={sub.id} className="glass-card p-5 space-y-3">
-                  <h3 className="text-lg font-semibold">
-                    {sub.company_name}
-                  </h3>
-
-                  <p className="text-sm text-muted-foreground">
-                    {sub.company_email}
-                  </p>
-
-                  <p className="text-sm">Plan: {sub.plan}</p>
-
-                  {/* Progress */}
-                  <div className="w-full bg-muted/30 rounded-full h-2">
-                    <div
-                      className="bg-primary h-2 rounded-full"
-                      style={{
-                        width: `${
-                          ((sub.resumes_used || 0) /
-                            (sub.resume_limit || 1)) *
-                          100
-                        }%`,
-                      }}
-                    />
-                  </div>
-
-                  <div className="flex justify-between text-xs">
-                    <span>
-                      {sub.resumes_used} / {sub.resume_limit}
-                    </span>
-                    <span className="text-blue-500">
-                      Remaining: {remaining}
-                    </span>
-                  </div>
-
-                  <p
-                    className={`text-xs ${
-                      expired ? "text-red-500" : "text-green-500"
-                    }`}
-                  >
-                    {expired
-                      ? "Expired"
-                      : `Valid till: ${sub.expiry_date
-                          ?.toDate()
-                          .toLocaleDateString()}`}
-                  </p>
-
-                  {remaining <= 5 && remaining > 0 && (
-                    <p className="text-xs text-yellow-500">
-                      ⚠️ Low credits
-                    </p>
-                  )}
-
-                  {remaining <= 0 && (
-                    <p className="text-xs text-red-500 font-semibold">
-                      🚫 Limit reached
-                    </p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* 🔥 CANDIDATES */}
-        {activeTab === "candidates" && (
-          <div className="grid md:grid-cols-2 gap-4">
-            {candidates.map((c, i) => (
-              <div key={i} className="glass-card p-5">
-                <h3 className="font-semibold">{c.fullName}</h3>
-                <p className="text-sm text-muted-foreground">{c.email}</p>
-                <p className="text-xs text-muted-foreground">
-                  {c.phone || "No phone"}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
+    {/* STATS */}
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div className="bg-gradient-to-br from-purple-600 to-indigo-600 p-5 rounded-xl shadow-lg flex flex-col items-center">
+        <p className="text-sm opacity-80">Revenue</p>
+        <h2 className="text-2xl font-bold mt-1">₹{revenue}</h2>
+      </div>
+      <div className="bg-gradient-to-br from-green-500 to-teal-500 p-5 rounded-xl shadow-lg flex flex-col items-center">
+        <p className="text-sm opacity-80">Active Companies</p>
+        <h2 className="text-2xl font-bold mt-1">{stats.activeSubs}</h2>
+      </div>
+      <div className="bg-gradient-to-br from-yellow-500 to-orange-500 p-5 rounded-xl shadow-lg flex flex-col items-center">
+        <p className="text-sm opacity-80">Pending Requests</p>
+        <h2 className="text-2xl font-bold mt-1">{pendingSubscriptions.length}</h2>
+      </div>
+      <div className="bg-gradient-to-br from-pink-500 to-red-500 p-5 rounded-xl shadow-lg flex flex-col items-center">
+        <p className="text-sm opacity-80">Candidates</p>
+        <h2 className="text-2xl font-bold mt-1">{stats.candidates}</h2>
       </div>
     </div>
-  );
+
+    {/* TABS */}
+    <div className="flex gap-4 border-b border-gray-600 text-sm">
+      {["subscriptions", "companies", "candidates"].map((tab) => (
+        <button
+          key={tab}
+          onClick={() => setActiveTab(tab)}
+          className={`pb-2 px-4 capitalize transition ${
+            activeTab === tab
+              ? "border-b-2 border-purple-500 text-white font-semibold"
+              : "text-gray-400 hover:text-white"
+          }`}
+        >
+          {tab}
+        </button>
+      ))}
+    </div>
+
+    {/* PENDING SUBSCRIPTIONS */}
+    {activeTab === "subscriptions" && (
+      <div className="grid md:grid-cols-2 gap-6 mt-6">
+        {pendingSubscriptions.map((sub) => (
+          <motion.div
+            key={sub.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-xl transition"
+          >
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="text-lg font-semibold">{sub.company_name}</h3>
+                <p className="text-gray-400 text-sm mt-1">{sub.company_email}</p>
+              </div>
+              <span className="bg-yellow-500 text-gray-900 px-2 py-1 rounded text-xs font-medium">
+                Pending
+              </span>
+            </div>
+
+            <div className="mt-4 space-y-1 text-gray-300 text-sm">
+              <p>Plan: <span className="font-medium">{sub.plan}</span></p>
+              <p>Amount: ₹{sub.amount_rupees}</p>
+            </div>
+
+            <div className="flex gap-3 mt-5">
+              <button
+                onClick={() => approveSubscription(sub)}
+                disabled={approving}
+                className="flex-1 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-sm font-medium"
+              >
+                Approve
+              </button>
+              <button
+                onClick={() => rejectSubscription(sub)}
+                className="flex-1 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-medium"
+              >
+                Reject
+              </button>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    )}
+
+    {/* ACTIVE COMPANIES */}
+    {activeTab === "companies" && (
+      <div className="grid md:grid-cols-2 gap-6 mt-6">
+        {activeSubscriptions.map((sub) => {
+          const remaining = (sub.resume_limit || 0) - (sub.resumes_used || 0);
+          const expired = sub.expiry_date?.toDate() < new Date();
+          const usagePercent = ((sub.resumes_used || 0) / (sub.resume_limit || 1)) * 100;
+
+          return (
+            <div
+              key={sub.id}
+              className="bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-xl transition"
+            >
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-lg font-semibold">{sub.company_name}</h3>
+                  <p className="text-gray-400 text-sm mt-1">{sub.company_email}</p>
+                </div>
+                <span
+                  className={`px-2 py-1 text-xs rounded ${
+                    expired ? "bg-red-600 text-white" : "bg-green-500 text-white"
+                  }`}
+                >
+                  {expired ? "Expired" : "Active"}
+                </span>
+              </div>
+
+              <p className="text-gray-300 text-sm mt-3">Plan: <span className="font-medium">{sub.plan}</span></p>
+
+              {/* PROGRESS */}
+              <div className="mt-4">
+                <div className="w-full h-2 bg-gray-700 rounded-full">
+                  <div className="h-2 bg-purple-500 rounded-full" style={{ width: `${usagePercent}%` }} />
+                </div>
+                <div className="flex justify-between text-xs text-gray-400 mt-1">
+                  <span>{sub.resumes_used} used</span>
+                  <span>{remaining} remaining</span>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center mt-3 text-xs text-gray-400">
+                <span>Valid till: {sub.expiry_date?.toDate().toLocaleDateString()}</span>
+                {remaining <= 0 ? <span className="text-red-500 font-medium">Limit reached</span> :
+                  remaining <= 5 ? <span className="text-yellow-400">Low credits</span> : null}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    )}
+
+    {/* CANDIDATES */}
+    {activeTab === "candidates" && (
+      <div className="grid md:grid-cols-2 gap-4 mt-6">
+        {candidates.map((c, i) => (
+          <div key={i} className="bg-gray-800 p-5 rounded-xl shadow-md hover:shadow-xl transition">
+            <h3 className="font-medium text-white">{c.fullName}</h3>
+            <p className="text-gray-400 text-sm mt-1">{c.email}</p>
+            <p className="text-gray-500 text-xs mt-1">{c.phone || "No phone"}</p>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+</div>
+);
 };
 
 export default AdminDashboardContent;
