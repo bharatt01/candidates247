@@ -15,11 +15,11 @@ const AdminDashboardContent = () => {
   const { user, loading } = useAuth();
 
   const [pendingSubscriptions, setPendingSubscriptions] = useState([]);
-  const [approving, setApproving] = useState(false);
-
-  // 🔥 NEW STATES
-  const [companies, setCompanies] = useState([]);
+  const [activeSubscriptions, setActiveSubscriptions] = useState([]);
   const [candidates, setCandidates] = useState([]);
+  const [approving, setApproving] = useState(false);
+  const [revenue, setRevenue] = useState(0);
+
   const [stats, setStats] = useState({
     companies: 0,
     candidates: 0,
@@ -29,49 +29,39 @@ const AdminDashboardContent = () => {
   const [activeTab, setActiveTab] = useState("subscriptions");
   const [search, setSearch] = useState("");
 
-  // 🔒 EXISTING LOGIC (UNCHANGED)
-  const fetchPending = async () => {
-    try {
-      const subsCol = collection(db, "subscriptions");
-      const subsSnap = await getDocs(subsCol);
-
-      const pending = subsSnap.docs
-        .map((doc) => ({ id: doc.id, ...doc.data() }))
-        .filter((sub) => sub.status === "pending");
-
-      setPendingSubscriptions(pending);
-    } catch (err) {
-      console.error("Failed to fetch subscriptions:", err);
-    }
-  };
-
-  // 🔥 NEW DATA FETCH
+  // 🔥 MAIN DATA FETCH
   const fetchAdminData = async () => {
     try {
-      const companySnap = await getDocs(collection(db, "companies"));
-      const companyData = companySnap.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-
-      const candidateSnap = await getDocs(collection(db, "candidates"));
-      const candidateData = candidateSnap.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-
       const subsSnap = await getDocs(collection(db, "subscriptions"));
-      const activeSubs = subsSnap.docs.filter(
-        (d) => d.data().status === "active"
-      ).length;
 
-      setCompanies(companyData);
+      const allSubs = subsSnap.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      const active = allSubs.filter((s) => s.status === "active");
+      const pending = allSubs.filter((s) => s.status === "pending");
+
+      // 💰 Revenue
+      const totalRevenue = active.reduce(
+        (sum, sub) => sum + (sub.amount_rupees || 0),
+        0
+      );
+
+      setActiveSubscriptions(active);
+      setPendingSubscriptions(pending);
+      setRevenue(totalRevenue);
+
+      // 👨‍💻 Candidates
+      const candidateSnap = await getDocs(collection(db, "candidates"));
+      const candidateData = candidateSnap.docs.map((doc) => doc.data());
+
       setCandidates(candidateData);
 
       setStats({
-        companies: companyData.length,
+        companies: active.length,
         candidates: candidateData.length,
-        activeSubs,
+        activeSubs: active.length,
       });
     } catch (err) {
       console.error("Admin data fetch failed:", err);
@@ -79,22 +69,12 @@ const AdminDashboardContent = () => {
   };
 
   useEffect(() => {
-    if (user) {
-      fetchPending();     // 🔒 KEEP
-      fetchAdminData();   // ✅ NEW
+    if (!loading) {
+      fetchAdminData();
     }
-  }, [user]);
+  }, [loading]);
 
-  // 🔍 FILTERS
-  const filteredCompanies = companies.filter((c) =>
-    (c.companyName || "").toLowerCase().includes(search.toLowerCase())
-  );
-
-  const filteredCandidates = candidates.filter((c) =>
-    (c.fullName || "").toLowerCase().includes(search.toLowerCase())
-  );
-
-  // 🔒 EXISTING LOGIC (UNCHANGED)
+  // 🔒 APPROVE (UNCHANGED LOGIC)
   const approveSubscription = async (sub) => {
     setApproving(true);
     try {
@@ -107,7 +87,7 @@ const AdminDashboardContent = () => {
         expiry_date: Timestamp.fromDate(expiry),
       });
 
-      fetchPending();
+      fetchAdminData();
     } catch (err) {
       console.error("Approval failed:", err);
     } finally {
@@ -115,12 +95,13 @@ const AdminDashboardContent = () => {
     }
   };
 
+  // 🔒 REJECT (UNCHANGED)
   const rejectSubscription = async (sub) => {
     try {
       await updateDoc(doc(db, "subscriptions", sub.id), {
         status: "rejected",
       });
-      fetchPending();
+      fetchAdminData();
     } catch (err) {
       console.error("Rejection failed:", err);
     }
@@ -133,33 +114,38 @@ const AdminDashboardContent = () => {
       <div className="max-w-6xl mx-auto space-y-8">
 
         {/* HEADER */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex flex-col md:flex-row justify-between gap-4">
           <h1 className="text-2xl font-bold">Admin Dashboard</h1>
 
           <input
             type="text"
-            placeholder="Search companies or candidates..."
+            placeholder="Search..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="px-4 py-2 rounded-lg bg-muted/30 border border-border outline-none focus:border-primary text-sm"
+            className="px-4 py-2 rounded-lg bg-muted/30 border border-border outline-none text-sm"
           />
         </div>
 
-        {/* STATS */}
-        <div className="grid grid-cols-3 gap-4">
+        {/* 🔥 STATS */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="glass-card p-5 text-center">
-            <p className="text-xs text-muted-foreground">Companies</p>
-            <h2 className="text-2xl font-bold">{stats.companies}</h2>
+            <p className="text-xs text-muted-foreground">Revenue</p>
+            <h2 className="text-xl font-bold">₹{revenue}</h2>
+          </div>
+
+          <div className="glass-card p-5 text-center">
+            <p className="text-xs text-muted-foreground">Active Companies</p>
+            <h2 className="text-xl font-bold">{stats.activeSubs}</h2>
+          </div>
+
+          <div className="glass-card p-5 text-center">
+            <p className="text-xs text-muted-foreground">Pending</p>
+            <h2 className="text-xl font-bold">{pendingSubscriptions.length}</h2>
           </div>
 
           <div className="glass-card p-5 text-center">
             <p className="text-xs text-muted-foreground">Candidates</p>
-            <h2 className="text-2xl font-bold">{stats.candidates}</h2>
-          </div>
-
-          <div className="glass-card p-5 text-center">
-            <p className="text-xs text-muted-foreground">Active Subs</p>
-            <h2 className="text-2xl font-bold">{stats.activeSubs}</h2>
+            <h2 className="text-xl font-bold">{stats.candidates}</h2>
           </div>
         </div>
 
@@ -180,102 +166,134 @@ const AdminDashboardContent = () => {
           ))}
         </div>
 
-        {/* ================= SUBSCRIPTIONS ================= */}
+        {/* 🔥 PENDING */}
         {activeTab === "subscriptions" && (
-          <>
-            {pendingSubscriptions.length === 0 ? (
-              <p>No pending subscriptions.</p>
-            ) : (
-              <div className="grid md:grid-cols-2 gap-6">
-                {pendingSubscriptions.map((sub) => (
-                  <motion.div
-                    key={sub.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="glass-card p-6 space-y-3"
-                  >
-                    <h3 className="text-lg font-semibold">{sub.plan}</h3>
-
-                    <p className="text-xs text-muted-foreground">
-                      ID: {sub.id}
-                    </p>
-
-                    <p className="text-sm">
-                      Resumes: {sub.resume_limit || 0}
-                    </p>
-
-                    <p className="text-xs text-yellow-500 flex items-center gap-1">
-                      <Clock size={12} /> Pending
-                    </p>
-
-                    <div className="flex gap-3 mt-4">
-                      <button
-                        onClick={() => approveSubscription(sub)}
-                        disabled={approving}
-                        className="flex-1 py-2 rounded-lg bg-green-600 text-white flex items-center justify-center gap-2"
-                      >
-                        <CheckCircle size={16} /> Approve
-                      </button>
-
-                      <button
-                        onClick={() => rejectSubscription(sub)}
-                        className="flex-1 py-2 rounded-lg bg-red-600 text-white flex items-center justify-center gap-2"
-                      >
-                        <XCircle size={16} /> Reject
-                      </button>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-          </>
-        )}
-
-        {/* ================= COMPANIES ================= */}
-        {activeTab === "companies" && (
-          <div className="grid md:grid-cols-2 gap-4">
-            {filteredCompanies.map((c) => (
-              <div key={c.id} className="glass-card p-5 space-y-2">
-                <h3 className="font-semibold text-lg">
-                  {c.companyName || "No Name"}
+          <div className="grid md:grid-cols-2 gap-6">
+            {pendingSubscriptions.map((sub) => (
+              <motion.div
+                key={sub.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="glass-card p-6 space-y-3"
+              >
+                <h3 className="text-lg font-semibold">
+                  {sub.company_name}
                 </h3>
 
                 <p className="text-sm text-muted-foreground">
-                  {c.email || "No Email"}
+                  {sub.company_email}
                 </p>
 
-                <p className="text-xs">
-                  Subscription:{" "}
-                  <span className="text-green-500">
-                    {c.subscriptionStatus || "None"}
-                  </span>
+                <p className="text-sm">Plan: {sub.plan}</p>
+
+                <p className="text-xs text-yellow-500 flex items-center gap-1">
+                  <Clock size={12} /> Pending
                 </p>
 
-                <p className="text-xs text-muted-foreground">
-                  ID: {c.id}
-                </p>
-              </div>
+                <div className="flex gap-3 mt-4">
+                  <button
+                    onClick={() => approveSubscription(sub)}
+                    disabled={approving}
+                    className="flex-1 py-2 bg-green-600 text-white rounded-lg"
+                  >
+                    Approve
+                  </button>
+
+                  <button
+                    onClick={() => rejectSubscription(sub)}
+                    className="flex-1 py-2 bg-red-600 text-white rounded-lg"
+                  >
+                    Reject
+                  </button>
+                </div>
+              </motion.div>
             ))}
           </div>
         )}
 
-        {/* ================= CANDIDATES ================= */}
+        {/* 🔥 ACTIVE COMPANIES */}
+        {activeTab === "companies" && (
+          <div className="grid md:grid-cols-2 gap-5">
+            {activeSubscriptions.map((sub) => {
+              const remaining =
+                (sub.resume_limit || 0) - (sub.resumes_used || 0);
+
+              const expired =
+                sub.expiry_date?.toDate() < new Date();
+
+              return (
+                <div key={sub.id} className="glass-card p-5 space-y-3">
+                  <h3 className="text-lg font-semibold">
+                    {sub.company_name}
+                  </h3>
+
+                  <p className="text-sm text-muted-foreground">
+                    {sub.company_email}
+                  </p>
+
+                  <p className="text-sm">Plan: {sub.plan}</p>
+
+                  {/* Progress */}
+                  <div className="w-full bg-muted/30 rounded-full h-2">
+                    <div
+                      className="bg-primary h-2 rounded-full"
+                      style={{
+                        width: `${
+                          ((sub.resumes_used || 0) /
+                            (sub.resume_limit || 1)) *
+                          100
+                        }%`,
+                      }}
+                    />
+                  </div>
+
+                  <div className="flex justify-between text-xs">
+                    <span>
+                      {sub.resumes_used} / {sub.resume_limit}
+                    </span>
+                    <span className="text-blue-500">
+                      Remaining: {remaining}
+                    </span>
+                  </div>
+
+                  <p
+                    className={`text-xs ${
+                      expired ? "text-red-500" : "text-green-500"
+                    }`}
+                  >
+                    {expired
+                      ? "Expired"
+                      : `Valid till: ${sub.expiry_date
+                          ?.toDate()
+                          .toLocaleDateString()}`}
+                  </p>
+
+                  {remaining <= 5 && remaining > 0 && (
+                    <p className="text-xs text-yellow-500">
+                      ⚠️ Low credits
+                    </p>
+                  )}
+
+                  {remaining <= 0 && (
+                    <p className="text-xs text-red-500 font-semibold">
+                      🚫 Limit reached
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* 🔥 CANDIDATES */}
         {activeTab === "candidates" && (
           <div className="grid md:grid-cols-2 gap-4">
-            {filteredCandidates.map((c) => (
-              <div key={c.id} className="glass-card p-5 space-y-2">
+            {candidates.map((c, i) => (
+              <div key={i} className="glass-card p-5">
                 <h3 className="font-semibold">{c.fullName}</h3>
-
-                <p className="text-sm text-muted-foreground">
-                  {c.email}
-                </p>
-
+                <p className="text-sm text-muted-foreground">{c.email}</p>
                 <p className="text-xs text-muted-foreground">
-                  Phone: {c.phone || "N/A"}
-                </p>
-
-                <p className="text-xs text-muted-foreground">
-                  ID: {c.id}
+                  {c.phone || "No phone"}
                 </p>
               </div>
             ))}

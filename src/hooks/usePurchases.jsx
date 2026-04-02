@@ -6,6 +6,8 @@ import {
   query,
   where,
   onSnapshot,
+  doc,
+  getDoc,
 } from "firebase/firestore";
 
 const usePurchases = () => {
@@ -25,31 +27,33 @@ const usePurchases = () => {
       where("companyId", "==", user.uid)
     );
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+    const unsubscribe = onSnapshot(q, async (snapshot) => {
+      const purchases = snapshot.docs.map((doc) => doc.data());
 
-      setPurchasedCandidates(data);
+      // 🔥 Fetch candidate details
+      const candidatesData = await Promise.all(
+        purchases.map(async (p) => {
+          const ref = doc(db, "candidates", p.candidateId);
+          const snap = await getDoc(ref);
+
+          if (snap.exists()) {
+            return {
+              id: snap.id,
+              ...snap.data(),
+            };
+          }
+          return null;
+        })
+      );
+
+      setPurchasedCandidates(candidatesData.filter(Boolean));
       setLoading(false);
     });
 
     return () => unsubscribe();
   }, [user]);
 
-  // ✅ Helper: check if already unlocked
-  const isPurchased = (candidateId) => {
-    return purchasedCandidates.some(
-      (item) => item.candidateId === candidateId
-    );
-  };
-
-  return {
-    purchasedCandidates,
-    loading,
-    isPurchased,
-  };
+  return { purchasedCandidates, loading };
 };
 
 export default usePurchases;

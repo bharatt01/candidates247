@@ -16,7 +16,7 @@ import {
   BookOpen,
 } from 'lucide-react';
 import { Lock } from "lucide-react";
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -26,28 +26,36 @@ const CandidateDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-const { hasActiveSubscription, unlockCandidate } = useSubscription();
-const [unlocked, setUnlocked] = useState(false);
+
+  const { hasActiveSubscription, unlockCandidate } = useSubscription();
+
+  const [unlocked, setUnlocked] = useState(false);
   const [candidate, setCandidate] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const handleUnlock = async () => {
-  if (!hasActiveSubscription) {
-    navigate("/subscription");
-    return;
-  }
+  // ✅ CHECK IF ALREADY UNLOCKED
+  const checkIfAlreadyUnlocked = async () => {
+    if (!user?.uid || !id) return;
 
-  try {
-    await unlockCandidate(id); // 🔥 saves purchase + increments usage
-    setUnlocked(true);
-    toast.success("Candidate unlocked successfully!");
-  } catch (err) {
-    console.error(err);
-    toast.error("Failed to unlock candidate");
-  }
-};
+    try {
+      const q = query(
+        collection(db, "purchases"),
+        where("companyId", "==", user.uid),
+        where("candidateId", "==", id)
+      );
 
+      const snap = await getDocs(q);
+
+      if (!snap.empty) {
+        setUnlocked(true);
+      }
+    } catch (err) {
+      console.error("Unlock check error:", err);
+    }
+  };
+
+  // ✅ FETCH DATA + CHECK UNLOCK
   useEffect(() => {
     if (!id) {
       setError('No candidate ID provided');
@@ -58,11 +66,14 @@ const [unlocked, setUnlocked] = useState(false);
     const fetchCandidate = async () => {
       try {
         const docSnap = await getDoc(doc(db, 'candidates', id));
+
         if (docSnap.exists()) {
           setCandidate({ id: docSnap.id, ...docSnap.data() });
         } else {
           setError('Candidate not found');
         }
+
+        await checkIfAlreadyUnlocked(); // 🔥 IMPORTANT
       } catch (err) {
         console.error(err);
         setError('Failed to load candidate details');
@@ -73,7 +84,29 @@ const [unlocked, setUnlocked] = useState(false);
     };
 
     fetchCandidate();
-  }, [id]);
+  }, [id, user]);
+
+  // ✅ SAFE UNLOCK (NO DOUBLE COUNT)
+  const handleUnlock = async () => {
+    if (unlocked) {
+      toast.info("Already unlocked");
+      return;
+    }
+
+    if (!hasActiveSubscription) {
+      navigate("/subscription");
+      return;
+    }
+
+    try {
+      await unlockCandidate(id);
+      setUnlocked(true);
+      toast.success("Candidate unlocked successfully!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to unlock candidate");
+    }
+  };
 
   if (loading)
     return (
@@ -97,7 +130,6 @@ const [unlocked, setUnlocked] = useState(false);
       </div>
     );
 
-  // Avatar fallback
   const getAvatar = (name) => {
     if (!name) return '?';
     const initials = name
@@ -113,6 +145,7 @@ const [unlocked, setUnlocked] = useState(false);
     <div className="min-h-screen bg-background relative pt-4">
       <div className="mesh-gradient absolute inset-0 opacity-20" />
       <div className="relative z-10 max-w-4xl mx-auto px-6 py-12">
+
         {/* Back Button */}
         <motion.button
           whileHover={{ scale: 1.05 }}
@@ -135,28 +168,28 @@ const [unlocked, setUnlocked] = useState(false);
               {getAvatar(candidate.fullName || candidate.name)}
             </div>
             <div className="flex-1">
-<div className="flex items-start justify-between mb-2">
-  <h1 className="text-3xl font-bold text-foreground">
-    {candidate.fullName || candidate.name}
-  </h1>
+              <div className="flex items-start justify-between mb-2">
+                <h1 className="text-3xl font-bold text-foreground">
+                  {candidate.fullName || candidate.name}
+                </h1>
 
-  {/* 🔥 Unlock Button */}
-  {!unlocked && (
-    <button
-      onClick={handleUnlock}
-      className="ml-4 px-4 py-2 text-sm font-semibold rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all flex items-center gap-2"
-    >
-      <Lock size={14} />
-      {hasActiveSubscription ? "Unlock Profile" : "Get Subscription"}
-    </button>
-  )}
+                {/* 🔥 Unlock Button */}
+                {!unlocked && (
+                  <button
+                    onClick={handleUnlock}
+                    className="ml-4 px-4 py-2 text-sm font-semibold rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all flex items-center gap-2"
+                  >
+                    <Lock size={14} />
+                    {hasActiveSubscription ? "Unlock Profile" : "Get Subscription"}
+                  </button>
+                )}
 
-  {/* ✅ Already unlocked */}
-  {unlocked && (
-    <span className="ml-4 px-3 py-1 text-xs rounded-full bg-green-500/20 text-green-600 font-medium">
-      Unlocked
-    </span>
-  )}
+                {/* ✅ Already unlocked */}
+                {unlocked && (
+                  <span className="ml-4 px-3 py-1 text-xs rounded-full bg-green-500/20 text-green-600 font-medium">
+                    Unlocked
+                  </span>
+                )}
 
                 {candidate.skills?.length >= 4 && (
                   <div className="flex items-center gap-1 text-xs font-medium bg-secondary/20 px-2.5 py-1 rounded-full text-secondary">
@@ -165,6 +198,7 @@ const [unlocked, setUnlocked] = useState(false);
                   </div>
                 )}
               </div>
+
               <div className="flex items-center gap-4 text-sm text-muted-foreground mb-1">
                 <div className="flex items-center gap-1">
                   <Briefcase size={16} />
@@ -178,6 +212,7 @@ const [unlocked, setUnlocked] = useState(false);
                   <span>{candidate.experience || 0} yrs exp</span>
                 </div>
               </div>
+
               {candidate.salaryExpectation && (
                 <p className="text-lg font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full inline-flex items-center gap-1">
                   ₹{candidate.salaryExpectation.toLocaleString()}

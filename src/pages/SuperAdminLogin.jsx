@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+ import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/firebase";
 
 const SUPERADMIN_EMAIL = "superadmin@example.com";
-const SUPERADMIN_PASSWORD = "YourSecurePassword123";
+// const SUPERADMIN_PASSWORD = "YourSecurePassword123";
 
 const SuperAdminLogin = () => {
   const navigate = useNavigate();
@@ -10,16 +12,31 @@ const SuperAdminLogin = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    if (email === SUPERADMIN_EMAIL && password === SUPERADMIN_PASSWORD) {
-      localStorage.setItem("isSuperAdmin", "true"); // simple auth flag
+
+
+const handleLogin = async (e) => {
+  e.preventDefault();
+  setError("");
+
+  try {
+    const res = await signInWithEmailAndPassword(
+      auth,
+      email.trim().toLowerCase(), // 🔥 FIX
+      password
+    );
+
+    if (res.user.email === SUPERADMIN_EMAIL) {
+      localStorage.setItem("isSuperAdmin", "true");
       navigate("/superadmin/dashboard");
     } else {
-      setError("Invalid email or password");
+      setError("Not authorized as superadmin");
     }
-  };
 
+  } catch (err) {
+    console.error(err); // 🔥 VERY IMPORTANT
+    setError(err.message);
+  }
+};
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <form
