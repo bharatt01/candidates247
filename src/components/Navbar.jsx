@@ -11,12 +11,16 @@ const Navbar = () => {
         { label: "Home", path: "/" },
         { label: "Dashboard", path: userRole === "company" ? "/dashboard/company" : "/dashboard/candidate" },
         { label: "About Us", path: "/about" },
+        { label: "Browse Candidates", path: "/browse-candidates" },
       ]
     : [
         { label: "Home", path: "/" },
+        { label: "Browse Candidates", path: "/browse-candidates" },
+        { label: "About Us", path: "/about" },
         { label: "For Candidates", path: "/for-candidates" },
         { label: "For Companies", path: "/for-companies" },
-        { label: "About Us", path: "/about" },
+     
+       
       ];
 
   return (

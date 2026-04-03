@@ -1,14 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Building2, LogIn, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { db } from "@/firebase";
-import { doc, setDoc } from "firebase/firestore";
-
+import { doc, getDoc } from "firebase/firestore";
+import { db, auth } from "@/firebase";
 const ForCompanies = () => {
-  const { user, userRole, signUp, signIn } = useAuth(); // ✅ FIXED
+  const { user, signUp, signIn, logout, userRole } = useAuth();
   const navigate = useNavigate();
   const [mode, setMode] = useState("signup");
 
@@ -18,74 +17,66 @@ const ForCompanies = () => {
   const [industry, setIndustry] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  // ✅ FIXED REDIRECT (use userRole)
-  useEffect(() => {
-    if (userRole === "company") {
-      navigate("/dashboard/company");
-    }
-  }, [userRole, navigate]);
+  const inputClass =
+    "w-full px-4 py-2.5 rounded-lg bg-muted/30 text-foreground placeholder:text-muted-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm transition-all";
 
-  // ✅ SIGNUP
+  // 🔹 SIGNUP
   const handleSignup = async (e) => {
     e.preventDefault();
     setSubmitting(true);
 
     try {
       const cred = await signUp(email, password, {
-        fullName: companyName,
-        role: "company"
-      });
-
-      const uid = cred.user.uid;
-
-      // ✅ VERY IMPORTANT (fix permission issue)
-      await cred.user.getIdToken();
-
-      // ✅ Save company profile
-      await setDoc(doc(db, "companies", uid), {
-        userId: uid,
         companyName,
         industry,
         role: "company",
-        createdAt: new Date(),
-        updatedAt: new Date()
       });
 
       toast.success("Company account created successfully!");
       navigate("/dashboard/company");
-
     } catch (error) {
-      console.error(error);
       toast.error(error.message);
     } finally {
       setSubmitting(false);
     }
   };
 
-  // ✅ LOGIN
+  // 🔹 LOGIN
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setSubmitting(true);
+  e.preventDefault();
+  setSubmitting(true);
 
-    try {
-      await signIn(email, password);
-      toast.success("Signed in successfully!");
-      navigate("/dashboard/company");
-    } catch (error) {
-      console.error(error);
-      toast.error(error.message);
-    } finally {
+  try {
+    const cred = await signIn(email, password);
+    const uid = cred.user.uid;
+
+    const userDoc = await getDoc(doc(db, "users", uid));
+    if (!userDoc.exists()) {
+      toast.error("User record not found!");
+      await auth.signOut();
       setSubmitting(false);
+      return;
     }
-  };
 
-  const inputClass =
-    "w-full px-4 py-2.5 rounded-lg bg-muted/30 text-foreground placeholder:text-muted-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm transition-all";
+    const userData = userDoc.data();
 
+    if (userData.role !== "company") {
+      toast.error("This email is registered as a candidate. Please login from candidate portal.");
+      await auth.signOut();
+      setSubmitting(false);
+      return;
+    }
+
+    toast.success("Signed in successfully!");
+    navigate("/dashboard/company");
+  } catch (error) {
+    toast.error(error.message);
+  } finally {
+    setSubmitting(false);
+  }
+};
   return (
     <div className="min-h-screen bg-background relative">
-
-
       <div className="mesh-gradient" />
 
       <div className="relative z-10 max-w-lg mx-auto px-6 py-12">
@@ -130,7 +121,6 @@ const ForCompanies = () => {
             </button>
           </div>
 
-          {/* LOGIN */}
           {mode === "login" ? (
             <form onSubmit={handleLogin} className="space-y-4">
               <input
@@ -141,7 +131,6 @@ const ForCompanies = () => {
                 placeholder="Email"
                 className={inputClass}
               />
-
               <input
                 type="password"
                 required
@@ -150,7 +139,6 @@ const ForCompanies = () => {
                 placeholder="Password"
                 className={inputClass}
               />
-
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 type="submit"
@@ -161,55 +149,39 @@ const ForCompanies = () => {
               </motion.button>
             </form>
           ) : (
-            /* SIGNUP */
             <form onSubmit={handleSignup} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Email"
-                  className={inputClass}
-                />
-
-                <input
-                  type="password"
-                  required
-                  minLength={6}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Password"
-                  className={inputClass}
-                />
-              </div>
-
-              <div className="pt-2 border-t border-border">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="relative">
-                    <Building2
-                      size={14}
-                      className="absolute left-3 top-1/2 -translate-y-1/2"
-                    />
-                    <input
-                      type="text"
-                      required
-                      value={companyName}
-                      onChange={(e) => setCompanyName(e.target.value)}
-                      placeholder="Company Name"
-                      className={`${inputClass} pl-9`}
-                    />
-                  </div>
-
-                  <input
-                    type="text"
-                    value={industry}
-                    onChange={(e) => setIndustry(e.target.value)}
-                    placeholder="Industry"
-                    className={inputClass}
-                  />
-                </div>
-              </div>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email"
+                className={inputClass}
+              />
+              <input
+                type="password"
+                required
+                minLength={6}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                className={inputClass}
+              />
+              <input
+                type="text"
+                required
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                placeholder="Company Name"
+                className={inputClass}
+              />
+              <input
+                type="text"
+                value={industry}
+                onChange={(e) => setIndustry(e.target.value)}
+                placeholder="Industry"
+                className={inputClass}
+              />
 
               <motion.button
                 whileTap={{ scale: 0.97 }}

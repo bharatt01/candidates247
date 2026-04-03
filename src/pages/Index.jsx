@@ -1,19 +1,16 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SlidersHorizontal, ArrowRight, Users, Zap } from "lucide-react";
+import { ArrowRight, Users, Zap } from "lucide-react";
 import { db } from "@/firebase";
 import { collection, getDocs } from "firebase/firestore";
 
 import CandidateCard from "@/components/CandidateCard";
 import SearchBar from "@/components/SearchBar";
 import FilterSidebar from "@/components/FilterSidebar";
-import ShoppingCart from "@/components/ShoppingCart";
-import TrendingRoles from "@/components/TrendingRoles";
 import SkeletonCard from "@/components/SkeletonCard";
-import usePurchases from "../hooks/usePurchases";
 import { useAuth } from "../contexts/AuthContext";
-import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+
 import HeroSection from "../components/ui/HeroSection";
 import TalentVelocityMatrix from "@/components/TalentVelocityMatrix";
 import NetworkPulse from "../components/ui/NetworkPulse";
@@ -24,15 +21,27 @@ const Index = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
+  const [search, setSearch] = useState("");
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filters, setFilters] = useState({ selectedSkills: [] });
+
+  // 🚀 FETCH DATA
   useEffect(() => {
     const fetchCandidates = async () => {
       setLoading(true);
       try {
         const querySnapshot = await getDocs(collection(db, "candidates"));
-        const data = querySnapshot.docs.map(doc => ({
+
+        let data = querySnapshot.docs.map((doc) => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         }));
+
+        // ✅ SORT LATEST FIRST
+        data.sort(
+          (a, b) =>
+            (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)
+        );
 
         const formatted = data.map((c) => ({
           id: c.id,
@@ -53,26 +62,49 @@ const Index = () => {
       }
     };
 
-    if (!authLoading) {
-      fetchCandidates();
-    }
+    if (!authLoading) fetchCandidates();
   }, [user, authLoading]);
 
-  const [search, setSearch] = useState("");
-  const [isSearching, setIsSearching] = useState(false);
-  const [filtersOpen, setFiltersOpen] = useState(false);
-  const [filters, setFilters] = useState({ selectedSkills: [] });
+  // 🔍 FILTER LOGIC
+  const filteredCandidates = useMemo(() => {
+    let result = [...candidates];
 
-  const filtered = useMemo(() => {
-    return candidates;
-  }, [candidates]);
+    if (search.trim()) {
+      const s = search.toLowerCase();
 
-  const purchasedIds = new Set();
-  const handleUnlock = () => {};
-  const cart = [];
-  const handleRemove = () => {};
-  const handleCheckout = () => {};
-  const jiggle = false;
+      result = result.filter(
+        (c) =>
+          c.name?.toLowerCase().includes(s) ||
+          c.role?.toLowerCase().includes(s) ||
+          c.skills?.some((skill) => skill.toLowerCase().includes(s)) ||
+          c.location?.toLowerCase().includes(s)
+      );
+    }
+
+    if (filters.selectedSkills.length > 0) {
+      result = result.filter((c) =>
+        filters.selectedSkills.every((skill) =>
+          c.skills.includes(skill)
+        )
+      );
+    }
+
+    return result;
+  }, [candidates, search, filters]);
+
+  // ✂️ ONLY 9
+  const visibleCandidates = useMemo(() => {
+    return filteredCandidates.slice(0, 9);
+  }, [filteredCandidates]);
+
+  // 🔥 AUTO SCROLL
+  useEffect(() => {
+    if (search) {
+      document
+        .getElementById("browse")
+        ?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [search]);
 
   return (
     <>
@@ -81,78 +113,76 @@ const Index = () => {
       <div className="min-h-screen bg-background relative">
         <div className="mesh-gradient" />
 
+        {/* HERO */}
         <section className="relative z-10 pt-20 pb-16 px-6">
           <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-4 leading-tight tracking-tight">
+            
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+              <h1 className="text-3xl md:text-5xl font-bold mb-4">
                 Hire <span className="glow-text">Elite Talent</span>,<br />
                 Verified & Ready
               </h1>
 
-              <p className="text-muted-foreground text-sm md:text-base max-w-md mb-6 leading-relaxed">
+              <p className="text-muted-foreground mb-6">
                 Access a curated pool of pre-verified professionals.
               </p>
 
-              <div className="flex gap-6 mb-8">
+              {/* 🔍 SEARCH */}
+              <SearchBar value={search} onChange={setSearch} />
+
+              <div className="flex gap-6 my-6">
                 <div className="flex items-center gap-2">
-                  <Users size={16} className="text-primary" />
+                  <Users size={16} />
                   <div>
-                    <p className="text-sm font-semibold text-foreground">
-                      {candidates.length}
-                    </p>
-                    <p className="text-[11px] text-muted-foreground">
+                    <p className="font-semibold">{candidates.length}</p>
+                    <p className="text-xs text-muted-foreground">
                       Live Candidates
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Zap size={16} className="text-secondary" />
+                  <Zap size={16} />
                   <div>
-                    <p className="text-sm font-semibold text-foreground">
-                      React
-                    </p>
-                    <p className="text-[11px] text-muted-foreground">
-                      Top skill this week
+                    <p className="font-semibold">React</p>
+                    <p className="text-xs text-muted-foreground">
+                      Top skill
                     </p>
                   </div>
                 </div>
               </div>
 
-              <a
-                href="#browse"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium bg-primary text-primary-foreground"
+              <button
+                onClick={() =>
+                  document
+                    .getElementById("browse")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-white"
               >
                 Browse Candidates
                 <ArrowRight size={15} />
-              </a>
+              </button>
             </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.15 }}
-              className="hidden md:block"
-            >
-              {candidates.length > 0 && (
+            <div className="hidden md:block">
+              {visibleCandidates[0] && (
                 <CandidateCard
-                  candidate={candidates[0]}
-                  index={0}
-                  isUnlocked={false}
-                  onUnlock={() => {}}
-                  onClick={() => candidates[0] && navigate(`/candidate/${candidates[0].id}`)}
+                  candidate={visibleCandidates[0]}
+                  onClick={() =>
+                    navigate(`/candidate/${visibleCandidates[0].id}`)
+                  }
                 />
               )}
-            </motion.div>
+            </div>
           </div>
         </section>
 
-        {/* BROWSE SECTION - BALANCED FOR LARGE CARDS & TIGHT GAPS */}
-        <section id="browse" className="relative z-10 max-w-[1400px] mx-auto px-6 pb-24">
+        {/* BROWSE */}
+        <section
+          id="browse"
+          className="max-w-[1400px] mx-auto px-6 pb-24"
+        >
           <AnimatePresence mode="wait">
             {candidatesLoading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -161,29 +191,32 @@ const Index = () => {
                 ))}
               </div>
             ) : (
-              <motion.div
-                key="results"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                /* Using gap-3 for tight spacing and 3 columns for balanced scaling */
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
-              >
-                {filtered.map((candidate, i) => (
-                  <div key={candidate.id} className="w-full flex justify-center">
+              <>
+                <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {visibleCandidates.map((candidate, i) => (
                     <CandidateCard
+                      key={candidate.id}
                       candidate={candidate}
                       index={i}
-                      isUnlocked={false}
-                      onUnlock={() => {}}
-                      onClick={() => navigate(`/candidate/${candidate.id}`)}
-                      /* IMPORTANT: Ensure CandidateCard.jsx does NOT have 
-                         max-w-sm or a fixed width like w-[300px]. 
-                         It should be w-full.
-                      */
+                      onClick={() =>
+                        navigate(`/candidate/${candidate.id}`)
+                      }
                     />
-                  </div>
-                ))}
-              </motion.div>
+                  ))}
+                </motion.div>
+
+                {/* 🔥 VIEW ALL */}
+                <div className="flex justify-center mt-10">
+                  <button
+                    onClick={() =>
+                      navigate(`/browsecandidate?search=${search}`)
+                    }
+                    className="px-6 py-3 rounded-lg bg-primary text-white"
+                  >
+                    View All Candidates
+                  </button>
+                </div>
+              </>
             )}
           </AnimatePresence>
         </section>
@@ -193,13 +226,6 @@ const Index = () => {
           onClose={() => setFiltersOpen(false)}
           filters={filters}
           onFiltersChange={setFilters}
-        />
-
-        <ShoppingCart
-          items={cart}
-          onRemove={handleRemove}
-          onCheckout={handleCheckout}
-          jiggle={jiggle}
         />
       </div>
 

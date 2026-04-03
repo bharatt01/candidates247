@@ -1,12 +1,18 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Search } from "lucide-react";
 
 const SearchBar = ({ value, onChange, onSearching }) => {
+
   useEffect(() => {
-    if (onSearching) return;
-    if (value.length > 0) {
+    if (!onSearching) return; // ✅ safe check
+
+    if (value.trim().length > 0) {
       onSearching(true);
-      const timer = setTimeout(() => onSearching(false), 800);
+
+      const timer = setTimeout(() => {
+        onSearching(false);
+      }, 500);
+
       return () => clearTimeout(timer);
     } else {
       onSearching(false);
@@ -16,7 +22,9 @@ const SearchBar = ({ value, onChange, onSearching }) => {
   return (
     <div className="search-glow rounded-xl max-w-2xl mx-auto">
       <div className="relative flex items-center rounded-xl overflow-hidden bg-card">
+        
         <Search size={18} className="absolute left-4 text-muted-foreground" />
+
         <input
           type="text"
           placeholder="Search by name, role, or skill..."
@@ -30,7 +38,3 @@ const SearchBar = ({ value, onChange, onSearching }) => {
 };
 
 export default SearchBar;
-
-
-
-

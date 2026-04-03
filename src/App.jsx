@@ -22,6 +22,7 @@ import SuperAdminLogin from "./pages/SuperAdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
+import BrowseCandidate from "./pages/BrowseCandidate";
 
 const queryClient = new QueryClient();
 
@@ -47,7 +48,7 @@ export default function App() {
                  <Route path="/superadmin" element={<SuperAdminLogin />} />
         <Route path="/superadmin/dashboard" element={<AdminDashboard />} />
                 <Route path="/complete-profile" element={<CompleteProfile />} />
-
+<Route path="/browse-candidates" element={<BrowseCandidate />} />
                 <Route path="/about" element={<About />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

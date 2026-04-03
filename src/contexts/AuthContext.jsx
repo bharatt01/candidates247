@@ -6,16 +6,10 @@ import {
   signOut,
   createUserWithEmailAndPassword
 } from "firebase/auth";
-import { 
-  doc, 
-  onSnapshot, 
-  getFirestore,
-  setDoc
-} from "firebase/firestore";
-import { app } from "@/firebase";
+import { doc, onSnapshot, setDoc, getDoc } from "firebase/firestore";
+import { app, db } from "@/firebase";
 
 const auth = getAuth(app);
-const db = getFirestore(app);
 
 const AuthContext = createContext();
 
@@ -24,35 +18,42 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);
+  const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let unsubscribeSnapshot = null;
 
-    const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
 
       if (!currentUser) {
         setUserData(null);
+        setUserRole(null);
         setLoading(false);
         return;
       }
 
-      // 🔥 Listen to user document
+      // 🔥 Listen to the user document
       const userDocRef = doc(db, "users", currentUser.uid);
 
       unsubscribeSnapshot = onSnapshot(
         userDocRef,
         (docSnap) => {
           if (docSnap.exists()) {
-            setUserData(docSnap.data());
+            const data = docSnap.data();
+            setUserData(data);
+            setUserRole(data.role || null);
           } else {
             setUserData(null);
+            setUserRole(null);
           }
           setLoading(false);
         },
         (error) => {
           console.error("Firestore snapshot error:", error);
+          setUserData(null);
+          setUserRole(null);
           setLoading(false);
         }
       );
@@ -68,11 +69,13 @@ export const AuthProvider = ({ children }) => {
   const signUp = async (email, password, extraData = {}) => {
     const cred = await createUserWithEmailAndPassword(auth, email, password);
 
-    // 🔥 Create user document
+    // 🔥 Save user document with role
     await setDoc(doc(db, "users", cred.user.uid), {
       email,
       role: extraData.role || "user",
       fullName: extraData.fullName || "",
+      phone: extraData.phone || "",
+      companyName: extraData.companyName || "",
       createdAt: new Date(),
       updatedAt: new Date()
     });
@@ -87,10 +90,11 @@ export const AuthProvider = ({ children }) => {
 
   // ✅ LOGOUT
   const logout = async () => {
+    setUser(null);
+    setUserData(null);
+    setUserRole(null);
     return signOut(auth);
   };
-
-  const userRole = userData?.role;
 
   const value = {
     user,
@@ -99,7 +103,7 @@ export const AuthProvider = ({ children }) => {
     signUp,
     signIn,
     logout,
-    loading,
+    loading
   };
 
   return (

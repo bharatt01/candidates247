@@ -38,7 +38,7 @@ const HeroSection = () => {
     className="absolute top-[12%] left-[8%] bg-white/15 border border-white/20 rounded-2xl px-4 py-3 flex items-center gap-3 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] scale-95 opacity-70"
 
   >
-    <ProfileCard name="Elena R." role="Staff Machine Learning" />
+    {/* <ProfileCard name="Elena R." role="Staff Machine Learning" /> */}
   </motion.div>
 
   {/* Card 2 */}
@@ -47,7 +47,7 @@ const HeroSection = () => {
     transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
     className="absolute top-[20%] right-[10%] bg-white/15 border border-white/20 rounded-2xl px-4 py-3 flex items-center gap-3 backdrop-blur-xl shadow-[0_8px_25px_rgba(0,0,0,0.04)] opacity-70"
   >
-    <ProfileCard name="Marcus T." role="Senior Backend Engineer" />
+    {/* <ProfileCard name="Marcus T." role="Senior Backend Engineer" /> */}
   </motion.div>
 
   {/* Card 3 */}
@@ -56,7 +56,7 @@ const HeroSection = () => {
     transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1 }}
     className="absolute bottom-[22%] left-[12%] bg-white/15 border border-white/20 rounded-2xl px-4 py-3 flex items-center gap-3 backdrop-blur-xl shadow-[0_6px_20px_rgba(0,0,0,0.04)] scale-95 opacity-70"
   >
-    <ProfileCard name="Sophie L." role="Principal Frontend" />
+    {/* <ProfileCard name="Sophie L." role="Principal Frontend" /> */}
   </motion.div>
 
   {/* Card 4 */}
@@ -65,7 +65,7 @@ const HeroSection = () => {
     transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 1.2 }}
     className="absolute bottom-[18%] right-[14%] bg-white/15 border border-white/20 rounded-2xl px-4 py-3 flex items-center gap-3 backdrop-blur-xl shadow-[0_8px_25px_rgba(0,0,0,0.05)] opacity-70"
   >
-    <ProfileCard name="Daniel K." role="DevOps Architect" />
+    {/* <ProfileCard name="Daniel K." role="DevOps Architect" /> */}
   </motion.div>
 
   {/* Card 5 */}
@@ -74,7 +74,7 @@ const HeroSection = () => {
     transition={{ duration: 13, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
     className="absolute top-[35%] left-[4%] bg-white/15 border border-white/20 rounded-2xl px-4 py-3 flex items-center gap-3 backdrop-blur-xl shadow-[0_8px_25px_rgba(0,0,0,0.04)] scale-95 opacity-70"
   >
-    <ProfileCard name="Aarav P." role="AI Systems Engineer" />
+    {/* <ProfileCard name="Aarav P." role="AI Systems Engineer" /> */}
   </motion.div>
 
   {/* Card 6 */}
@@ -83,7 +83,7 @@ const HeroSection = () => {
     transition={{ duration: 14, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
     className="absolute top-[45%] right-[4%] bg-white/15 border border-white/20 rounded-2xl px-4 py-3 flex items-center gap-3 backdrop-blur-xl shadow-[0_6px_20px_rgba(0,0,0,0.04)] scale-90 opacity-70"
   >
-    <ProfileCard name="Isabella M." role="Cloud Infrastructure Lead" />
+    {/* <ProfileCard name="Isabella M." role="Cloud Infrastructure Lead" /> */}
   </motion.div>
 
 </div>
@@ -99,14 +99,38 @@ const HeroSection = () => {
           animate={{ opacity: 1, scale: 1 }}
           className="leading-[1.1] font-medium tracking-tighter mb-6 w-max mx-auto text-center"
         >
-          <span className="text-[2.8rem] md:text-[3.5rem] lg:text-[4.5rem] text-[hsl(300,20%,8%)]
+          {/* <span className="text-[2.8rem] md:text-[3.5rem] lg:text-[4.5rem] text-[hsl(300,20%,8%)]
  block mb-2 whitespace-nowrap">
             View Candidates For Free.
-          </span>
+          </span> */}
 
-          <span className="text-[1.2rem] md:text-[1.8rem] lg:text-[2.5rem] bg-clip-text text-transparent bg-gradient-to-b from-[hsl(32,88%,55%)] to-[hsl(32,88%,40%)] whitespace-nowrap">
+          {/* <span className="text-[2.8rem] md:text-[3.5rem] lg:text-[4.5rem] bg-clip-text text-transparent bg-gradient-to-b from-[hsl(32,88%,55%)] to-[hsl(32,88%,40%)] whitespace-nowrap">
             Hire Talented, Experienced Candidates Across Profiles.
-          </span>
+          </span> */}
+
+{/* <span className="text-[2.8rem] md:text-[3rem] lg:text-[3rem] bg-clip-text text-transparent bg-gradient-to-b from-[hsl(32,88%,55%)] to-[hsl(32,88%,40%)]"> */}
+  {/* Hire Talented,  <span className="text-black bg-none">Experienced</span> */}
+  {/* <br className="hidden md:block" /> */}
+  {/* <span> Candidates <br className="hidden md:block" /> <span className="text-black bg-none">Across</span> Profiles.</span> */}
+{/* </span> */}
+
+<span className="leading-tight tracking-tight font-semibold">
+
+  {/* LINE 1 */}
+  <span className="block text-[2.2rem] md:text-[2.8rem] lg:text-[3rem]">
+    <span className="text-[2.2rem] md:text-[4rem] lg:text-[3rem] text-black">
+      Hire
+    </span>{" "}
+    Talented,{" "}
+    <span className="text-black">Experienced</span> Candidates
+  </span>
+
+  {/* LINE 2 */}
+  <span className="block text-[2.8rem] md:text-[3.5rem] lg:text-[4rem] mt-1 bg-clip-text text-transparent bg-gradient-to-b from-[hsl(32,88%,55%)] to-[hsl(32,88%,40%)]">
+    Across Profiles
+  </span>
+
+</span>
         </motion.h1>
 
         {/* Subtext */}
