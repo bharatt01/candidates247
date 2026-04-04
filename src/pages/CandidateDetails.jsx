@@ -283,12 +283,9 @@ const CandidateDetails = () => {
                   <h3 className="text-sm font-semibold mb-3 flex gap-2 items-center">
                     <Code size={14} /> Projects
                   </h3>
-                  {candidate.projects.map((p, i) => (
-                    <div key={i} className="mb-2">
-                      <p className="font-medium">{p.title}</p>
-                      <p className="text-sm text-muted-foreground">{p.description}</p>
-                    </div>
-                  ))}
+                 {candidate.projects.map((p, i) => (
+  <p key={i} className="text-sm">• {p}</p>
+))}
                 </div>
               )}
 
@@ -337,9 +334,9 @@ const CandidateDetails = () => {
                   <h3 className="text-sm font-semibold mb-3 flex gap-2 items-center">
                     <Star size={14} /> Achievements
                   </h3>
-                  <p className="text-sm whitespace-pre-wrap">
-                    {candidate.achievements}
-                  </p>
+                 {candidate.achievements?.map((a, i) => (
+  <p key={i} className="text-sm">• {a}</p>
+))}
                 </div>
               )}
 
