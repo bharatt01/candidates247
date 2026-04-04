@@ -35,7 +35,11 @@ const ForCompanies = () => {
       toast.success("Company account created successfully!");
       navigate("/dashboard/company");
     } catch (error) {
-      toast.error(error.message);
+      let message = "An error occurred";
+      if (error.code === "auth/email-already-in-use") {
+        message = "Email already in use";
+      }
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }
@@ -70,7 +74,11 @@ const ForCompanies = () => {
     toast.success("Signed in successfully!");
     navigate("/dashboard/company");
   } catch (error) {
-    toast.error(error.message);
+    let message = "Email not found";
+    if (error.code === "auth/wrong-password") {
+      message = "Incorrect password";
+    }
+    toast.error(message);
   } finally {
     setSubmitting(false);
   }
