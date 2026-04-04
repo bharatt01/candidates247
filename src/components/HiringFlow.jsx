@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const LiveCandidatesStrip = () => {
   const candidates = [
@@ -9,7 +10,7 @@ const LiveCandidatesStrip = () => {
     { name: "Sneha Kapoor", role: "UI/UX Designer", exp: "3 yrs", location: "Mumbai" },
     { name: "Vikas Yadav", role: "Backend Developer", exp: "5 yrs", location: "Gurgaon" },
   ];
-
+const navigate = useNavigate();
   return (
     <section className="relative py-24 bg-[hsl(38,70%,96%)] overflow-hidden">
 
@@ -63,7 +64,7 @@ const LiveCandidatesStrip = () => {
 
       {/* Bottom CTA */}
       <div className="mt-16 text-center">
-        <button className="px-8 py-3 bg-[hsl(32,88%,55%)] text-white rounded-xl font-semibold hover:brightness-95 transition">
+        <button onClick={() => navigate("/browse-candidates")} className="px-8 py-3 bg-[hsl(32,88%,55%)] text-white rounded-xl font-semibold hover:brightness-95 transition">
           View All Candidates
         </button>
       </div>

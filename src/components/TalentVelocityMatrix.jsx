@@ -1,7 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
-
+import { useNavigate } from "react-router-dom";
 const TalentShowcaseIndia = () => {
+  const navigate = useNavigate();
   const talents = [
     {
       name: "Rahul Sharma",
@@ -130,7 +131,7 @@ const TalentShowcaseIndia = () => {
           transition={{ duration: 0.8 }}
           className="mt-20 text-center"
         >
-          <button className="px-10 py-4 bg-[hsl(32,88%,55%)] text-white rounded-2xl font-semibold text-lg shadow-[0_15px_40px_rgba(180,120,40,0.2)] hover:brightness-95 transition-all duration-300">
+          <button onClick={() => navigate("/browse-candidates")} className="px-10 py-4 bg-[hsl(32,88%,55%)] text-white rounded-2xl font-semibold text-lg shadow-[0_15px_40px_rgba(180,120,40,0.2)] hover:brightness-95 transition-all duration-300">
             Browse Candidates
           </button>
 
