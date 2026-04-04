@@ -51,6 +51,9 @@ useEffect(() => {
       const candidateRef = doc(db, "candidates", user.uid);
       const candidateSnap = await getDoc(candidateRef);
 
+      let candidateFullName = "";
+      let candidateRoleTitle = "";
+
       if (candidateSnap.exists()) {
         const data = candidateSnap.data();
 
@@ -61,8 +64,11 @@ useEffect(() => {
 
         setCandidateData(data);
 
+        candidateFullName = data.fullName || data.name || "";
+        candidateRoleTitle = data.roleTitle || data.role || data.title || "";
+
         // set states...
-        setRoleTitle(data.roleTitle || "");
+        setRoleTitle(candidateRoleTitle);
         setExperience(String(data.experience || ""));
         setLocation(data.location || "");
         setPhone(data.phone || "");
@@ -84,7 +90,7 @@ useEffect(() => {
       if (userSnap.exists()) {
         const userData = userSnap.data();
         setProfile(userData);
-        setFullName(userData.fullName || "");
+        setFullName(userData.fullName || candidateFullName || "");
       }
 
     } catch (err) {
@@ -153,6 +159,7 @@ useEffect(() => {
         });
 
         await updateDoc(doc(db, "candidates", user.uid), {
+          fullName,
           roleTitle,
           experience: parseInt(experience) || 0,
           location,
@@ -171,24 +178,28 @@ useEffect(() => {
 
         }
       );
-// ✅ update UI instantly
-setCandidateData({
-  ...candidateData,
-  roleTitle,
-  experience: parseInt(experience) || 0,
-  location,
-  phone,
-  skills,
-  summary,
-  workExperience,
-  education,
-  projects,
-  certifications,
-  achievements,
-  languages,
-  interests,
-  references,
-});
+
+        // ✅ update UI instantly
+        setCandidateData({
+          ...candidateData,
+          fullName,
+          roleTitle,
+          role: roleTitle,
+          experience: parseInt(experience) || 0,
+          location,
+          phone,
+          skills,
+          summary,
+          workExperience,
+          education,
+          projects,
+          certifications,
+          achievements,
+          languages,
+          interests,
+          references,
+        });
+        setProfile((prev) => (prev ? { ...prev, fullName } : prev));
         toast.success("Profile updated! Changes are live on the marketplace.");
         setEditing(false);
       } catch (error) {
@@ -215,7 +226,7 @@ setCandidateData({
           <div className="flex items-center justify-between mb-8">
             <div>
               <h1 className="text-2xl font-bold text-foreground">
-                Welcome, {profile?.fullName || "Candidate"}
+                Welcome, {fullName || candidateData?.fullName || profile?.fullName || "Candidate"}
               </h1>
               <p className="text-sm text-muted-foreground">
                 Your candidate dashboard — edit your resume anytime
@@ -259,7 +270,7 @@ setCandidateData({
                   {editing ? (
                     <input value={fullName} onChange={(e) => setFullName(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary outline-none text-sm mt-1" />
                   ) : (
-                    <p className="text-sm text-foreground font-medium">{profile?.fullName || "—"}</p>
+                    <p className="text-sm text-foreground font-medium">{fullName || candidateData?.fullName || candidateData?.name || profile?.fullName || "—"}</p>
                   )}
                 </div>
                 <div>
@@ -300,7 +311,7 @@ setCandidateData({
                   {editing ? (
                     <input value={roleTitle} onChange={(e) => setRoleTitle(e.target.value)} placeholder="Frontend Developer" className="w-full px-3 py-2 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary outline-none text-sm mt-1" />
                   ) : (
-                  <p className="text-sm text-foreground font-medium">{candidateData?.roleTitle || "Not set"}</p>
+                    <p className="text-sm text-foreground font-medium">{candidateData?.roleTitle || candidateData?.role || candidateData?.title || roleTitle || "Not set"}</p>
                   )}
                 </div>
                 <div>
