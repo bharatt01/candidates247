@@ -4,7 +4,7 @@ import { User, Briefcase, MapPin, Phone, Mail, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { db } from "@/firebase";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
   
@@ -129,38 +129,39 @@ const handleSubmit = async (e) => {
   try {
     setUploading(true);
 
-    await updateDoc(doc(db, "candidates", user.uid), {
-      fullName,
-      roleTitle: role,
-      location,
-      experience: parseInt(experience) || 0,
-      phone,
-      email,
-      summary,
-      skills,
-      projects,
-      workExperience,
-      education,
-      certifications,
-      achievements,
-      languages,
-      interests,
-      references,
+    const docRef = doc(db, "candidates", user.uid);
 
-      // 🔥 MOST IMPORTANT LINE
-      profileCompleted: true,
-
-      updatedAt: new Date()
-    });
+    // ✅ THIS FIXES EVERYTHING
+    await setDoc(
+      docRef,
+      {
+        fullName,
+        roleTitle: role,
+        location,
+        experience: parseInt(experience) || 0,
+        phone,
+        email,
+        summary,
+        skills,
+        projects,
+        workExperience,
+        education,
+        certifications,
+        achievements,
+        languages,
+        interests,
+        references,
+        profileCompleted: true,
+        updatedAt: new Date(),
+      },
+      { merge: true } // ✅ IMPORTANT
+    );
 
     toast.success("Profile completed successfully!");
-
-    // 🚀 FINAL REDIRECT
     navigate("/dashboard/candidate");
-
   } catch (err) {
     console.error(err);
-    toast.error("Something went wrong");
+    toast.error(err.message);
   } finally {
     setUploading(false);
   }
