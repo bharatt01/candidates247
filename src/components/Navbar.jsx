@@ -2,12 +2,12 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { LogOut, Menu, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-
+import { useNavigate } from "react-router-dom";
 const Navbar = () => {
   const location = useLocation();
   const { user, userRole, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
-
+const navigate = useNavigate();
   const navItems = user
     ? [
         { label: "Home", path: "/" },
@@ -72,7 +72,10 @@ const Navbar = () => {
           {/* DESKTOP LOGOUT (UNCHANGED) */}
           {user && (
             <button
-              onClick={logout}
+          onClick={async () => {
+  await logout();
+  navigate("/");
+}}
               className="hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-muted/40 text-muted-foreground border border-border hover:text-foreground transition-all"
             >
               <LogOut size={14} />

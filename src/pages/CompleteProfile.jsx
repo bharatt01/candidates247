@@ -15,32 +15,46 @@ const CompleteProfile = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
 
-  useEffect(() => {
-    if (!user?.uid) return;
+ useEffect(() => {
+  if (!user?.uid) return;
 
-    const fetchData = async () => {
-      const snap = await getDoc(doc(db, "candidates", user.uid));
+  const fetchData = async () => {
+    try {
+      // 1️⃣ Get basic data from users collection
+      const userSnap = await getDoc(doc(db, "users", user.uid));
 
-      if (snap.exists()) {
-        const data = snap.data();
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
 
-        // 🚨 IMPORTANT: If already completed → skip page
+        setFullName(userData.fullName || "");
+        setEmail(userData.email || user.email || "");
+        setPhone(userData.phone || "");
+      }
+
+      // 2️⃣ Get candidate profile data
+      const candidateSnap = await getDoc(doc(db, "candidates", user.uid));
+
+      if (candidateSnap.exists()) {
+        const data = candidateSnap.data();
+
+        // 🚨 If already completed → skip page
         if (data.profileCompleted) {
           navigate("/dashboard/candidate");
           return;
         }
 
-        // ✅ Autofill fields
-        setFullName(data.fullName || "");
-        setEmail(data.email || "");
-        setPhone(data.phone || "");
+        // Autofill remaining fields
         setLocation(data.location || "");
+        setRole(data.roleTitle || "");
       }
-    };
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to load profile data");
+    }
+  };
 
-    fetchData();
-  }, [user]);
-
+  fetchData();
+}, [user]);
   const [fullName, setFullName] = useState("");
   const [role, setRole] = useState("");
   const [location, setLocation] = useState("");
