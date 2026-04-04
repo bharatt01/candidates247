@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Briefcase, Phone, X, LogIn, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -8,14 +7,13 @@ import { doc, getDoc } from "firebase/firestore";
 import { db, auth } from "@/firebase";
 
 const ForCandidates = () => {
-  const { user, signUp, signIn, logout, userRole } = useAuth();
+  const { signUp, signIn } = useAuth();
   const navigate = useNavigate();
   const [mode, setMode] = useState("signup");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [roleTitle, setRoleTitle] = useState("");
   const [phone, setPhone] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -25,11 +23,10 @@ const ForCandidates = () => {
     setSubmitting(true);
 
     try {
-      const cred = await signUp(email, password, {
+      await signUp(email, password, {
         fullName,
         phone,
         role: "candidate",
-        roleTitle,
       });
 
       toast.success("Account created!");
@@ -43,41 +40,42 @@ const ForCandidates = () => {
 
   // 🔹 LOGIN
   const handleLogin = async (e) => {
-  e.preventDefault();
-  setSubmitting(true);
+    e.preventDefault();
+    setSubmitting(true);
 
-  try {
-    // 1️⃣ Sign in with Firebase Auth
-    const cred = await signIn(email, password);
-    const uid = cred.user.uid;
+    try {
+      // 1️⃣ Sign in
+      const cred = await signIn(email, password);
+      const uid = cred.user.uid;
 
-    // 2️⃣ Fetch user document
-    const userDoc = await getDoc(doc(db, "users", uid));
-    if (!userDoc.exists()) {
-      toast.error("User record not found!");
-      await auth.signOut();
+      // 2️⃣ Get user doc
+      const userDoc = await getDoc(doc(db, "users", uid));
+
+      if (!userDoc.exists()) {
+        toast.error("User record not found!");
+        await auth.signOut();
+        return;
+      }
+
+      const userData = userDoc.data();
+
+      // 3️⃣ Role check
+      if (userData.role !== "candidate") {
+        toast.error(
+          "This email is registered as a company. Please use company login."
+        );
+        await auth.signOut();
+        return;
+      }
+
+      toast.success("Signed in successfully!");
+      navigate("/dashboard/candidate");
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
       setSubmitting(false);
-      return;
     }
-
-    const userData = userDoc.data();
-
-    // 3️⃣ Check role
-    if (userData.role !== "candidate") {
-      toast.error("This email is registered as a company. Please login from company portal.");
-      await auth.signOut(); // sign out immediately
-      setSubmitting(false);
-      return;
-    }
-
-    toast.success("Signed in successfully!");
-    navigate("/dashboard/candidate");
-  } catch (error) {
-    toast.error(error.message);
-  } finally {
-    setSubmitting(false);
-  }
-};
+  };
 
   const inputClass =
     "w-full px-4 py-2.5 rounded-lg bg-muted/30 text-foreground placeholder:text-muted-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm transition-all";
@@ -92,6 +90,7 @@ const ForCandidates = () => {
         className="w-full max-w-md relative z-10"
       >
         <div className="backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl rounded-2xl p-8">
+          {/* Header */}
           <div className="mb-8 text-center">
             <h1 className="text-2xl font-semibold text-foreground">
               {mode === "signup" ? "Create Account" : "Welcome Back"}
@@ -127,6 +126,7 @@ const ForCandidates = () => {
             </button>
           </div>
 
+          {/* LOGIN */}
           {mode === "login" ? (
             <form onSubmit={handleLogin} className="space-y-4">
               <input
@@ -137,6 +137,7 @@ const ForCandidates = () => {
                 placeholder="Email address"
                 className={inputClass}
               />
+
               <input
                 type="password"
                 required
@@ -145,6 +146,7 @@ const ForCandidates = () => {
                 placeholder="Password"
                 className={inputClass}
               />
+
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 type="submit"
@@ -155,6 +157,7 @@ const ForCandidates = () => {
               </motion.button>
             </form>
           ) : (
+            /* SIGNUP */
             <form onSubmit={handleSignup} className="space-y-4">
               <input
                 type="text"
@@ -162,15 +165,6 @@ const ForCandidates = () => {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="Full name"
-                className={inputClass}
-              />
-
-              <input
-                type="text"
-                required
-                value={roleTitle}
-                onChange={(e) => setRoleTitle(e.target.value)}
-                placeholder="Your role (e.g. Frontend Developer)"
                 className={inputClass}
               />
 
