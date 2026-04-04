@@ -119,7 +119,7 @@ const Navbar = () => {
                 logout();
                 setMenuOpen(false);
               }}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-medium bg-red-600 hover:bg-red-700"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-medium text-white bg-red-600 hover:bg-red-700"
             >
               <LogOut size={14} />
               Sign Out
