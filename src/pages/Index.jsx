@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowRight, Users, Zap } from "lucide-react";
 import { db } from "@/firebase";
 import { collection, getDocs } from "firebase/firestore";
@@ -11,9 +11,10 @@ import SkeletonCard from "@/components/SkeletonCard";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-import HeroSection from "../components/ui/HeroSection";
 import TalentVelocityMatrix from "@/components/TalentVelocityMatrix";
 import NetworkPulse from "../components/ui/NetworkPulse";
+import HeroSection from "../components/ui/HeroSection";
+import HiringFlow from "../components/HiringFlow";
 
 const Index = () => {
   const [candidates, setCandidates] = useState([]);
@@ -25,7 +26,7 @@ const Index = () => {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filters, setFilters] = useState({ selectedSkills: [] });
 
-  // 🚀 FETCH DATA
+  // 🔥 FETCH DATA
   useEffect(() => {
     const fetchCandidates = async () => {
       setLoading(true);
@@ -37,7 +38,6 @@ const Index = () => {
           ...doc.data(),
         }));
 
-        // ✅ SORT LATEST FIRST
         data.sort(
           (a, b) =>
             (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)
@@ -76,7 +76,9 @@ const Index = () => {
         (c) =>
           c.name?.toLowerCase().includes(s) ||
           c.role?.toLowerCase().includes(s) ||
-          c.skills?.some((skill) => skill.toLowerCase().includes(s)) ||
+          c.skills?.some((skill) =>
+            skill.toLowerCase().includes(s)
+          ) ||
           c.location?.toLowerCase().includes(s)
       );
     }
@@ -92,145 +94,173 @@ const Index = () => {
     return result;
   }, [candidates, search, filters]);
 
-  // ✂️ ONLY 9
-  const visibleCandidates = useMemo(() => {
-    return filteredCandidates.slice(0, 9);
+  // ⭐ Featured = Top 3
+  const featuredCandidates = useMemo(() => {
+    return filteredCandidates.slice(0, 3);
   }, [filteredCandidates]);
 
-  // 🔥 AUTO SCROLL
-  useEffect(() => {
-    if (search) {
-      document
-        .getElementById("browse")
-        ?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [search]);
+  // 📂 Browse = Remaining (no duplicates)
+  const browseCandidates = useMemo(() => {
+    return filteredCandidates.slice(3, 12);
+  }, [filteredCandidates]);
 
   return (
     <>
-      <HeroSection />
+    <HeroSection/>
+    <div className="bg-background">
 
-      <div className="min-h-screen bg-background relative">
-        <div className="mesh-gradient" />
+      {/* 🔥 HERO */}
+      <section className="px-6 pt-24 pb-20 text-center">
+        <div className="max-w-4xl mx-auto">
 
-        {/* HERO */}
-        <section className="relative z-10 pt-20 pb-16 px-6">
-          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-            
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <h1 className="text-3xl md:text-5xl font-bold mb-4">
-                Hire <span className="glow-text">Elite Talent</span>,<br />
-                Verified & Ready
-              </h1>
+          <h1 className="text-4xl md:text-6xl font-bold leading-tight">
+            Hire <span className="text-primary">Top Talent</span>  
+            <br /> Faster Than Ever
+          </h1>
 
-              <p className="text-muted-foreground mb-6">
-                Access a curated pool of pre-verified professionals.
-              </p>
+          <p className="mt-4 text-muted-foreground text-lg">
+            Discover verified candidates, filter by skills, and hire smarter.
+          </p>
 
-              {/* 🔍 SEARCH */}
-              <SearchBar value={search} onChange={setSearch} />
+          <div className="mt-8 max-w-xl mx-auto">
+            <SearchBar value={search} onChange={setSearch} />
+          </div>
 
-              <div className="flex gap-6 my-6">
-                <div className="flex items-center gap-2">
-                  <Users size={16} />
-                  <div>
-                    <p className="font-semibold">{candidates.length}</p>
-                    <p className="text-xs text-muted-foreground">
-                      Live Candidates
-                    </p>
-                  </div>
-                </div>
+          <button
+            onClick={() =>
+              document.getElementById("browse")?.scrollIntoView({
+                behavior: "smooth",
+              })
+            }
+            className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-white shadow-md hover:scale-105 transition"
+          >
+            Explore Candidates <ArrowRight size={16} />
+          </button>
+        </div>
+      </section>
 
-                <div className="flex items-center gap-2">
-                  <Zap size={16} />
-                  <div>
-                    <p className="font-semibold">React</p>
-                    <p className="text-xs text-muted-foreground">
-                      Top skill
-                    </p>
-                  </div>
-                </div>
-              </div>
+      {/* 💎 STATS */}
+      <section className="px-6 pb-16">
+        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-6">
 
-              <button
-                onClick={() =>
-                  document
-                    .getElementById("browse")
-                    ?.scrollIntoView({ behavior: "smooth" })
-                }
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-white"
+          <div className="p-6 rounded-2xl bg-white shadow-sm text-center">
+            <Users className="mx-auto mb-2 text-primary" />
+            <p className="text-2xl font-bold">{candidates.length}+</p>
+            <p className="text-sm text-muted-foreground">Candidates</p>
+          </div>
+
+          <div className="p-6 rounded-2xl bg-white shadow-sm text-center">
+            <Zap className="mx-auto mb-2 text-primary" />
+            <p className="text-2xl font-bold">React</p>
+            <p className="text-sm text-muted-foreground">Top Skill</p>
+          </div>
+
+          <div className="p-6 rounded-2xl bg-white shadow-sm text-center hidden md:block">
+            <p className="text-2xl font-bold">Fast</p>
+            <p className="text-sm text-muted-foreground">Hiring</p>
+          </div>
+        </div>
+      </section>
+
+      {/* 🌟 FEATURED */}
+      <section className="px-6 pb-20">
+        <div className="max-w-6xl mx-auto">
+
+          <h2 className="text-2xl font-semibold mb-8">
+            🌟 Featured Talent
+          </h2>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {featuredCandidates.map((candidate, i) => (
+              <div
+                key={candidate.id}
+                className="relative p-[1px] rounded-2xl bg-gradient-to-br from-primary/40 to-transparent"
               >
-                Browse Candidates
-                <ArrowRight size={15} />
-              </button>
-            </motion.div>
+                <div className="bg-white rounded-2xl">
+                  <CandidateCard
+                    candidate={candidate}
+                    index={i}
+                    onClick={() =>
+                      navigate(`/candidate/${candidate.id}`)
+                    }
+                  />
+                </div>
 
-            <div className="hidden md:block">
-              {visibleCandidates[0] && (
+                <span className="absolute top-3 right-3 text-xs bg-primary text-white px-2 py-1 rounded-full">
+                  Featured
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 📂 BROWSE */}
+      <section
+        id="browse"
+        className="px-6 py-20 bg-muted/30"
+      >
+        <div className="max-w-6xl mx-auto">
+
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-2xl font-semibold">
+              Browse Candidates
+            </h2>
+
+            <button
+              onClick={() => setFiltersOpen(true)}
+              className="text-sm px-4 py-2 border rounded-lg hover:bg-muted transition"
+            >
+              Filters
+            </button>
+          </div>
+
+          {candidatesLoading ? (
+            <div className="grid md:grid-cols-3 gap-5">
+              {[...Array(6)].map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-3 gap-5">
+              {browseCandidates.map((candidate) => (
                 <CandidateCard
-                  candidate={visibleCandidates[0]}
+                  key={candidate.id}
+                  candidate={candidate}
                   onClick={() =>
-                    navigate(`/candidate/${visibleCandidates[0].id}`)
+                    navigate(`/candidate/${candidate.id}`)
                   }
                 />
-              )}
+              ))}
             </div>
+          )}
+
+          {/* 🔥 VIEW ALL */}
+          <div className="flex justify-center mt-12">
+            <button
+              onClick={() =>
+                navigate(`/browse-candidates?search=${search}`)
+              }
+              className="px-6 py-3 rounded-xl bg-primary text-white hover:scale-105 transition"
+            >
+              View All Candidates
+            </button>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* BROWSE */}
-        <section
-          id="browse"
-          className="max-w-[1400px] mx-auto px-6 pb-24"
-        >
-          <AnimatePresence mode="wait">
-            {candidatesLoading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {[...Array(6)].map((_, i) => (
-                  <SkeletonCard key={i} />
-                ))}
-              </div>
-            ) : (
-              <>
-                <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {visibleCandidates.map((candidate, i) => (
-                    <CandidateCard
-                      key={candidate.id}
-                      candidate={candidate}
-                      index={i}
-                      onClick={() =>
-                        navigate(`/candidate/${candidate.id}`)
-                      }
-                    />
-                  ))}
-                </motion.div>
-
-                {/* 🔥 VIEW ALL */}
-                <div className="flex justify-center mt-10">
-                  <button
-                    onClick={() =>
-                      navigate(`/browsecandidate?search=${search}`)
-                    }
-                    className="px-6 py-3 rounded-lg bg-primary text-white"
-                  >
-                    View All Candidates
-                  </button>
-                </div>
-              </>
-            )}
-          </AnimatePresence>
-        </section>
-
-        <FilterSidebar
-          isOpen={filtersOpen}
-          onClose={() => setFiltersOpen(false)}
-          filters={filters}
-          onFiltersChange={setFilters}
-        />
-      </div>
-
+      {/* SIDEBAR */}
+      <FilterSidebar
+        isOpen={filtersOpen}
+        onClose={() => setFiltersOpen(false)}
+        filters={filters}
+        onFiltersChange={setFilters}
+      />
+<HiringFlow />
+      {/* EXTRA SECTIONS */}
       <TalentVelocityMatrix />
       <NetworkPulse />
+    </div>
     </>
   );
 };

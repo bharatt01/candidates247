@@ -242,16 +242,7 @@ setCandidateData({
                 </button>
               )}
 
-              <button
-        onClick={async () => {
-          await logout();
-          navigate("/");
-        }}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-muted/40 text-muted-foreground border border-border hover:text-foreground transition-all btn-haptic"
-              >
-                <LogOut size={14} />
-                Sign Out
-              </button>
+            
             </div>
           </div>
 

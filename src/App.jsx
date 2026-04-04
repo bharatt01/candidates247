@@ -8,7 +8,6 @@ import { AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar"; 
 import Footer from "../src/components/PremiumFooter"
-import Index from "./pages/Index";
 import CompleteProfile from "./pages/CompleteProfile"; 
 
 import About from "./pages/About";
@@ -23,6 +22,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import BrowseCandidate from "./pages/BrowseCandidate";
+import Index from "./pages/Index";
 
 const queryClient = new QueryClient();
 
@@ -33,27 +33,27 @@ export default function App() {
         <Toaster />
         <Sonner />
         <BrowserRouter>
-        <ScrollToTop />
+          <ScrollToTop />
           <AuthProvider>
             <Navbar />
             <AnimatePresence mode="wait">
               <Routes>
-                <Route path="/" element={<Index />} />
+              <Route path="/" element={<Index />} />
                 <Route path="/for-candidates" element={<ForCandidates />} />
-                <Route path="/for-companies" element={<ForCompanies />} />
+                 <Route path="/for-companies" element={<ForCompanies />} />
                 <Route path="/dashboard/candidate" element={<CandidateDashboard />} />
                 <Route path="/dashboard/company" element={<CompanyDashboard />} />
                 <Route path="/subscription" element={<SubscriptionPage />} />
                 <Route path="/candidate/:id" element={<CandidateDetails />} />
-                 <Route path="/superadmin" element={<SuperAdminLogin />} />
-        <Route path="/superadmin/dashboard" element={<AdminDashboard />} />
+                <Route path="/superadmin" element={<SuperAdminLogin />} />
+                <Route path="/superadmin/dashboard" element={<AdminDashboard />} />
                 <Route path="/complete-profile" element={<CompleteProfile />} />
-<Route path="/browse-candidates" element={<BrowseCandidate />} />
+               <Route path="/browse-candidates" element={<BrowseCandidate />} /> 
                 <Route path="/about" element={<About />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </AnimatePresence>
-    <Footer /> {/* Uncomment when PremiumFooter is created */}
+            <Footer />
           </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>
