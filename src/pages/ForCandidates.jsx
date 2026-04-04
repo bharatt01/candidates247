@@ -15,7 +15,7 @@ const ForCandidates = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [roleTitle, setRoleTitle] = useState("");
+  // const [roleTitle, setRoleTitle] = useState("");
   const [phone, setPhone] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -165,14 +165,14 @@ const ForCandidates = () => {
                 className={inputClass}
               />
 
-              <input
+              {/* <input
                 type="text"
                 required
                 value={roleTitle}
                 onChange={(e) => setRoleTitle(e.target.value)}
                 placeholder="Your role (e.g. Frontend Developer)"
                 className={inputClass}
-              />
+              /> */}
 
               <input
                 type="tel"
