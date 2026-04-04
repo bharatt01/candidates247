@@ -89,7 +89,7 @@ const CompanyDashboard = () => {
             Dashboard
           </Link>
           <Link
-            to="/"
+            to="/browse-candidates"
             className="block px-3 py-2 rounded-lg text-muted-foreground hover:bg-muted text-sm"
           >
             Browse Candidates
@@ -124,7 +124,7 @@ const CompanyDashboard = () => {
             </div>
 
             <Link
-              to="/"
+              to="/browse-candidates"
               className="px-4 py-2 bg-primary text-white rounded-lg text-sm hover:scale-[1.05] transition"
             >
               Browse Talent
