@@ -59,35 +59,57 @@ const CandidateDetails = () => {
   };
 
   // ✅ FETCH DATA
-  useEffect(() => {
-    if (!id) {
-      setError("No candidate ID provided");
-      setLoading(false);
-      return;
-    }
+ import { onSnapshot } from "firebase/firestore";
 
-    const fetchCandidate = async () => {
-      try {
-        const docSnap = await getDoc(doc(db, "candidates", id));
+useEffect(() => {
+  if (!id) {
+    setError("No candidate ID provided");
+    setLoading(false);
+    return;
+  }
 
-        if (docSnap.exists()) {
-          setCandidate({ id: docSnap.id, ...docSnap.data() });
-        } else {
-          setError("Candidate not found");
+  let unsubscribe;
+
+  const setupListener = async () => {
+    try {
+      const docRef = doc(db, "candidates", id);
+
+      // ✅ REALTIME LISTENER
+      unsubscribe = onSnapshot(
+        docRef,
+        async (docSnap) => {
+          if (docSnap.exists()) {
+            setCandidate({ id: docSnap.id, ...docSnap.data() });
+          } else {
+            setError("Candidate not found");
+          }
+
+          setLoading(false);
+
+          // ✅ ALSO CHECK UNLOCK STATUS
+          await checkIfAlreadyUnlocked();
+        },
+        (err) => {
+          console.error(err);
+          setError("Failed to load candidate details");
+          toast.error("Realtime fetch failed");
+          setLoading(false);
         }
+      );
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong");
+      setLoading(false);
+    }
+  };
 
-        await checkIfAlreadyUnlocked();
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load candidate details");
-        toast.error("Failed to load candidate");
-      } finally {
-        setLoading(false);
-      }
-    };
+  setupListener();
 
-    fetchCandidate();
-  }, [id, user]);
+  // ✅ CLEANUP (VERY IMPORTANT)
+  return () => {
+    if (unsubscribe) unsubscribe();
+  };
+}, [id, user]);
 
   // ✅ UNLOCK
   const handleUnlock = async () => {
