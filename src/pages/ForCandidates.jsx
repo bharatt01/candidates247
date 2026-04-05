@@ -6,6 +6,25 @@ import { useAuth } from "@/contexts/AuthContext";
 import { doc, getDoc } from "firebase/firestore";
 import { db, auth } from "@/firebase";
 
+
+// ✅ Format Name (Proper Case + remove extra spaces)
+const formatName = (name) => {
+  return name
+    .trim()
+    .replace(/\s+/g, " ")
+    .toLowerCase()
+    .split(" ")
+    .map((word) =>
+      word.charAt(0).toUpperCase() + word.slice(1)
+    )
+    .join(" ");
+};
+
+// ✅ Format Email (lowercase)
+const formatEmail = (email) => {
+  return email.trim().toLowerCase();
+};
+
 const ForCandidates = () => {
   const { signUp, signIn } = useAuth();
   const navigate = useNavigate();
@@ -23,8 +42,11 @@ const ForCandidates = () => {
     setSubmitting(true);
 
     try {
-      await signUp(email, password, {
-        fullName,
+      const formattedName = formatName(fullName);
+      const formattedEmail = formatEmail(email);
+
+      await signUp(formattedEmail, password, {
+        fullName: formattedName,
         phone,
         role: "candidate",
       });
@@ -48,8 +70,10 @@ const ForCandidates = () => {
     setSubmitting(true);
 
     try {
+      const formattedEmail = formatEmail(email);
+
       // 1️⃣ Sign in
-      const cred = await signIn(email, password);
+      const cred = await signIn(formattedEmail, password);
       const uid = cred.user.uid;
 
       // 2️⃣ Get user doc
@@ -98,6 +122,7 @@ const ForCandidates = () => {
         className="w-full max-w-md relative z-10"
       >
         <div className="backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl rounded-2xl p-8">
+          
           {/* Header */}
           <div className="mb-8 text-center">
             <h1 className="text-2xl font-semibold text-foreground">
@@ -141,7 +166,7 @@ const ForCandidates = () => {
                 type="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => setEmail(formatEmail(e.target.value))}
                 placeholder="Email address"
                 className={inputClass}
               />
@@ -171,7 +196,7 @@ const ForCandidates = () => {
                 type="text"
                 required
                 value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
+                onChange={(e) => setFullName(formatName(e.target.value))}
                 placeholder="Full name"
                 className={inputClass}
               />
@@ -193,7 +218,7 @@ const ForCandidates = () => {
                 type="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => setEmail(formatEmail(e.target.value))}
                 placeholder="Email"
                 className={inputClass}
               />

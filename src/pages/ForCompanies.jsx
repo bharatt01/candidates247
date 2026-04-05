@@ -6,8 +6,27 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { doc, getDoc } from "firebase/firestore";
 import { db, auth } from "@/firebase";
+
+// ✅ Format Name / Company / Industry
+const formatText = (text) => {
+  return text
+    .trim()
+    .replace(/\s+/g, " ")
+    .toLowerCase()
+    .split(" ")
+    .map((word) =>
+      word.charAt(0).toUpperCase() + word.slice(1)
+    )
+    .join(" ");
+};
+
+// ✅ Format Email
+const formatEmail = (email) => {
+  return email.trim().toLowerCase();
+};
+
 const ForCompanies = () => {
-  const { user, signUp, signIn, logout, userRole } = useAuth();
+  const { signUp, signIn } = useAuth();
   const navigate = useNavigate();
   const [mode, setMode] = useState("signup");
 
@@ -26,9 +45,13 @@ const ForCompanies = () => {
     setSubmitting(true);
 
     try {
-      const cred = await signUp(email, password, {
-        companyName,
-        industry,
+      const formattedEmail = formatEmail(email);
+      const formattedCompany = formatText(companyName);
+      const formattedIndustry = formatText(industry);
+
+      await signUp(formattedEmail, password, {
+        companyName: formattedCompany,
+        industry: formattedIndustry,
         role: "company",
       });
 
@@ -47,42 +70,47 @@ const ForCompanies = () => {
 
   // 🔹 LOGIN
   const handleLogin = async (e) => {
-  e.preventDefault();
-  setSubmitting(true);
+    e.preventDefault();
+    setSubmitting(true);
 
-  try {
-    const cred = await signIn(email, password);
-    const uid = cred.user.uid;
+    try {
+      const formattedEmail = formatEmail(email);
 
-    const userDoc = await getDoc(doc(db, "users", uid));
-    if (!userDoc.exists()) {
-      toast.error("User record not found!");
-      await auth.signOut();
+      const cred = await signIn(formattedEmail, password);
+      const uid = cred.user.uid;
+
+      const userDoc = await getDoc(doc(db, "users", uid));
+      if (!userDoc.exists()) {
+        toast.error("User record not found!");
+        await auth.signOut();
+        setSubmitting(false);
+        return;
+      }
+
+      const userData = userDoc.data();
+
+      if (userData.role !== "company") {
+        toast.error(
+          "This email is registered as a candidate. Please login from candidate portal."
+        );
+        await auth.signOut();
+        setSubmitting(false);
+        return;
+      }
+
+      toast.success("Signed in successfully!");
+      navigate("/dashboard/company");
+    } catch (error) {
+      let message = "Email not found";
+      if (error.code === "auth/wrong-password") {
+        message = "Incorrect password";
+      }
+      toast.error(message);
+    } finally {
       setSubmitting(false);
-      return;
     }
+  };
 
-    const userData = userDoc.data();
-
-    if (userData.role !== "company") {
-      toast.error("This email is registered as a candidate. Please login from candidate portal.");
-      await auth.signOut();
-      setSubmitting(false);
-      return;
-    }
-
-    toast.success("Signed in successfully!");
-    navigate("/dashboard/company");
-  } catch (error) {
-    let message = "Email not found";
-    if (error.code === "auth/wrong-password") {
-      message = "Incorrect password";
-    }
-    toast.error(message);
-  } finally {
-    setSubmitting(false);
-  }
-};
   return (
     <div className="min-h-screen bg-background relative">
       <div className="mesh-gradient" />
@@ -135,10 +163,11 @@ const ForCompanies = () => {
                 type="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => setEmail(formatEmail(e.target.value))}
                 placeholder="Email"
                 className={inputClass}
               />
+
               <input
                 type="password"
                 required
@@ -147,6 +176,7 @@ const ForCompanies = () => {
                 placeholder="Password"
                 className={inputClass}
               />
+
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 type="submit"
@@ -158,14 +188,31 @@ const ForCompanies = () => {
             </form>
           ) : (
             <form onSubmit={handleSignup} className="space-y-4">
+            <input
+                type="text"
+                required
+                value={companyName}
+                onChange={(e) => setCompanyName(formatText(e.target.value))}
+                placeholder="Company Name"
+                className={inputClass}
+              />
+
+              <input
+                type="text"
+                value={industry}
+                onChange={(e) => setIndustry(formatText(e.target.value))}
+                placeholder="Industry"
+                className={inputClass}
+              />
               <input
                 type="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => setEmail(formatEmail(e.target.value))}
                 placeholder="Email"
                 className={inputClass}
               />
+
               <input
                 type="password"
                 required
@@ -175,21 +222,8 @@ const ForCompanies = () => {
                 placeholder="Password"
                 className={inputClass}
               />
-              <input
-                type="text"
-                required
-                value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
-                placeholder="Company Name"
-                className={inputClass}
-              />
-              <input
-                type="text"
-                value={industry}
-                onChange={(e) => setIndustry(e.target.value)}
-                placeholder="Industry"
-                className={inputClass}
-              />
+
+             
 
               <motion.button
                 whileTap={{ scale: 0.97 }}
@@ -197,7 +231,9 @@ const ForCompanies = () => {
                 disabled={submitting}
                 className="w-full py-3 rounded-lg font-semibold bg-primary text-white disabled:opacity-50"
               >
-                {submitting ? "Creating account..." : "Create Company Account"}
+                {submitting
+                  ? "Creating account..."
+                  : "Create Company Account"}
               </motion.button>
             </form>
           )}

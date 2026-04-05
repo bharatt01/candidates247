@@ -223,7 +223,7 @@ const CompanyDashboard = () => {
                     Start exploring talent and unlock profiles
                   </p>
                   <Link
-                    to="/"
+                    to="/browse-candidates"
                     className="px-5 py-2 bg-primary text-white rounded-lg text-sm"
                   >
                     Browse Candidates

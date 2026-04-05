@@ -17,14 +17,16 @@ const CompleteProfile = () => {
   const [fullName, setFullName] = useState("");
   const [role, setRole] = useState("");
   const [location, setLocation] = useState("");
-  const [experience, setExperience] = useState("");
+const [expYears, setExpYears] = useState("");
+const [expMonths, setExpMonths] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [summary, setSummary] = useState("");
   const [workExperience, setWorkExperience] = useState("");
   const [education, setEducation] = useState("");
-  const [projects, setProjects] = useState([]);
-  const [projectInput, setProjectInput] = useState("");
+ const [projects, setProjects] = useState([]);
+const [projectTitle, setProjectTitle] = useState("");
+const [projectDesc, setProjectDesc] = useState("");
   const [certifications, setCertifications] = useState([]);
   const [certificationInput, setCertificationInput] = useState("");
   const [achievements, setAchievements] = useState([]);
@@ -34,6 +36,24 @@ const CompleteProfile = () => {
   const [interests, setInterests] = useState([]);
   const [interestInput, setInterestInput] = useState("");
   const [references, setReferences] = useState("");
+
+  
+const formatText = (text) => {
+  return text
+    .trim()
+    .replace(/\s+/g, " ")
+    .toLowerCase()
+    .split(" ")
+    .map((word) =>
+      word.charAt(0).toUpperCase() + word.slice(1)
+    )
+    .join(" ");
+};
+
+const formatEmail = (email) => {
+  return email.trim().toLowerCase();
+};
+
 
   useEffect(() => {
     if (!user?.uid) return;
@@ -67,33 +87,78 @@ const CompleteProfile = () => {
     fetchData();
   }, [user, navigate]);
 
-  const addSkill = () => { if (skillInput.trim() && !skills.includes(skillInput.trim())) { setSkills([...skills, skillInput.trim()]); setSkillInput(""); } };
-  const addProject = () => { if (projectInput.trim()) { setProjects([...projects, projectInput.trim()]); setProjectInput(""); } };
-  const addCertification = () => { if (certificationInput.trim()) { setCertifications([...certifications, certificationInput.trim()]); setCertificationInput(""); } };
+  const addSkill = () => {
+  const value = formatText(skillInput);
+  if (value && !skills.includes(value)) {
+    setSkills([...skills, value]);
+    setSkillInput("");
+  }
+};
+const addProject = () => {
+  if (projectTitle.trim() && projectDesc.trim()) {
+    setProjects([
+      ...projects,
+      {
+        title: projectTitle.trim(),
+        description: projectDesc.trim(),
+      },
+    ]);
+    setProjectTitle("");
+    setProjectDesc("");
+  }
+};  
+const addCertification = () => { if (certificationInput.trim()) { setCertifications([...certifications, certificationInput.trim()]); setCertificationInput(""); } };
   const addAchievement = () => { if (achievementInput.trim()) { setAchievements([...achievements, achievementInput.trim()]); setAchievementInput(""); } };
   const addLanguage = () => { if (languageInput.trim()) { setLanguages([...languages, languageInput.trim()]); setLanguageInput(""); } };
   const addInterest = () => { if (interestInput.trim()) { setInterests([...interests, interestInput.trim()]); setInterestInput(""); } };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!user?.uid) return toast.error("Please sign in first");
+  e.preventDefault();
+  if (!user?.uid) return toast.error("Please sign in first");
 
-    try {
-      setUploading(true);
-      const docRef = doc(db, "candidates", user.uid);
-      await setDoc(docRef, {
-        fullName, roleTitle: role, location, experience: parseInt(experience)||0, phone, email,
-        summary, skills, projects, workExperience, education,
-        certifications, achievements, languages, interests, references,
-        profileCompleted: true, updatedAt: new Date(),
-      }, { merge: true });
-      toast.success("Profile completed successfully!");
-      navigate("/dashboard/candidate");
-    } catch (err) {
-      console.error(err);
-      toast.error(err.message);
-    } finally { setUploading(false); }
-  };
+  try {
+    setUploading(true);
+
+    const totalExperience =
+      (parseInt(expYears) || 0) * 12 +
+      (parseInt(expMonths) || 0);
+
+    await setDoc(
+      doc(db, "candidates", user.uid),
+      {
+        fullName: formatText(fullName),
+        roleTitle: formatText(role),
+        location: formatText(location),
+        experience: totalExperience, // ✅ stored in months
+        phone,
+        email: formatEmail(email),
+
+        summary,
+        skills,
+        projects,
+        workExperience,
+        education,
+        certifications,
+        achievements,
+        languages,
+        interests,
+        references,
+
+        profileCompleted: true,
+        updatedAt: new Date(),
+      },
+      { merge: true }
+    );
+
+    toast.success("Profile completed successfully!");
+    navigate("/dashboard/candidate");
+  } catch (err) {
+    console.error(err);
+    toast.error(err.message);
+  } finally {
+    setUploading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-background relative">
@@ -108,12 +173,41 @@ const CompleteProfile = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider"> Resume Title </label>
-                <input type="text" value={role} onChange={(e)=>setRole(e.target.value)} placeholder="Backend Developer" required className="w-full px-4 py-2.5 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary text-sm outline-none transition-all" />
+                <input type="text" value={role} onChange={(e)=>setRole(formatText(e.target.value))} placeholder="Backend Developer" required className="w-full px-4 py-2.5 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary text-sm outline-none transition-all" />
               </div>
               <div>
                 <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider"> Experience (yrs) </label>
-                <input type="number" value={experience} onChange={(e)=>setExperience(e.target.value)} min={0} max={30} placeholder="5" required className="w-full px-4 py-2.5 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary text-sm outline-none transition-all" />
-              </div>
+               <div className="grid grid-cols-2 gap-4">
+  <div>
+    <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase">
+      Experience (Years)
+    </label>
+    <input
+      type="number"
+      value={expYears}
+      onChange={(e) => setExpYears(e.target.value)}
+      min={0}
+      placeholder="1"
+      className="w-full px-4 py-2.5 rounded-lg bg-muted/30 border border-border text-sm"
+    />
+  </div>
+
+  <div>
+    <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase">
+      Experience (Months)
+    </label>
+    <input
+      type="number"
+      value={expMonths}
+      onChange={(e) => setExpMonths(e.target.value)}
+      min={0}
+      max={11}
+      placeholder="6"
+      className="w-full px-4 py-2.5 rounded-lg bg-muted/30 border border-border text-sm"
+    />
+  </div>
+</div>
+               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -121,14 +215,14 @@ const CompleteProfile = () => {
                 <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider"> Full Name </label>
                 <div className="relative">
                   <User size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                  <input type="text" value={fullName} onChange={(e)=>setFullName(e.target.value)} placeholder="John Doe" required className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary text-sm outline-none transition-all" />
+                  <input type="text" value={fullName} onChange={(e) => setFullName(formatText(e.target.value))} placeholder="John Doe" required className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary text-sm outline-none transition-all" />
                 </div>
               </div>
               <div>
                 <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider"> Location </label>
                 <div className="relative">
                   <MapPin size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                  <input type="text" value={location} onChange={(e)=>setLocation(e.target.value)} placeholder="Bengaluru" required className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary text-sm outline-none transition-all" />
+                  <input type="text" value={location} onChange={(e)=>setLocation(formatText(e.target.value))} placeholder="Bengaluru" required className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary text-sm outline-none transition-all" />
                 </div>
               </div>
             </div>
@@ -145,7 +239,7 @@ const CompleteProfile = () => {
                 <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider"> Email </label>
                 <div className="relative">
                   <Mail size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                  <input type="email" value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="you@email.com" required className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary text-sm outline-none transition-all" />
+                  <input type="email" value={email} onChange={(e)=>setEmail(formatEmail(e.target.value))} placeholder="you@email.com" required className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary text-sm outline-none transition-all" />
                 </div>
               </div>
             </div>
@@ -153,7 +247,7 @@ const CompleteProfile = () => {
             {/* Full width textareas */}
             <div>
               <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider"> Career Objective / Summary </label>
-              <textarea value={summary} onChange={(e)=>setSummary(e.target.value)} placeholder="Brief summary..." className="w-full px-4 py-2.5 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm min-h-[80px] resize-none transition-all" />
+              <textarea value={summary} onChange={(e)=>setSummary(formatText(e.target.value))} placeholder="Brief summary..." className="w-full px-4 py-2.5 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm min-h-[80px] resize-none transition-all" />
             </div>
 
             {/* Dynamic Lists: Skills, Projects, etc. */}

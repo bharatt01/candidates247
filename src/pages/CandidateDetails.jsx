@@ -279,15 +279,28 @@ const CandidateDetails = () => {
 
               {/* PROJECTS */}
               {candidate.projects?.length > 0 && (
-                <div className="glass-card p-5">
-                  <h3 className="text-sm font-semibold mb-3 flex gap-2 items-center">
-                    <Code size={14} /> Projects
-                  </h3>
-                 {candidate.projects.map((p, i) => (
-  <p key={i} className="text-sm">• {p}</p>
-))}
-                </div>
-              )}
+  <div className="glass-card p-5">
+    <h3 className="text-sm font-semibold mb-3 flex gap-2 items-center">
+      <Code size={14} /> Projects
+    </h3>
+
+    <div className="space-y-3">
+      {candidate.projects.map((proj, i) => (
+        <div key={i}>
+          {/* Title */}
+          <p className="text-sm font-semibold text-foreground">
+            • {proj.title}
+          </p>
+
+          {/* Description */}
+          <p className="text-sm text-muted-foreground ml-4">
+            {proj.description}
+          </p>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
 
               {/* CERTIFICATIONS */}
               {candidate.certifications?.length > 0 && (
