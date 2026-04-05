@@ -26,7 +26,8 @@ import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
     const [workExperience, setWorkExperience] = useState("");
     const [education, setEducation] = useState("");
     const [projects, setProjects] = useState([]);
-    const [projectInput, setProjectInput] = useState("");
+const [projectTitle, setProjectTitle] = useState("");
+const [projectDesc, setProjectDesc] = useState("");
     const [certifications, setCertifications] = useState([]);
     const [certificationInput, setCertificationInput] = useState("");
     const [achievements, setAchievements] = useState([]);
@@ -109,12 +110,19 @@ useEffect(() => {
       }
     };
 
-    const addProject = () => {
-      if (projectInput.trim()) {
-        setProjects([...projects, projectInput.trim()]);
-        setProjectInput("");
-      }
-    };
+  const addProject = () => {
+  if (projectTitle.trim() && projectDesc.trim()) {
+    setProjects([
+      ...projects,
+      {
+        title: projectTitle.trim(),
+        description: projectDesc.trim(),
+      },
+    ]);
+    setProjectTitle("");
+    setProjectDesc("");
+  }
+};
 
     const addCertification = () => {
       if (certificationInput.trim()) {
@@ -383,34 +391,75 @@ useEffect(() => {
                   <p className="text-sm text-foreground">{candidateData?.education || "No education history entered."}</p>
                 )}
               </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Projects</p>
-                {editing ? (
-                  <div>
-                    <div className="flex gap-2 mb-2">
-                      <input value={projectInput} onChange={(e) => setProjectInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addProject())} placeholder="Add a project..." className="flex-1 px-3 py-2 rounded-lg bg-muted/30 text-foreground border border-border focus:border-secondary outline-none text-sm" />
-                      <button type="button" onClick={addProject} className="px-3 py-2 rounded-lg btn-haptic text-secondary bg-secondary/10 border border-secondary/20"><Plus size={14} /></button>
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {projects.map((proj) => (
-                        <span key={proj} className="glow-tag-cyan flex items-center gap-1.5">
-                          {proj}
-                          <button type="button" onClick={() => setProjects(projects.filter((p) => p !== proj))} className="hover:text-foreground"><X size={12} /></button>
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex flex-wrap gap-1.5">
-                    {(candidateData?.projects || []).map((proj) => (
-                      <span key={proj} className="glow-tag-cyan">{proj}</span>
-                    ))}
-                    {(!candidateData?.projects || candidateData.projects.length === 0) && (
-                      <span className="text-sm text-muted-foreground">No projects listed.</span>
-                    )}
-                  </div>
-                )}
-              </div>
+             <div>
+  <p className="text-xs text-muted-foreground">Projects</p>
+
+  {editing ? (
+    <div className="space-y-3 mt-2">
+
+      {/* INPUTS */}
+      <div className="flex flex-col gap-2">
+        <input
+          value={projectTitle}
+          onChange={(e) => setProjectTitle(e.target.value)}
+          placeholder="Project Title"
+          className="px-3 py-2 rounded-lg bg-muted/30 border border-border text-sm"
+        />
+
+        <input
+          value={projectDesc}
+          onChange={(e) => setProjectDesc(e.target.value)}
+          placeholder="Project Description"
+          className="px-3 py-2 rounded-lg bg-muted/30 border border-border text-sm"
+        />
+
+        <button
+          type="button"
+          onClick={addProject}
+          className="px-3 py-2 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center gap-1"
+        >
+          <Plus size={14} /> Add Project
+        </button>
+      </div>
+
+      {/* LIST */}
+      <div className="space-y-2">
+        {projects.map((proj, index) => (
+          <div
+            key={index}
+            className="flex justify-between items-start bg-muted/20 p-2 rounded"
+          >
+            <div>
+              <p className="text-sm font-medium">{proj.title}</p>
+              <p className="text-xs text-muted-foreground">
+                {proj.description}
+              </p>
+            </div>
+
+            <button
+              onClick={() =>
+                setProjects(projects.filter((_, i) => i !== index))
+              }
+            >
+              <X size={14} />
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  ) : (
+    <div className="space-y-2">
+      {(candidateData?.projects || []).map((proj, i) => (
+        <div key={i}>
+          <p className="text-sm font-medium">• {proj.title}</p>
+          <p className="text-xs text-muted-foreground ml-3">
+            {proj.description}
+          </p>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
               <div>
                 <p className="text-xs text-muted-foreground">Certifications</p>
                 {editing ? (
