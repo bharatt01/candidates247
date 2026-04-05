@@ -166,7 +166,9 @@ useEffect(() => {
           updatedAt: new Date()
         });
 
-        await updateDoc(doc(db, "candidates", user.uid), {
+    await setDoc(
+  doc(db, "candidates", user.uid),
+  {
           fullName,
           roleTitle,
           experience: parseInt(experience) || 0,
@@ -184,7 +186,7 @@ useEffect(() => {
           references,
           updatedAt: new Date()
 
-        }
+        },{ merge: true }
       );
 
         // ✅ update UI instantly

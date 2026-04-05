@@ -311,38 +311,45 @@ const addCertification = () => { if (certificationInput.trim()) { setCertificati
   </div>
 </div>
             {/* Dynamic Lists: Skills, Projects, etc. */}
-            {[["Skills", skills, skillInput, addSkill, setSkillInput],
+  
       
-              ["Certifications", certifications, certificationInput, addCertification, setCertificationInput],
-              ["Achievements", achievements, achievementInput, addAchievement, setAchievementInput],
-              ["Languages", languages, languageInput, addLanguage, setLanguageInput],
-              ["Interests / Hobbies", interests, interestInput, addInterest, setInterestInput]
-            ].map(([label, arr, input, addFn, setInput]) => (
-              <div key={label}>
-                <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider">{label}</label>
-                <div className="flex gap-2 mb-2 flex-wrap sm:flex-nowrap">
-                  <input type="text" value={input} onChange={(e)=>setInput(e.target.value)} onKeyDown={(e)=>e.key==="Enter"&&(e.preventDefault(), addFn())} placeholder={`Add a ${label.toLowerCase()}`} className="flex-1 px-4 py-2.5 rounded-lg bg-muted/30 text-foreground border border-border focus:border-secondary focus:ring-1 focus:ring-secondary outline-none text-sm transition-all" />
-                  <button type="button" onClick={addFn} className="px-3 py-2.5 rounded-lg btn-haptic text-secondary bg-secondary/10 border border-secondary/20 hover:bg-secondary/15 transition-colors">
-                    <Plus size={16} />
-                  </button>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {arr.map((item)=>(
-                    <span key={item} className="glow-tag-cyan flex items-center gap-1.5">
-                      {item}
-                      <button type="button" onClick={()=>arr===skills?setSkills(skills.filter(s=>s!==item))
-                    
-                        :arr===certifications?setCertifications(certifications.filter(c=>c!==item))
-                        :arr===achievements?setAchievements(achievements.filter(a=>a!==item))
-                        :arr===languages?setLanguages(languages.filter(l=>l!==item))
-                        :setInterests(interests.filter(i=>i!==item))
-                      } className="hover:text-foreground"><X size={12}/></button>
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
+{[
+          ["Skills", skills, skillInput, addSkill, setSkillInput],
+  ["Certifications", certifications, certificationInput, addCertification, setCertificationInput],
+  ["Achievements", achievements, achievementInput, addAchievement, setAchievementInput],
+  ["Languages", languages, languageInput, addLanguage, setLanguageInput],
+  ["Interests / Hobbies", interests, interestInput, addInterest, setInterestInput],
+].map(([title, list, input, addFn, setInput], index) => (
+  <div key={index}>
+    <p className="text-xs text-muted-foreground">{title}</p>
 
+    {true ? (
+      <div>
+        <div className="flex gap-2 mb-2">
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            className="flex-1 px-3 py-2 rounded-lg bg-muted/30 border"
+          />
+          <button onClick={addFn}>
+            <Plus size={14} />
+          </button>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          {list.map((item, i) => (
+            <span key={i}>
+              {item}
+            </span>
+          ))}
+        </div>
+      </div>
+    ) : (
+      <div>{list.join(", ")}</div>
+    )}
+  </div>
+))}
+               
             {/* References */}
             <div>
               <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider"> References (optional) </label>
