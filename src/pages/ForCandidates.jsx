@@ -14,9 +14,7 @@ const formatName = (name) => {
     .replace(/\s+/g, " ")
     .toLowerCase()
     .split(" ")
-    .map((word) =>
-      word.charAt(0).toUpperCase() + word.slice(1)
-    )
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 };
 
@@ -196,7 +194,7 @@ const ForCandidates = () => {
                 type="text"
                 required
                 value={fullName}
-                onChange={(e) => setFullName(formatName(e.target.value))}
+               onChange={(e) => setFullName(e.target.value)}
                 placeholder="Full name"
                 className={inputClass}
               />
