@@ -7,7 +7,7 @@ const HeroSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="relative h-[85vh] w-full flex items-center justify-center bg-gray-900 overflow-hidden">
+    <section className="relative h-[95vh] w-full flex items-center justify-center bg-gray-900 overflow-hidden">
 
       {/* Background Video */}
       <div className="absolute inset-0 z-0">
