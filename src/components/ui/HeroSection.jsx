@@ -32,7 +32,7 @@ const HeroSection = () => {
           transition={{ duration: 1 }}
           className="text-6xl md:text-7xl lg:text-7xl font-medium text-white leading-tight mb-6 drop-shadow-[0_0_20px_rgba(0,0,0,0.7)]"
         >
-          On This Website - <br />
+          {/* On This Website - <br /> */}
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-orange-500 to-red-500">
             Hire & Get Hired
           </span>
