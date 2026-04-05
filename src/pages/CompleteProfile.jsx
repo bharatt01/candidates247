@@ -249,10 +249,70 @@ const addCertification = () => { if (certificationInput.trim()) { setCertificati
               <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider"> Career Objective / Summary </label>
               <textarea value={summary} onChange={(e)=>setSummary(formatText(e.target.value))} placeholder="Brief summary..." className="w-full px-4 py-2.5 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm min-h-[80px] resize-none transition-all" />
             </div>
+<div>
+  <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider">
+    Projects
+  </label>
 
+  {/* Inputs */}
+  <div className="flex flex-col gap-2 mb-3">
+    <input
+      type="text"
+      value={projectTitle}
+      onChange={(e) => setProjectTitle(e.target.value)}
+      placeholder="Project Title"
+      className="w-full px-4 py-2.5 rounded-lg bg-muted/30 border border-border text-sm"
+    />
+
+    <textarea
+      value={projectDesc}
+      onChange={(e) => setProjectDesc(e.target.value)}
+      placeholder="Project Description"
+      className="w-full px-4 py-2.5 rounded-lg bg-muted/30 border border-border text-sm min-h-[70px]"
+    />
+
+    <button
+      type="button"
+      onClick={addProject}
+      className="px-4 py-2 rounded-lg bg-secondary/10 border border-secondary/20 text-secondary text-sm w-fit"
+    >
+      Add Project
+    </button>
+  </div>
+
+  {/* Display */}
+  <div className="space-y-2">
+    {projects.map((proj, index) => (
+      <div
+        key={index}
+        className="p-3 rounded-lg bg-muted/20 border border-border"
+      >
+        <div className="flex justify-between items-start">
+          <div>
+            <p className="text-sm font-semibold">
+              • {proj.title}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {proj.description}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() =>
+              setProjects(projects.filter((_, i) => i !== index))
+            }
+          >
+            <X size={14} />
+          </button>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
             {/* Dynamic Lists: Skills, Projects, etc. */}
             {[["Skills", skills, skillInput, addSkill, setSkillInput],
-              ["Projects", projects, projectInput, addProject, setProjectInput],
+      
               ["Certifications", certifications, certificationInput, addCertification, setCertificationInput],
               ["Achievements", achievements, achievementInput, addAchievement, setAchievementInput],
               ["Languages", languages, languageInput, addLanguage, setLanguageInput],
@@ -271,7 +331,7 @@ const addCertification = () => { if (certificationInput.trim()) { setCertificati
                     <span key={item} className="glow-tag-cyan flex items-center gap-1.5">
                       {item}
                       <button type="button" onClick={()=>arr===skills?setSkills(skills.filter(s=>s!==item))
-                        :arr===projects?setProjects(projects.filter(p=>p!==item))
+                    
                         :arr===certifications?setCertifications(certifications.filter(c=>c!==item))
                         :arr===achievements?setAchievements(achievements.filter(a=>a!==item))
                         :arr===languages?setLanguages(languages.filter(l=>l!==item))

@@ -278,26 +278,42 @@ const CandidateDetails = () => {
               )}
 
               {/* PROJECTS */}
-              {candidate.projects?.length > 0 && (
+             {candidate.projects?.length > 0 && (
   <div className="glass-card p-5">
-    <h3 className="text-sm font-semibold mb-3 flex gap-2 items-center">
+    <h3 className="text-sm font-semibold mb-4 flex gap-2 items-center">
       <Code size={14} /> Projects
     </h3>
 
-    <div className="space-y-3">
-      {candidate.projects.map((proj, i) => (
-        <div key={i}>
-          {/* Title */}
-          <p className="text-sm font-semibold text-foreground">
-            • {proj.title}
-          </p>
+    <div className="space-y-4">
+      {candidate.projects.map((proj, i) => {
+        // ✅ handle both old + new data
+        const title =
+          typeof proj === "string" ? proj : proj.title || "Untitled Project";
 
-          {/* Description */}
-          <p className="text-sm text-muted-foreground ml-4">
-            {proj.description}
-          </p>
-        </div>
-      ))}
+        const description =
+          typeof proj === "string"
+            ? null
+            : proj.description || "";
+
+        return (
+          <div
+            key={i}
+            className="border-l-2 border-primary/40 pl-4"
+          >
+            {/* TITLE */}
+            <p className="text-sm font-semibold text-foreground">
+              {title}
+            </p>
+
+            {/* DESCRIPTION */}
+            {description && (
+              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                {description}
+              </p>
+            )}
+          </div>
+        );
+      })}
     </div>
   </div>
 )}
