@@ -114,7 +114,7 @@ const CandidateDetails = () => {
 
   const getAvatar = (name) =>
     name?.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase() || "?";
-
+console.log(candidate);
   return (
     <div className="min-h-screen bg-background relative">
       <div className="mesh-gradient absolute inset-0 opacity-20" />
@@ -339,26 +339,22 @@ const CandidateDetails = () => {
                   {candidate.portfolio && <a href={candidate.portfolio} target="_blank" className="block text-primary">Portfolio</a>}
                 </div>
               )}
-
-              {/* RESUME */}
-              {candidate.resumeUrl && (
-                <div className="glass-card p-5">
-                  <h3 className="text-sm font-semibold mb-3">Resume</h3>
-
-                  {hasActiveSubscription && unlocked ? (
-                    <a href={candidate.resumeUrl} target="_blank" className="text-primary underline text-sm">
-                      View / Download Resume
-                    </a>
-                  ) : (
-                    <p className="text-sm text-muted-foreground flex gap-2 items-center">
-                      <Lock size={14} /> Unlock to view resume
-                    </p>
-                  )}
-                </div>
-              )}
-
+{candidate.interests?.length > 0 && (
+  <div className="glass-card p-5">
+    <h3 className="text-sm font-semibold mb-3 flex gap-2 items-center">
+      <Globe size={14} /> Interests
+    </h3>
+    <div className="flex gap-2 flex-wrap">
+      {candidate.interests.map((i, index) => (
+        <span key={index} className="px-2 py-1 bg-muted rounded text-sm">
+          {i}
+        </span>
+      ))}
+    </div>
+  </div>
+)}
               {/* ACHIEVEMENTS */}
-              {candidate.achievements && (
+              {candidate.achievements?.length > 0 && (
                 <div className="glass-card p-5">
                   <h3 className="text-sm font-semibold mb-3 flex gap-2 items-center">
                     <Star size={14} /> Achievements

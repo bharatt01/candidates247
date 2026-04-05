@@ -82,7 +82,11 @@ useEffect(() => {
         setAchievements(data.achievements || []);
         setLanguages(data.languages || []);
         setInterests(data.interests || []);
-        setReferences(data.references || "");
+        setReferences(
+  Array.isArray(data.references)
+    ? data.references.join(", ")
+    : data.references || ""
+);;
       }
 
       const userRef = doc(db, "users", user.uid);
@@ -151,6 +155,14 @@ useEffect(() => {
         setInterestInput("");
       }
     };
+const toArray = (value) => {
+  if (Array.isArray(value)) return value;
+
+  return value
+    ?.split(",")
+    .map((item) => item.trim())
+    .filter((item) => item !== "") || [];
+};
 
     const handleSave = async () => {
       if (!user?.uid) {
@@ -179,11 +191,11 @@ useEffect(() => {
           workExperience,
           education,
           projects,
-          certifications,
-          achievements,
-          languages,
-          interests,
-          references,
+         certifications: Array.isArray(certifications) ? certifications : [],
+achievements: Array.isArray(achievements) ? achievements : [],
+languages: Array.isArray(languages) ? languages : [],
+interests: Array.isArray(interests) ? interests : [],
+       references: toArray(references),
           updatedAt: new Date()
 
         },{ merge: true }
