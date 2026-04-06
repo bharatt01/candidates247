@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { SlidersHorizontal, MapPin, Briefcase, IndianRupee, Cpu, RotateCcw, Search } from "lucide-react";
@@ -10,7 +10,6 @@ import SearchBar from "@/components/SearchBar";
 import SkeletonCard from "@/components/SkeletonCard";
 
 const skillsList = ["React", "Node", "MongoDB", "Python", "Java"];
-// const PAGE_SIZE = 12;
 
 const BrowseCandidate = () => {
   const [candidates, setCandidates] = useState([]);
@@ -29,9 +28,6 @@ const BrowseCandidate = () => {
   const [role, setRole] = useState("");
   const [sortBy, setSortBy] = useState("latest");
 
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-  const loaderRef = useRef(null);
-
   // --- Data Fetching ---
   useEffect(() => {
     const fetchCandidates = async () => {
@@ -39,9 +35,10 @@ const BrowseCandidate = () => {
       try {
         const snapshot = await getDocs(collection(db, "candidates"));
         let data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        
+
+        // Sort latest first client-side (avoids dropping candidates missing createdAt)
         data.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-        
+
         const formatted = data.map((c) => ({
           id: c.id,
           name: c.fullName || "Candidate",
@@ -62,37 +59,53 @@ const BrowseCandidate = () => {
     fetchCandidates();
   }, []);
 
-  // --- Filtering Logic ---
+  // --- Filtering + Sorting ---
   const filteredCandidates = useMemo(() => {
     let result = [...candidates];
+
     if (search.trim()) {
       const s = search.toLowerCase();
-      result = result.filter(c => 
-        c.name?.toLowerCase().includes(s) || 
-        c.role?.toLowerCase().includes(s) || 
-        c.skills?.some(skill => skill.toLowerCase().includes(s)) ||
-        c.location?.toLowerCase().includes(s)
+      result = result.filter(
+        (c) =>
+          c.name?.toLowerCase().includes(s) ||
+          c.role?.toLowerCase().includes(s) ||
+          c.skills?.some((skill) => skill.toLowerCase().includes(s)) ||
+          c.location?.toLowerCase().includes(s)
       );
     }
+
     if (selectedSkills.length > 0) {
-      result = result.filter(c => selectedSkills.every(skill => c.skills.includes(skill)));
+      result = result.filter((c) =>
+        selectedSkills.every((skill) => c.skills.includes(skill))
+      );
     }
-    if (minExp) result = result.filter(c => c.experience >= Number(minExp));
-    if (maxExp) result = result.filter(c => c.experience <= Number(maxExp));
-    if (location) result = result.filter(c => c.location.toLowerCase().includes(location.toLowerCase()));
-    if (role) result = result.filter(c => c.role.toLowerCase().includes(role.toLowerCase()));
-    
-    result = result.filter(c => c.salary >= salaryRange[0] && c.salary <= salaryRange[1]);
+
+    if (minExp) result = result.filter((c) => c.experience >= Number(minExp));
+    if (maxExp) result = result.filter((c) => c.experience <= Number(maxExp));
+    if (location)
+      result = result.filter((c) =>
+        c.location.toLowerCase().includes(location.toLowerCase())
+      );
+    if (role)
+      result = result.filter((c) =>
+        c.role.toLowerCase().includes(role.toLowerCase())
+      );
+
+    result = result.filter(
+      (c) => c.salary >= salaryRange[0] && c.salary <= salaryRange[1]
+    );
 
     if (sortBy === "exp") result.sort((a, b) => b.experience - a.experience);
     else if (sortBy === "salary") result.sort((a, b) => b.salary - a.salary);
-    
+
     return result;
   }, [candidates, search, selectedSkills, minExp, maxExp, location, salaryRange, role, sortBy]);
 
   const locationSuggestions = useMemo(() => {
     const unique = [...new Set(candidates.map((c) => c.location))];
-    return unique.filter((loc) => loc && loc.toLowerCase().includes(location.toLowerCase()));
+    return unique.filter(
+      (loc) => loc && loc.toLowerCase().includes(location.toLowerCase())
+    );
   }, [location, candidates]);
 
   const clearFilters = () => {
@@ -105,11 +118,9 @@ const BrowseCandidate = () => {
     setSearch("");
   };
 
-  const visibleCandidates = filteredCandidates.slice(0, visibleCount);
-
   return (
     <div className="min-h-screen bg-white dark:bg-background px-4 md:px-8 py-10">
-      
+
       {/* 1. Header Section */}
       <header className="max-w-7xl mx-auto mb-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -137,7 +148,7 @@ const BrowseCandidate = () => {
             ))}
           </div>
         </div>
-        
+
         <div className="mt-8 max-w-3xl border rounded-2xl bg-white dark:bg-card shadow-sm">
           <SearchBar value={search} onChange={setSearch} />
         </div>
@@ -145,24 +156,24 @@ const BrowseCandidate = () => {
 
       {/* 2. Main Layout Grid */}
       <div className="max-w-7xl mx-auto grid lg:grid-cols-4 gap-8 items-start">
-        
-        {/* SIDEBAR - Sticky Container */}
+
+        {/* SIDEBAR */}
         <aside className="lg:col-span-1">
           <div className="sticky top-28 bg-white dark:bg-card border rounded-[2.5rem] p-8 shadow-sm space-y-8">
-            
+
             <div className="flex justify-between items-center border-b border-slate-100 pb-5">
               <h2 className="font-bold flex gap-2 items-center text-slate-900 dark:text-slate-100">
                 <SlidersHorizontal size={18} className="text-primary" /> Filters
               </h2>
-              <button 
-                onClick={clearFilters} 
+              <button
+                onClick={clearFilters}
                 className="text-[11px] font-black uppercase tracking-widest text-primary hover:opacity-70 flex items-center gap-1.5 transition-opacity"
               >
                 <RotateCcw size={14} /> Clear
               </button>
             </div>
 
-            {/* Exp Input */}
+            {/* Experience */}
             <div className="space-y-3">
               <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 flex items-center gap-2">
                 <Briefcase size={14} /> Experience (Years)
@@ -185,7 +196,7 @@ const BrowseCandidate = () => {
               </div>
             </div>
 
-            {/* Role Input */}
+            {/* Role */}
             <div className="space-y-3">
               <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 flex items-center gap-2">
                 <Cpu size={14} /> Specialization
@@ -198,7 +209,7 @@ const BrowseCandidate = () => {
               />
             </div>
 
-            {/* Location Input */}
+            {/* Location */}
             <div className="space-y-3">
               <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 flex items-center gap-2">
                 <MapPin size={14} /> Location
@@ -240,7 +251,7 @@ const BrowseCandidate = () => {
               />
             </div>
 
-            {/* Skills Pills */}
+            {/* Skills */}
             <div className="space-y-4">
               <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">Core Skills</label>
               <div className="flex flex-wrap gap-2">
@@ -269,14 +280,20 @@ const BrowseCandidate = () => {
           </div>
         </aside>
 
-        {/* RESULTS AREA */}
+        {/* RESULTS */}
         <main className="lg:col-span-3">
           <div className="flex items-center justify-between mb-8 px-2">
             <div className="flex items-center gap-2 text-slate-400 font-medium">
               <Search size={16} />
-              <p className="text-sm">
-                Found <span className="text-slate-900 font-bold">{filteredCandidates.length}</span> verified profiles
-              </p>
+              {!loading && (
+                <p className="text-sm">
+                  Found{" "}
+                  <span className="text-slate-900 dark:text-white font-bold">
+                    {filteredCandidates.length}
+                  </span>{" "}
+                  verified profile{filteredCandidates.length !== 1 ? "s" : ""}
+                </p>
+              )}
             </div>
           </div>
 
@@ -286,42 +303,27 @@ const BrowseCandidate = () => {
                 <SkeletonCard key={i} />
               ))}
             </div>
-          ) : (
-            <>
-              {filteredCandidates.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-20 text-center bg-white rounded-[3rem] border border-dashed border-slate-200">
-                  <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4">
-                    <Search size={32} className="text-slate-300" />
-                  </div>
-                  <h3 className="text-xl font-bold text-slate-900">No candidates match these filters</h3>
-                  <p className="text-slate-400 mt-2 max-w-xs">Try adjusting your experience or skill requirements to see more results.</p>
-                </div>
-              ) : (
-                <motion.div 
-                  layout
-                  className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6"
-                >
-                  {visibleCandidates.map((candidate, i) => (
-                    <CandidateCard
-                      key={candidate.id}
-                      candidate={candidate}
-                      index={i}
-                      onClick={() => navigate(`/candidate/${candidate.id}`)}
-                    />
-                  ))}
-                </motion.div>
-              )}
-
-              {/* Load More Observer */}
-              <div ref={loaderRef} className="h-32 flex items-center justify-center">
-                {visibleCount < filteredCandidates.length && (
-                  <div className="flex flex-col items-center gap-4">
-                    <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-                    <span className="text-xs font-black text-slate-300 uppercase tracking-widest">Loading Talent</span>
-                  </div>
-                )}
+          ) : filteredCandidates.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 text-center bg-white rounded-[3rem] border border-dashed border-slate-200">
+              <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+                <Search size={32} className="text-slate-300" />
               </div>
-            </>
+              <h3 className="text-xl font-bold text-slate-900">No candidates match these filters</h3>
+              <p className="text-slate-400 mt-2 max-w-xs">
+                Try adjusting your experience or skill requirements to see more results.
+              </p>
+            </div>
+          ) : (
+            <motion.div layout className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
+              {filteredCandidates.map((candidate, i) => (
+                <CandidateCard
+                  key={candidate.id}
+                  candidate={candidate}
+                  index={i}
+                  onClick={() => navigate(`/candidate/${candidate.id}`)}
+                />
+              ))}
+            </motion.div>
           )}
         </main>
       </div>
