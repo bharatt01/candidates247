@@ -10,7 +10,7 @@ import SearchBar from "@/components/SearchBar";
 import SkeletonCard from "@/components/SkeletonCard";
 
 const skillsList = ["React", "Node", "MongoDB", "Python", "Java"];
-const PAGE_SIZE = 12;
+// const PAGE_SIZE = 12;
 
 const BrowseCandidate = () => {
   const [candidates, setCandidates] = useState([]);
