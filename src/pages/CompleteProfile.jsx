@@ -7,6 +7,7 @@ import { db } from "@/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useAuth } from "@/contexts/AuthContext";
 
+
 const CompleteProfile = () => {
   const [skills, setSkills] = useState([]);
   const [skillInput, setSkillInput] = useState("");
@@ -99,8 +100,8 @@ const addProject = () => {
     setProjects([
       ...projects,
       {
-        title: projectTitle.trim(),
-        description: projectDesc.trim(),
+       title: projectTitle.trim(),
+description: projectDesc.trim(),
       },
     ]);
     setProjectTitle("");
@@ -115,40 +116,64 @@ const addCertification = () => { if (certificationInput.trim()) { setCertificati
   const handleSubmit = async (e) => {
   e.preventDefault();
   if (!user?.uid) return toast.error("Please sign in first");
+// ✅ VALIDATION BLOCK
+if (!fullName.trim()) return toast.error("Full name is required");
+if (!email.trim()) return toast.error("Email is required");
+if (!phone.trim() || phone.length !== 10)
+  return toast.error("Valid phone number required");
+
+if (!summary.trim())
+  return toast.error("Career objective is required");
+
+if (!skills.length)
+  return toast.error("Add at least one skill");
+
+if (!languages.length)
+  return toast.error("Add at least one language");
 
   try {
     setUploading(true);
 
-    const totalExperience =
-      (parseInt(expYears) || 0) * 12 +
-      (parseInt(expMonths) || 0);
+const years = Math.max(0, parseInt(expYears) || 0);
+let months = Math.max(0, parseInt(expMonths) || 0);
 
-    await setDoc(
-      doc(db, "candidates", user.uid),
-      {
-        fullName: formatText(fullName),
-        roleTitle: formatText(role),
-        location: formatText(location),
-        experience: totalExperience, // ✅ stored in months
-        phone,
-        email: formatEmail(email),
+// enforce strict 0–11
+months = Math.min(months, 11);
 
-        summary,
-        skills,
-        projects,
-        workExperience,
-        education,
-        certifications,
-        achievements,
-        languages,
-        interests,
-        references,
+// final safe decimal (number type, max 2 digits)
+const experienceDecimal = Number(
+  (years + months / 12).toFixed(2)
+);
 
-        profileCompleted: true,
-        updatedAt: new Date(),
-      },
-      { merge: true }
-    );
+await setDoc(
+  doc(db, "candidates", user.uid),
+  {
+    profileCompleted: true, 
+    fullName: formatText(fullName),
+   roleTitle: role.trim(),        // don't format roles
+location: formatText(location), // OK
+        // ❌ no formatting here
+phone: phone,           // just trim, no formatting
+    email: formatEmail(email),
+summary: summary.trim(),       // don't destroy sentences
+
+   projects: projects,
+    experience: experienceDecimal,
+    workExperience: formatText(workExperience),
+    education: formatText(education),
+    certifications: certifications.map(formatText),
+    achievements: achievements.map(formatText),
+    languages: languages.map(formatText),
+    interests: interests.map(formatText),
+  references: references
+  .split("\n")
+  .map((r) => r.trim())
+  .filter(Boolean),
+    // rest unchanged
+  },
+  
+  { merge: true }
+);
 
     toast.success("Profile completed successfully!");
     navigate("/dashboard/candidate");
@@ -173,7 +198,7 @@ const addCertification = () => { if (certificationInput.trim()) { setCertificati
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider"> Resume Title </label>
-                <input type="text" value={role} onChange={(e)=>setRole(formatText(e.target.value))} placeholder="Backend Developer" required className="w-full px-4 py-2.5 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary text-sm outline-none transition-all" />
+                <input type="text" value={role} onChange={(e)=>setRole(e.target.value)} placeholder="Backend Developer" required className="w-full px-4 py-2.5 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary text-sm outline-none transition-all" />
               </div>
               <div>
                 <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider"> Experience (yrs) </label>
@@ -185,7 +210,13 @@ const addCertification = () => { if (certificationInput.trim()) { setCertificati
     <input
       type="number"
       value={expYears}
-      onChange={(e) => setExpYears(e.target.value)}
+          onChange={(e) => {
+  const value = e.target.value;
+  if (value === "") {
+    setExpYears("");
+  } else {
+    setExpYears(parseInt(value));
+  }}}
       min={0}
       placeholder="1"
       className="w-full px-4 py-2.5 rounded-lg bg-muted/30 border border-border text-sm"
@@ -199,7 +230,13 @@ const addCertification = () => { if (certificationInput.trim()) { setCertificati
     <input
       type="number"
       value={expMonths}
-      onChange={(e) => setExpMonths(e.target.value)}
+ 
+     onChange={(e) => {
+  let value = parseInt(e.target.value) || 0;
+  if (value > 11) value = 11;
+  setExpMonths(value);
+
+}}
       min={0}
       max={11}
       placeholder="6"
@@ -215,7 +252,7 @@ const addCertification = () => { if (certificationInput.trim()) { setCertificati
                 <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider"> Full Name </label>
                 <div className="relative">
                   <User size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                  <input type="text" value={fullName} onChange={(e) => setFullName(formatText(e.target.value))} placeholder="John Doe" required className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary text-sm outline-none transition-all" />
+                  <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="John Doe" required className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary text-sm outline-none transition-all" />
                 </div>
               </div>
               <div>
@@ -232,7 +269,16 @@ const addCertification = () => { if (certificationInput.trim()) { setCertificati
                 <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider"> Phone </label>
                 <div className="relative">
                   <Phone size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                  <input type="tel" value={phone} onChange={(e)=>setPhone(e.target.value)} placeholder="+91 98765 43210" required className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary text-sm outline-none transition-all" />
+                  <input
+  type="tel"
+  value={phone}
+  maxLength={10}
+  onChange={(e) => {
+    const value = e.target.value.replace(/\D/g, "");
+    if (value.length <= 10) setPhone(value);
+  }}
+  placeholder="9876543210"
+  required className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary text-sm outline-none transition-all" />
                 </div>
               </div>
               <div>
@@ -247,7 +293,7 @@ const addCertification = () => { if (certificationInput.trim()) { setCertificati
             {/* Full width textareas */}
             <div>
               <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider"> Career Objective / Summary </label>
-              <textarea value={summary} onChange={(e)=>setSummary(formatText(e.target.value))} placeholder="Brief summary..." className="w-full px-4 py-2.5 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm min-h-[80px] resize-none transition-all" />
+              <textarea value={summary} onChange={(e)=>setSummary(e.target.value)} placeholder="Brief summary..." className="w-full px-4 py-2.5 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm min-h-[80px] resize-none transition-all" />
             </div>
 <div>
   <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider">
@@ -327,20 +373,29 @@ const addCertification = () => { if (certificationInput.trim()) { setCertificati
       <div>
         <div className="flex gap-2 mb-2">
           <input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            className="flex-1 px-3 py-2 rounded-lg bg-muted/30 border"
-          />
-          <button onClick={addFn}>
-            <Plus size={14} />
-          </button>
+  value={input}
+  onChange={(e) => setInput(e.target.value)}
+  onKeyDown={(e) => {
+    if (e.key === "Enter") {
+      e.preventDefault(); // ❌ stop form submit
+      addFn();            // ✅ add item
+    }
+  }}
+  className="flex-1 px-3 py-2 rounded-lg bg-muted/30 border"
+/>
+         <button type="button" onClick={addFn}>
+  <Plus size={14} />
+</button>
         </div>
 
         <div className="flex flex-wrap gap-2">
           {list.map((item, i) => (
-            <span key={i}>
-              {item}
-            </span>
+            <span
+  key={i}
+  className="px-3 py-1 rounded-full bg-green-500/10 text-green-600 text-xs border border-green-500/20"
+>
+  {item}
+</span>
           ))}
         </div>
       </div>
