@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
-const navigate = useNavigate();
+
 const steps = [
   {
     title: "BUILD PROFILE",
@@ -22,6 +22,7 @@ const steps = [
 ];
 
 const CurvedFlow = () => {
+    const navigate = useNavigate();
   return (
     <section className="py-16 lg:py-24 px-4 sm:px-6 bg-background relative overflow-hidden">
 
