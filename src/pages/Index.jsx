@@ -124,7 +124,7 @@ const Index = () => {
             </h1>
 
             <p className="mt-4 text-muted-foreground text-lg">
-              Discover verified candidates, filter by skills, and hire smarter.
+              Discover verified candidates, filter by skills, experience and hire smarter.
             </p>
 
             <div className="mt-8 max-w-xl mx-auto">
@@ -144,7 +144,7 @@ const Index = () => {
           </div>
         </section>
 
-        {/* 💎 STATS */}
+        {/* 💎 STATS
         <section className="px-6 pb-16">
           <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-6">
             <div className="p-6 rounded-2xl bg-white shadow-sm text-center">
@@ -164,14 +164,14 @@ const Index = () => {
               <p className="text-sm text-muted-foreground">Hiring</p>
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* 🌟 FEATURED */}
         {featuredCandidates.length > 0 && (
           <section className="px-6 pb-20">
             <div className="max-w-6xl mx-auto">
               <h2 className="text-2xl font-semibold mb-8">
-                🌟 Featured Talent
+                 Featured Candidates
               </h2>
 
               <div className="grid md:grid-cols-3 gap-6">
@@ -204,7 +204,7 @@ const Index = () => {
         <section id="browse" className="px-6 py-20 bg-muted/30">
           <div className="max-w-6xl mx-auto">
             <div className="flex justify-between items-center mb-8">
-              <h2 className="text-2xl font-semibold">Browse Candidates</h2>
+              <h2 className="text-2xl font-semibold">Browse & Filter Candidates according to your requirements</h2>
               <button
                 onClick={() => setFiltersOpen(true)}
                 className="text-sm px-4 py-2 border rounded-lg hover:bg-muted transition"
