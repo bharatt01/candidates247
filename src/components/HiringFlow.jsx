@@ -16,9 +16,7 @@ const navigate = useNavigate();
 
       {/* Top Heading */}
       <div className="max-w-6xl mx-auto px-6 mb-16">
-        <p className="uppercase tracking-[0.3em] text-[11px] text-[hsl(300,12%,45%)] mb-4">
-          Live Candidates
-        </p>
+    
 
         <h2 className="text-4xl md:text-5xl font-medium tracking-tight">
           Fresh Profiles

@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { doc, getDoc } from "firebase/firestore";
 import { db, auth } from "@/firebase";
-
+import { Briefcase, Sparkles } from "lucide-react";
 // ✅ Format Name / Company / Industry
 const formatText = (text) => {
   return text
@@ -111,15 +111,18 @@ const ForCompanies = () => {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-background relative">
-      <div className="mesh-gradient" />
+ return (
+<div className="min-h-screen bg-background relative overflow-x-hidden">
+    <div className="mesh-gradient" />
 
-      <div className="relative z-10 max-w-lg mx-auto px-6 py-12">
+ <div className="relative z-10 grid lg:grid-cols-2">
+
+      {/* ================= LEFT SIDE (FORM) ================= */}
+     <div className="flex items-center justify-center px-6 py-10 lg:py-6">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass-card p-8"
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+        className="w-full max-w-md glass-card p-6"
         >
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-foreground mb-1">
@@ -157,6 +160,7 @@ const ForCompanies = () => {
             </button>
           </div>
 
+          {/* ===== FORMS ===== */}
           {mode === "login" ? (
             <form onSubmit={handleLogin} className="space-y-4">
               <input
@@ -188,7 +192,7 @@ const ForCompanies = () => {
             </form>
           ) : (
             <form onSubmit={handleSignup} className="space-y-4">
-            <input
+              <input
                 type="text"
                 required
                 value={companyName}
@@ -204,6 +208,7 @@ const ForCompanies = () => {
                 placeholder="Industry"
                 className={inputClass}
               />
+
               <input
                 type="email"
                 required
@@ -223,8 +228,6 @@ const ForCompanies = () => {
                 className={inputClass}
               />
 
-             
-
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 type="submit"
@@ -239,7 +242,134 @@ const ForCompanies = () => {
           )}
         </motion.div>
       </div>
+
+      {/* ================= RIGHT SIDE (WHY JOIN) ================= */}
+    {/* ================= RIGHT SIDE ================= */}
+<div className="flex flex-col justify-start px-6 lg:px-12 py-6 lg:py-2">
+  {/* 🔥 IMAGE */}
+
+
+    {/* BACK GLOW */}
+    <div className="absolute -inset-6 bg-gradient-to-tr from-primary/30 via-purple-500/20 to-transparent blur-2xl opacity-40" />
+
+    {/* RANDOM POLYGON */}
+    <div
+      className="relative w-full h-full overflow-hidden shadow-[0_30px_80px_rgba(0,0,0,0.45)]"
+      style={{
+        clipPath: `
+          polygon(
+            3% 12%,
+            18% 2%,
+            42% 6%,
+            68% 0%,
+            92% 10%,
+            100% 28%,
+            96% 55%,
+            100% 82%,
+            78% 100%,
+            52% 92%,
+            28% 100%,
+            8% 88%,
+            0% 60%,
+            6% 38%
+          )
+        `,
+      }}
+    >
+      <div className="relative w-full h-[140px] lg:h-[160px] mb-6 rounded-xl overflow-hidden">
+
+  <img
+    src="/Images/forcompanies.jpg"
+    alt="Hiring"
+    className="w-full h-full object-cover"
+  />
+
+  {/* 🔥 COLOR BALANCE OVERLAY */}
+  <div className="absolute inset-0 bg-gradient-to-br from-background/70 via-background/40 to-primary/20" />
+
+  {/* 🔥 DARK DEPTH OVERLAY */}
+  <div className="absolute inset-0 bg-black/30" />
+
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
     </div>
+
+    {/* BORDER */}
+    <div
+      className="absolute inset-0 border border-white/10 pointer-events-none"
+      style={{
+        clipPath: `
+          polygon(
+            3% 12%,
+            18% 2%,
+            42% 6%,
+            68% 0%,
+            92% 10%,
+            100% 28%,
+            96% 55%,
+            100% 82%,
+            78% 100%,
+            52% 92%,
+            28% 100%,
+            8% 88%,
+            0% 60%,
+            6% 38%
+          )
+        `,
+      }}
+    />
+
+    {/* TAGS */}
+    <div className="absolute top-4 left-4 bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-md text-[10px] sm:text-xs text-white">
+      ⚡ Smart Hiring
+    </div>
+
+    <div className="absolute bottom-4 right-4 bg-primary text-white px-3 py-1.5 rounded-md text-[10px] sm:text-xs shadow">
+      🚀 1000+ Companies
+    </div>
+  </div>
+
+  {/* ================= UNIQUE TEXT ================= */}
+
+  {/* ================= BETTER COMPANY TEXT ================= */}
+<div className="mt-0 max-w-md">
+
+  {/* HEADING */}
+  <h2 className="text-4xl lg:text-5xl font-bold leading-[1.1]">
+    <span className="block text-foreground">Stop Wasting Time</span>
+    <span className="block text-primary">on Hiring</span>
+  </h2>
+
+  {/* HARD-HITTING LINES */}
+  <div className="mt-4 space-y-4">
+
+    <p className="text-md lg:text-lg font-semibold text-foreground">
+      100+ Relevant Candidates. Not 1000 Random Resumes.
+    </p>
+
+    <p className="text-md lg:text-lg font-semibold text-foreground">
+      See Skills. Experience. Projects. All in One View.
+    </p>
+
+    <p className="text-md lg:text-lg font-semibold text-foreground">
+      Shortlist in Minutes. Not Days.
+    </p>
+
+    <p className="text-md lg:text-lg font-semibold text-primary">
+      Hire Faster. Spend Less.
+    </p>
+
+  </div>
+
+  {/* FINAL TRUST LINE */}
+  <div className="mt-6 text-lg font-bold text-foreground">
+    Built for companies that want results — not noise.
+  </div>
+
+</div>
+
+</div>
+    </div>
+  </div>
   );
 };
 

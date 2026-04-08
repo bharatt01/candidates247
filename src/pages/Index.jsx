@@ -15,6 +15,7 @@ import TalentVelocityMatrix from "@/components/TalentVelocityMatrix";
 import NetworkPulse from "../components/ui/NetworkPulse";
 import HeroSection from "@/components/ui/HeroSection";
 import HiringFlow from "../components/HiringFlow";
+import ResumeFlow from "../components/ResumeFlow";
 
 const Index = () => {
   const [candidates, setCandidates] = useState([]);
@@ -257,7 +258,7 @@ const Index = () => {
           filters={filters}
           onFiltersChange={setFilters}
         />
-
+<ResumeFlow />
         <HiringFlow />
         <TalentVelocityMatrix />
         <NetworkPulse />

@@ -126,7 +126,7 @@ const BrowseCandidate = () => {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <h1 className="text-4xl font-black tracking-tight text-slate-900 dark:text-white">
-              Browse <span className="text-primary">Talent</span>
+              Browse <span className="text-primary">Candidates</span>
             </h1>
             <p className="text-muted-foreground mt-2 font-medium">
               Connecting elite healthcare professionals with premier institutions.
@@ -159,11 +159,11 @@ const BrowseCandidate = () => {
 
         {/* SIDEBAR */}
         <aside className="lg:col-span-1">
-          <div className="sticky top-28 bg-white dark:bg-card border rounded-[2.5rem] p-8 shadow-sm space-y-8">
+          <div className="sticky top-28 bg-white/90 backdrop-blur-xl border border-slate-200/60 rounded-[2.5rem] p-8 shadow-[0_10px_40px_rgba(0,0,0,0.08)] space-y-8">
 
             <div className="flex justify-between items-center border-b border-slate-100 pb-5">
               <h2 className="font-bold flex gap-2 items-center text-slate-900 dark:text-slate-100">
-                <SlidersHorizontal size={18} className="text-primary" /> Filters
+                <SlidersHorizontal size={19} className="text-primary" /> Filters
               </h2>
               <button
                 onClick={clearFilters}
@@ -175,7 +175,7 @@ const BrowseCandidate = () => {
 
             {/* Experience */}
             <div className="space-y-3">
-              <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 flex items-center gap-2">
+              <label className="text-[12px] font-black uppercase tracking-[0.15em] text-slate-700 dark:text-slate-200 flex items-center gap-2">
                 <Briefcase size={14} /> Experience (Years)
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -184,48 +184,48 @@ const BrowseCandidate = () => {
                   type="number"
                   value={minExp}
                   onChange={(e) => setMinExp(e.target.value)}
-                  className="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                  className="w-full bg-slate-100 border-none rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                 />
                 <input
                   placeholder="Max"
                   type="number"
                   value={maxExp}
                   onChange={(e) => setMaxExp(e.target.value)}
-                  className="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                  className="w-full bg-slate-100 border-none rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                 />
               </div>
             </div>
 
             {/* Role */}
             <div className="space-y-3">
-              <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 flex items-center gap-2">
+              <label className="text-[12px] font-black uppercase tracking-[0.15em] text-slate-800 dark:text-slate-200 flex items-center gap-2">
                 <Cpu size={14} /> Specialization
               </label>
               <input
                 placeholder="Search Role..."
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
-                className="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                className="w-full bg-slate-100 border-none rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
               />
             </div>
 
             {/* Location */}
             <div className="space-y-3">
-              <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 flex items-center gap-2">
+              <label className="text-[12px] font-black uppercase tracking-[0.15em] text-slate-800 dark:text-slate-200 flex items-center gap-2">
                 <MapPin size={14} /> Location
               </label>
               <input
                 placeholder="Preferred City..."
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                className="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                className="w-full bg-slate-100 border-none rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
               />
               <div className="flex flex-wrap gap-1.5 pt-1">
                 {locationSuggestions.slice(0, 3).map((loc) => (
                   <button
                     key={loc}
                     onClick={() => setLocation(loc)}
-                    className="text-[10px] px-3 py-1.5 bg-slate-100 hover:bg-primary hover:text-white rounded-xl transition-all font-bold text-slate-500"
+                    className="text-[13px] px-3 py-1.5 bg-slate-100 hover:bg-primary hover:text-white rounded-xl transition-all font-bold text-slate-500"
                   >
                     {loc}
                   </button>
@@ -233,27 +233,10 @@ const BrowseCandidate = () => {
               </div>
             </div>
 
-            {/* Salary Range */}
-            <div className="space-y-4 pt-2">
-              <div className="flex justify-between items-center">
-                <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 flex items-center gap-2">
-                  <IndianRupee size={14} /> Salary (LPA)
-                </label>
-                <span className="text-xs font-black text-primary">₹{salaryRange[1]}L</span>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={salaryRange[1]}
-                onChange={(e) => setSalaryRange([0, Number(e.target.value)])}
-                className="w-full accent-primary h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer"
-              />
-            </div>
-
+            
             {/* Skills */}
             <div className="space-y-4">
-              <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">Core Skills</label>
+              <label className="text-[12px] font-black uppercase tracking-[0.15em] text-slate-800 dark:text-slate-200">Core Skills</label>
               <div className="flex flex-wrap gap-2">
                 {skillsList.map((skill) => {
                   const isActive = selectedSkills.includes(skill);
@@ -265,10 +248,10 @@ const BrowseCandidate = () => {
                           isActive ? prev.filter((s) => s !== skill) : [...prev, skill]
                         )
                       }
-                      className={`px-4 py-2 rounded-2xl text-[11px] font-black transition-all border ${
+                      className={`px-4  py-2 rounded-2xl text-[13px] font-medium transition-all border ${
                         isActive
                           ? "bg-primary border-primary text-white shadow-lg shadow-primary/20"
-                          : "bg-white border-slate-100 text-slate-400 hover:border-primary/30 hover:text-slate-600"
+                          : "bg-white border-slate-300 text-slate-600 hover:border-primary/30 hover:text-slate-600"
                       }`}
                     >
                       {skill}
@@ -283,7 +266,7 @@ const BrowseCandidate = () => {
         {/* RESULTS */}
         <main className="lg:col-span-3">
           <div className="flex items-center justify-between mb-8 px-2">
-            <div className="flex items-center gap-2 text-slate-400 font-medium">
+            {/* <div className="flex items-center gap-2 text-slate-400 font-medium">
               <Search size={16} />
               {!loading && (
                 <p className="text-sm">
@@ -294,7 +277,7 @@ const BrowseCandidate = () => {
                   verified profile{filteredCandidates.length !== 1 ? "s" : ""}
                 </p>
               )}
-            </div>
+            </div> */}
           </div>
 
           {loading ? (

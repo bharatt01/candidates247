@@ -44,9 +44,7 @@ const TalentShowcaseIndia = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-20"
         >
-          <p className="uppercase tracking-[0.4em] text-[11px] text-[hsl(300,12%,45%)] mb-6">
-            Verified Talent
-          </p>
+        
 
           <h2 className="text-5xl md:text-6xl font-medium tracking-tight">
             Hire Skilled Candidates

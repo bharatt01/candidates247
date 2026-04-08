@@ -1,132 +1,134 @@
 import { motion } from "framer-motion";
 import { Shield, Cpu, Target, Users, CheckCircle, Globe } from "lucide-react";
-import Navbar from "@/components/Navbar";
 
 const stats = [
-  { label: "Active Candidates", value: "12,400+" },
-  { label: "Companies Hiring", value: "850+" },
-  { label: "Successful Placements", value: "3,200+" },
-  { label: "Cities Covered", value: "45+" },
-];
-
-const bentoItems = [
-  {
-    icon: Target,
-    title: "Our Mission",
-    description: "To connect elite talent with forward-thinking companies through a transparent, AI-powered marketplace that respects both candidate privacy and recruiter efficiency.",
-    span: "md:col-span-2",
-  },
-  {
-    icon: Cpu,
-    title: "Our Technology",
-    description: "AI-verified profiles, intelligent matching algorithms, and encrypted candidate data ensure only verified, high-quality connections.",
-    span: "md:col-span-1",
-  },
-  {
-    icon: Shield,
-    title: "Security & Privacy",
-    description: "Contact details are encrypted until unlocked. We use industry-standard security to protect all candidate data.",
-    span: "md:col-span-1",
-  },
-  {
-    icon: Users,
-    title: "Our Community",
-    description: "A curated network of professionals across engineering, design, product, and data science — all vetted and ready to hire.",
-    span: "md:col-span-2",
-  },
-];
-
-const timeline = [
-  { year: "2023", title: "Founded", description: "Started with a vision to fix recruitment." },
-  { year: "2024", title: "AI Integration", description: "Launched AI-powered candidate verification." },
-  { year: "2025", title: "Scale", description: "Expanded to 45+ cities across India." },
-  { year: "2026", title: "Enterprise", description: "Serving 850+ companies with premium talent solutions." },
+  { label: "Active Candidates", value: "12,400+", icon: Users },
+  { label: "Companies", value: "850+", icon: Globe },
+  { label: "Placements", value: "3,200+", icon: CheckCircle },
+  { label: "Cities", value: "45+", icon: Target },
 ];
 
 const About = () => {
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="min-h-screen bg-background relative overflow-hidden">
       <div className="mesh-gradient" />
 
+      {/* ================= HERO ================= */}
+      <section className="relative z-10 grid lg:grid-cols-2 items-center px-6 lg:px-12 pt-24 pb-20">
+        {/* LEFT TEXT */}
+        <div>
+          <motion.h1
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-4xl md:text-6xl font-black leading-tight"
+          >
+           <img src="/Images/logo.png" alt="Candidates247 Logo" className="h-12 w-auto object-contain scale-[6] origin-left -translate-x-10 mb-4" />
+            <span className="block text-foreground text-2xl md:text-3xl mt-6 font-medium">
+              Where Talent Meets Opportunity
+            </span>
+          </motion.h1>
 
-      <main className="relative z-10 max-w-5xl mx-auto px-6 py-16">
-        {/* Hero */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-16"
-        >
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
-            About <span className="glow-text">Prestige</span>
-          </h1>
-          <p className="text-muted-foreground max-w-lg mx-auto text-sm">
-            The premium talent marketplace built for modern recruitment teams.
+          <p className="mt-6 max-w-lg text-muted-foreground text-sm md:text-base leading-relaxed">
+            Candidates247 is a next-generation hiring platform designed to remove
+            friction from recruitment. We help companies discover real talent faster
+            and empower candidates to get noticed — without noise or middlemen.
           </p>
-        </motion.div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
-          {stats.map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.08 }}
-              className="glass-card p-5 text-center"
-            >
-              <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-              <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-16">
-          {bentoItems.map((item, i) => (
-            <motion.div
-              key={item.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 + i * 0.08 }}
-              className={`glass-card-hover p-6 ${item.span}`}
-            >
-              <item.icon size={20} className="text-primary mb-3" />
-              <h3 className="text-sm font-semibold text-foreground mb-2">{item.title}</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">{item.description}</p>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Timeline */}
-        <div className="max-w-xl mx-auto">
-          <h2 className="text-lg font-semibold text-foreground text-center mb-8">Our Journey</h2>
-          <div className="relative">
-            <div className="absolute left-4 top-0 bottom-0 w-px bg-border" />
-            {timeline.map((event, i) => (
-              <motion.div
-                key={event.year}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="relative pl-12 pb-8 last:pb-0"
-              >
-                <div className="absolute left-2.5 top-1 w-3 h-3 rounded-full bg-primary border-2 border-background" />
-                <span className="text-xs font-bold text-primary">{event.year}</span>
-                <h4 className="text-sm font-semibold text-foreground mt-0.5">{event.title}</h4>
-                <p className="text-xs text-muted-foreground mt-0.5">{event.description}</p>
-              </motion.div>
-            ))}
+          {/* TAGS WITH ICONS */}
+          <div className="flex flex-wrap gap-4 mt-6 text-xs">
+            <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full">
+              <Target size={16} /> Smart Matching
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full">
+              <Shield size={16} /> Secure Data
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full">
+              <Users size={16} /> Verified Candidates
+            </div>
           </div>
         </div>
-      </main>
+
+        {/* RIGHT VISUAL */}
+        <div className="relative mt-12 lg:mt-0">
+          {/* GLOW */}
+          <div className="absolute -top-10 -left-10 w-72 h-72 bg-primary/30 blur-3xl rounded-full opacity-30" />
+          <div className="absolute bottom-0 right-0 w-72 h-72 bg-purple-500/20 blur-3xl rounded-full opacity-30" />
+
+          {/* GLASS CARD */}
+          <div className="relative backdrop-blur-xl bg-white/5 border border-white/10 p-10 rounded-3xl shadow-2xl">
+            <p className="text-sm text-muted-foreground mb-3">
+              Platform Highlights
+            </p>
+            <h3 className="text-2xl font-bold text-foreground mb-4">
+              Smarter Hiring Experience
+            </h3>
+            <ul className="space-y-3 text-sm text-muted-foreground">
+              <li className="flex items-center gap-2"><CheckCircle size={16} className="text-primary" /> AI-verified candidates</li>
+              <li className="flex items-center gap-2"><Users size={16} className="text-primary" /> Direct company connections</li>
+              <li className="flex items-center gap-2"><Cpu size={16} className="text-primary" /> Smart Matching Algorithms</li>
+              <li className="flex items-center gap-2"><Shield size={16} className="text-primary" /> Privacy & Security</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= STATS STRIP ================= */}
+      <section className="relative z-10 flex flex-wrap justify-center gap-6 px-6 mb-20">
+        {stats.map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.1 }}
+            className="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-lg text-center flex flex-col items-center gap-2"
+          >
+            <stat.icon size={24} className="text-primary" />
+            <p className="text-3xl font-bold text-primary">{stat.value}</p>
+            <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
+          </motion.div>
+        ))}
+      </section>
+
+      {/* ================= BENTO ================= */}
+      <section className="relative z-10 max-w-6xl mx-auto px-6 mb-24">
+        <div className="grid md:grid-cols-3 gap-5">
+          <motion.div className="md:col-span-2 p-8 rounded-3xl bg-gradient-to-br from-primary/20 to-transparent border border-white/10">
+            <Target className="text-primary mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Our Mission</h3>
+            <p className="text-sm text-muted-foreground">
+              To redefine hiring by creating a transparent ecosystem where companies
+              hire faster and candidates get real opportunities without friction.
+            </p>
+          </motion.div>
+
+          <motion.div className="p-6 rounded-3xl glass-card-hover">
+            <Cpu className="text-primary mb-3" />
+            <h4 className="font-semibold">AI Matching</h4>
+            <p className="text-xs text-muted-foreground">
+              Smart algorithms match candidates beyond keywords.
+            </p>
+          </motion.div>
+
+          <motion.div className="p-6 rounded-3xl glass-card-hover">
+            <Shield className="text-primary mb-3" />
+            <h4 className="font-semibold">Privacy First</h4>
+            <p className="text-xs text-muted-foreground">
+              Your contact data stays protected until unlocked.
+            </p>
+          </motion.div>
+
+          <motion.div className="md:col-span-2 p-8 rounded-3xl glass-card-hover">
+            <Users className="text-primary mb-4" />
+            <h3 className="text-xl font-semibold">Our Community</h3>
+            <p className="text-sm text-muted-foreground">
+              A growing network of skilled professionals across tech, product,
+              design, and beyond — ready to build and innovate.
+            </p>
+          </motion.div>
+        </div>
+      </section>
     </div>
   );
 };
 
 export default About;
-
-
-
-

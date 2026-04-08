@@ -111,7 +111,10 @@ const ForCandidates = () => {
     "w-full px-4 py-2.5 rounded-lg bg-muted/30 text-foreground placeholder:text-muted-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm transition-all";
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4 relative">
+ 
+  <div className="h-screen overflow-hidden bg-background relative">
+    <div className="relative z-10 h-full grid lg:grid-cols-2">
+   <div className="flex items-center justify-center px-6 py-6">
       <div className="mesh-gradient" />
 
       <motion.div
@@ -134,7 +137,7 @@ const ForCandidates = () => {
           </div>
 
           {/* Toggle */}
-          <div className="flex bg-muted/40 p-1 rounded-xl mb-6">
+          <div className="flex bg-muted/40 p-1 rounded-xl mt-4">
             <button
               onClick={() => setMode("signup")}
               className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
@@ -243,8 +246,125 @@ const ForCandidates = () => {
           )}
         </div>
       </motion.div>
+ </div>
+  {/* your existing motion div (form) stays SAME */}
+
+   {/* ================= RIGHT SIDE ================= */}
+<div className="flex flex-col justify-start px-6 lg:px-10 py-2 lg:py-1 relative">
+
+  {/* 🔥 IMAGE (POLYGON) */}
+  <div className="relative w-full h-[140px] lg:h-[150px] mb-2">
+
+    <div
+      className="relative w-full h-full overflow-hidden"
+      style={{
+        clipPath: `
+          polygon(
+            3% 12%,
+            18% 2%,
+            42% 6%,
+            68% 0%,
+            92% 10%,
+            100% 28%,
+            96% 55%,
+            100% 82%,
+            78% 100%,
+            52% 92%,
+            28% 100%,
+            8% 88%,
+            0% 60%,
+            6% 38%
+          )
+        `,
+      }}
+    >
+      <img
+        src="/Images/forcompanies.jpg"
+        alt="Hiring"
+        className="w-full h-full object-cover"
+      />
+
+      {/* overlays */}
+      <div className="absolute inset-0 bg-gradient-to-br from-background/70 via-background/40 to-primary/20" />
+      <div className="absolute inset-0 bg-black/30" />
     </div>
-  );
+
+    {/* border */}
+    <div
+      className="absolute inset-0 border border-white/10 pointer-events-none"
+      style={{
+        clipPath: `
+          polygon(
+            3% 12%,
+            18% 2%,
+            42% 6%,
+            68% 0%,
+            92% 10%,
+            100% 28%,
+            96% 55%,
+            100% 82%,
+            78% 100%,
+            52% 92%,
+            28% 100%,
+            8% 88%,
+            0% 60%,
+            6% 38%
+          )
+        `,
+      }}
+    />
+
+    {/* tags */}
+    <div className="absolute top-2 left-2 bg-black/50 backdrop-blur px-2 py-1 rounded text-[10px] text-white">
+      ⚡ Smart Hiring
+    </div>
+
+    <div className="absolute bottom-2 right-2 bg-primary text-white px-2 py-1 rounded text-[10px] shadow">
+      🚀 1000+
+    </div>
+  </div>
+
+  {/* 🔥 TEXT (THIS WAS NEVER REMOVED) */}
+  <div className="max-w-md -mt-1">
+
+    <h2 className="text-3xl lg:text-5xl font-bold leading-[1.05]">
+      <span className="block text-foreground">STOP APPLYING.</span>
+      <span className="block text-primary">START GETTING SELECTED.</span>
+    </h2>
+
+    <div className="mt-3 space-y-2">
+
+      <p className="text-base lg:text-lg font-semibold text-foreground">
+      NO MORE 100 JOB APPLICATIONS
+
+      </p>
+
+      <p className="text-base lg:text-lg font-semibold text-foreground">
+        NO MORE GETTING IGNORED
+      </p>
+
+      <p className="text-base lg:text-lg font-semibold text-foreground">
+        
+NO MORE RESUME BLACK HOLE
+      </p>
+
+      <p className="text-base lg:text-lg font-semibold text-primary">
+   YOUR PROFILE = YOUR BRAND
+      </p>
+
+    </div>
+
+    <div className="mt-3 text-base lg:text-lg font-bold text-foreground">
+    THIS IS NOT A JOB PORTAL.
+THIS IS WHERE YOU GET DISCOVERED.
+    </div>
+
+  </div>
+
+</div>
+</div>
+</div>
+);
 };
 
 export default ForCandidates;

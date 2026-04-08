@@ -30,10 +30,10 @@ const CandidateCard = ({ candidate, index, onClick }) => {
               </span>
             )}
           </div>
-          <p className="text-sm text-muted-foreground flex items-center gap-2 mt-1">
+         <p className="text-[15px] font-semibold text-foreground flex items-center gap-2 mt-1">
             <Briefcase size={14} className="text-primary shrink-0" /> {candidate.role}
           </p>
-          <p className="text-sm text-muted-foreground flex items-center gap-2 mt-0.5">
+      <p className="text-[14px] font-semibold text-foreground flex items-center gap-2 mt-0.5">
             <MapPin size={13} className="text-muted-foreground shrink-0" /> {candidate.location} · {candidate.experience} yrs
           </p>
         </div>
@@ -48,7 +48,7 @@ const CandidateCard = ({ candidate, index, onClick }) => {
         </h4>
         <div className="flex flex-wrap gap-2">
           {(candidate.skills || []).slice(0, 4).map((skill) => (
-            <span key={skill} className="flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-medium border border-[hsl(32,88%,55%)]/30 text-[hsl(32,88%,55%)] hover:bg-[hsl(32,88%,55%)]/10 transition-all pointer-events-none">
+            <span key={skill} className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[12px] font-semibold border border-[hsl(32,88%,55%)]/40 text-[hsl(32,88%,45%)] bg-[hsl(32,88%,55%)]/10"> 
               <span className="w-2 h-2 rounded-full bg-[hsl(32,88%,55%)] animate-pulse"></span>
               {skill}
             </span>
@@ -72,7 +72,7 @@ const CandidateCard = ({ candidate, index, onClick }) => {
           </div>
         </div>
       ) : (
-        <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
+        <div className="flex items-center font-semibold gap-2 text-sm text-foreground mt-2">
           <Lock size={14} /> Subscribe to view contact details
         </div>
       )}

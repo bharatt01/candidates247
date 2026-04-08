@@ -23,13 +23,7 @@ const HiringTrendsIndia = () => {
         <div className="flex flex-col lg:flex-row justify-between items-end gap-12 mb-20">
 
           <div className="space-y-6">
-            <div className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-[hsl(32,90%,94%)] border border-[hsl(38,35%,86%)]">
-              <span className="w-1.5 h-1.5 rounded-full bg-[hsl(32,88%,55%)] animate-pulse" />
-              <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[hsl(300,12%,45%)]">
-                Live Hiring Data
-              </span>
-            </div>
-
+            
             <h2 className="text-5xl font-medium tracking-tight">
               Live Hiring Trends
             </h2>
