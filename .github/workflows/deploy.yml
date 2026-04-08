@@ -3,7 +3,7 @@ name: 🚀 Deploy Candidates247 (SSH)
 on:
   push:
     branches:
-      - main   # change if your branch is different
+      - master  # change if your branch is different
 
 jobs:
   build-and-deploy:
