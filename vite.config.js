@@ -1,3 +1,8 @@
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
+import componentTagger from "vite-plugin-component-tagger";
+
 export default defineConfig(({ mode }) => ({
   base: "/",   // ✅ ADD THIS LINE
   server: {
