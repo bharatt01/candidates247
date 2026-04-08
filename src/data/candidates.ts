@@ -1,0 +1,133 @@
+export interface Candidate {
+  id: string;
+  name: string;
+  role: string;
+  location: string;
+  experience: number;
+  salary: number;
+  skills: string[];
+  phone: string;
+  email: string;
+  avatar: string;
+  unlocked: boolean;
+}
+
+export const candidates: Candidate[] = [
+  {
+    id: "1",
+    name: "Arjun Mehta",
+    role: "Senior Frontend Developer",
+    location: "Bengaluru",
+    experience: 6,
+    salary: 2200000,
+    skills: ["React", "TypeScript", "Next.js", "Tailwind"],
+    phone: "+91 98765 43210",
+    email: "arjun.m@email.com",
+    avatar: "AM",
+    unlocked: false,
+  },
+  {
+    id: "2",
+    name: "Priya Sharma",
+    role: "UX/UI Designer",
+    location: "Mumbai",
+    experience: 4,
+    salary: 1500000,
+    skills: ["Figma", "Sketch", "Adobe XD", "Prototyping"],
+    phone: "+91 87654 32109",
+    email: "priya.s@email.com",
+    avatar: "PS",
+    unlocked: false,
+  },
+  {
+    id: "3",
+    name: "Rahul Verma",
+    role: "Full Stack Engineer",
+    location: "Hyderabad",
+    experience: 5,
+    salary: 1800000,
+    skills: ["Node.js", "React", "MongoDB", "AWS"],
+    phone: "+91 76543 21098",
+    email: "rahul.v@email.com",
+    avatar: "RV",
+    unlocked: false,
+  },
+  {
+    id: "4",
+    name: "Sneha Patel",
+    role: "Graphic Designer",
+    location: "Faridabad",
+    experience: 3,
+    salary: 900000,
+    skills: ["Photoshop", "Illustrator", "After Effects", "Branding"],
+    phone: "+91 65432 10987",
+    email: "sneha.p@email.com",
+    avatar: "SP",
+    unlocked: false,
+  },
+  {
+    id: "5",
+    name: "Karan Singh",
+    role: "DevOps Engineer",
+    location: "Delhi",
+    experience: 7,
+    salary: 2500000,
+    skills: ["Docker", "Kubernetes", "Terraform", "CI/CD"],
+    phone: "+91 54321 09876",
+    email: "karan.s@email.com",
+    avatar: "KS",
+    unlocked: false,
+  },
+  {
+    id: "6",
+    name: "Ananya Roy",
+    role: "Data Scientist",
+    location: "Pune",
+    experience: 4,
+    salary: 2000000,
+    skills: ["Python", "TensorFlow", "SQL", "Tableau"],
+    phone: "+91 43210 98765",
+    email: "ananya.r@email.com",
+    avatar: "AR",
+    unlocked: false,
+  },
+  {
+    id: "7",
+    name: "Vikram Joshi",
+    role: "Backend Developer",
+    location: "Chennai",
+    experience: 5,
+    salary: 1700000,
+    skills: ["Java", "Spring Boot", "PostgreSQL", "Redis"],
+    phone: "+91 32109 87654",
+    email: "vikram.j@email.com",
+    avatar: "VJ",
+    unlocked: false,
+  },
+  {
+    id: "8",
+    name: "Meera Nair",
+    role: "Product Manager",
+    location: "Bengaluru",
+    experience: 8,
+    salary: 3000000,
+    skills: ["Strategy", "Agile", "Analytics", "Roadmapping"],
+    phone: "+91 21098 76543",
+    email: "meera.n@email.com",
+    avatar: "MN",
+    unlocked: false,
+  },
+  {
+    id: "9",
+    name: "Aditya Kapoor",
+    role: "Mobile Developer",
+    location: "Gurgaon",
+    experience: 4,
+    salary: 1600000,
+    skills: ["React Native", "Flutter", "Swift", "Kotlin"],
+    phone: "+91 10987 65432",
+    email: "aditya.k@email.com",
+    avatar: "AK",
+    unlocked: false,
+  },
+];
