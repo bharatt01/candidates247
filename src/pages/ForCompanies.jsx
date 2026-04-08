@@ -250,7 +250,7 @@ const ForCompanies = () => {
 
 
     {/* BACK GLOW */}
-    <div className="absolute -inset-6 bg-gradient-to-tr from-primary/30 via-purple-500/20 to-transparent blur-2xl opacity-40" />
+    <div className="absolute -inset-6 pointer-events-none bg-gradient-to-tr from-primary/30 via-purple-500/20 to-transparent blur-2xl opacity-40" />
 
     {/* RANDOM POLYGON */}
     <div
