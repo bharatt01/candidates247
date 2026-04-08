@@ -553,7 +553,7 @@ const CandidateDashboard = () => {
           <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-4">Resume Details</h2>
           <div className="space-y-4">
             <div>
-              <p className="text-xs text-muted-foreground">Work Experience</p>
+              <p className="text-sm font-semibold text-foreground">Work Experience</p>
               {editing ? (
                 <textarea value={workExperience} onChange={(e) => setWorkExperience(e.target.value)} placeholder="No work experience entered." className="w-full px-3 py-2 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary outline-none text-sm min-h-[70px]" />
               ) : (
@@ -562,7 +562,7 @@ const CandidateDashboard = () => {
             </div>
 
             <div>
-              <p className="text-xs text-muted-foreground">Education</p>
+              <p className="text-sm font-semibold text-foreground">Education</p>
               {editing ? (
                 <textarea value={education} onChange={(e) => setEducation(e.target.value)} placeholder="No education history entered." className="w-full px-3 py-2 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary outline-none text-sm min-h-[70px]" />
               ) : (
@@ -572,7 +572,7 @@ const CandidateDashboard = () => {
 
             {/* Projects */}
             <div>
-              <p className="text-xs text-muted-foreground">Projects</p>
+              <p className="text-sm font-semibold text-foreground">Projects</p>
               {editing ? (
                 <div className="space-y-3 mt-2">
                   <div className="flex flex-col gap-2">
@@ -612,7 +612,7 @@ const CandidateDashboard = () => {
 
             {/* Certifications */}
             <div>
-              <p className="text-xs text-muted-foreground">Certifications</p>
+              <p className="text-sm font-semibold text-foreground">Certifications</p>
               {editing ? (
                 <div>
                   <div className="flex gap-2 mb-2">
@@ -642,7 +642,7 @@ const CandidateDashboard = () => {
 
             {/* Achievements */}
             <div>
-              <p className="text-xs text-muted-foreground">Achievements</p>
+              <p className="text-sm font-semibold text-foreground">Achievements</p>
               {editing ? (
                 <div>
                   <div className="flex gap-2 mb-2">
@@ -672,7 +672,7 @@ const CandidateDashboard = () => {
 
             {/* Languages */}
             <div>
-              <p className="text-xs text-muted-foreground">Languages</p>
+              <p className="text-sm font-semibold text-foreground">Languages</p>
               {editing ? (
                 <div>
                   <div className="flex gap-2 mb-2">
@@ -702,7 +702,7 @@ const CandidateDashboard = () => {
 
             {/* Interests */}
             <div>
-              <p className="text-xs text-muted-foreground">Interests / Hobbies</p>
+              <p className="text-sm font-semibold text-foreground">Interests / Hobbies</p>
               {editing ? (
                 <div>
                   <div className="flex gap-2 mb-2">
@@ -732,7 +732,7 @@ const CandidateDashboard = () => {
 
             {/* References */}
             <div>
-              <p className="text-xs text-muted-foreground">References</p>
+              <p className="text-sm font-semibold text-foreground">References</p>
               {editing ? (
                 <textarea value={references} onChange={(e) => setReferences(e.target.value)} placeholder="No references listed." className="w-full px-3 py-2 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary outline-none text-sm min-h-[70px]" />
               ) : (
