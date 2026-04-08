@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { doc, getDoc } from "firebase/firestore";
 import { db, auth } from "@/firebase";
-
+import CurvedFlow from "../components/ResumeFlow";
 
 // ✅ Format Name (Proper Case + remove extra spaces)
 const formatName = (name) => {
@@ -112,7 +112,7 @@ const ForCandidates = () => {
     "w-full px-4 py-2.5 rounded-lg bg-muted/30 text-foreground placeholder:text-muted-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm transition-all";
 
   return (
- 
+ <>
   <div className="h-screen overflow-hidden bg-background relative">
     <div className="relative z-10 h-full grid lg:grid-cols-2">
    <div className="flex items-center justify-center px-6 py-6">
@@ -364,7 +364,10 @@ THIS IS WHERE YOU GET DISCOVERED.
 
 </div>
 </div>
+
 </div>
+<CurvedFlow />
+</>
 );
 };
 

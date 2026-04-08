@@ -4,20 +4,17 @@ import { useNavigate } from "react-router-dom";
 
 const steps = [
   {
-    title: "BUILD PROFILE",
-    desc: "Add skills, projects, experience",
+    title: "BUILD & OPTIMIZE YOUR PROFILE/RESUME",
+    desc: "Add skills, projects, experience, Make it sharp, ATS-friendly",
   },
+  
   {
-    title: "OPTIMIZE",
-    desc: "Make it sharp, ATS-friendly",
-  },
-  {
-    title: "GET DISCOVERED",
+    title: "GET DISCOVERED & SHORTLISTED",
     desc: "Companies find you directly",
   },
   {
-    title: "GET SHORTLISTED",
-    desc: "Recruiters reach out instantly",
+    title: "GET INTERVIEW CALLS & GET HIRED",
+    desc: "Recruiters reach out instantly and hire faster without the wait",
   },
 ];
 
@@ -27,13 +24,13 @@ const CurvedFlow = () => {
     <section className="py-16 lg:py-24 px-4 sm:px-6 bg-background relative overflow-hidden">
 
       {/* 🔥 HEADING */}
-      <div className="max-w-5xl mx-auto mb-12 lg:mb-20">
-        <h2 className="text-3xl sm:text-4xl lg:text-7xl font-bold leading-tight lg:leading-[1.05]">
-          <span className="block text-foreground">Your Journey</span>
-          <span className="block text-primary">To Getting Hired</span>
-        </h2>
-      </div>
-
+     <div className="max-w-5xl mx-auto mb-12 lg:mb-20">
+  <h2 className="text-3xl sm:text-4xl lg:text-7xl font-bold leading-tight lg:leading-[1.05]">
+    <span className="text-foreground">
+      Get Hired in <span className="text-primary">3 Steps</span>
+    </span>
+  </h2>
+</div>
       {/* 🔥 FLOW */}
       <div className="max-w-5xl mx-auto relative">
 
@@ -43,20 +40,21 @@ const CurvedFlow = () => {
           viewBox="0 0 100 100"
           preserveAspectRatio="none"
         >
-          <path
-            d="M 5 10 C 30 0, 70 0, 95 20 S 30 50, 5 70 S 70 90, 95 95"
-            stroke="hsl(var(--primary))"
-            strokeWidth="1.5"
-            fill="transparent"
-            opacity="0.4"
-          />
+      <path
+  d="M 5 5 C 30 0, 70 0, 95 20 S 30 50, 5 75 "
+  stroke="hsl(var(--primary))"
+  strokeWidth="1.5"
+  fill="transparent"
+  opacity="0.4"
+
+/>
         </svg>
 
         {/* MOBILE LINE */}
         <div className="lg:hidden absolute left-4 top-0 w-[2px] h-full bg-primary/30" />
 
         {/* STEPS */}
-        <div className="relative space-y-12 lg:space-y-20">
+<div className="relative space-y-12 lg:space-y-16">
 
           {steps.map((step, i) => (
             <motion.div

@@ -258,7 +258,7 @@ const Index = () => {
           filters={filters}
           onFiltersChange={setFilters}
         />
-<ResumeFlow />
+
         <HiringFlow />
         <TalentVelocityMatrix />
         <NetworkPulse />
