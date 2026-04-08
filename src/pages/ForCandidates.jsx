@@ -97,6 +97,7 @@ const ForCandidates = () => {
       toast.success("Signed in successfully!");
       navigate("/dashboard/candidate");
     } catch (error) {
+      console.log(error.code, error.message);
       let message = "Email not found";
       if (error.code === "auth/wrong-password") {
         message = "Incorrect password";

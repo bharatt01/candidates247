@@ -10,7 +10,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const CompleteProfile = () => {
   const [skills, setSkills] = useState([]);
-  const [skillInput, setSkillInput] = useState("");
+  // const [skillInput, setSkillInput] = useState("");
   const [uploading, setUploading] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -18,6 +18,7 @@ const CompleteProfile = () => {
   const [fullName, setFullName] = useState("");
   const [role, setRole] = useState("");
   const [location, setLocation] = useState("");
+  const [skillInput, setSkillInput] = useState("");
 const [expYears, setExpYears] = useState("");
 const [expMonths, setExpMonths] = useState("");
   const [phone, setPhone] = useState("");
@@ -148,16 +149,15 @@ const experienceDecimal = Number(
 await setDoc(
   doc(db, "candidates", user.uid),
   {
-    profileCompleted: true, 
+    profileCompleted: true,
     fullName: formatText(fullName),
-   roleTitle: role.trim(),        // don't format roles
-location: formatText(location), // OK
-        // ❌ no formatting here
-phone: phone,           // just trim, no formatting
+    roleTitle: role.trim(),        // don't format roles
+    location: formatText(location), // OK
+    phone: phone,           // just trim, no formatting
     email: formatEmail(email),
-summary: summary.trim(),       // don't destroy sentences
-
-   projects: projects,
+    summary: summary.trim(),       // don't destroy sentences
+    skills,
+    projects: projects,
     experience: experienceDecimal,
     workExperience: formatText(workExperience),
     education: formatText(education),
@@ -165,13 +165,12 @@ summary: summary.trim(),       // don't destroy sentences
     achievements: achievements.map(formatText),
     languages: languages.map(formatText),
     interests: interests.map(formatText),
-  references: references
-  .split("\n")
-  .map((r) => r.trim())
-  .filter(Boolean),
+    references: references
+      .split("\n")
+      .map((r) => r.trim())
+      .filter(Boolean),
     // rest unchanged
   },
-  
   { merge: true }
 );
 
