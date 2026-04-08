@@ -204,7 +204,7 @@ const Index = () => {
         <section id="browse" className="px-6 py-20 bg-muted/30">
           <div className="max-w-6xl mx-auto">
             <div className="flex justify-between items-center mb-8">
-              <h2 className="text-2xl font-semibold">Browse & Filter Candidates according to your requirements</h2>
+              <h2 className="text-2xl font-semibold">Browse & Filter Candidates </h2>
               <button
                 onClick={() => setFiltersOpen(true)}
                 className="text-sm px-4 py-2 border rounded-lg hover:bg-muted transition"

@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { Lock, Sparkles, Briefcase, MapPin, Phone, Mail, ArrowRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";

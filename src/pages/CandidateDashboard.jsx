@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { User, MapPin, Briefcase, Edit3, Save, Plus, X, Phone, CheckCircle2, AlertCircle } from "lucide-react";
@@ -505,7 +506,7 @@ const CandidateDashboard = () => {
                 {editing ? (
                   <input type="number" min={0} max={30} value={experience} onChange={(e) => setExperience(e.target.value)} placeholder="Years" className="w-full px-3 py-2 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary outline-none text-sm mt-1" />
                 ) : (
-                  <p className="text-sm text-foreground font-medium">{candidateData?.experience ?? 0} years</p>
+                  <p className="text-sm text-foreground font-medium">{candidateData?.experience?.category} years</p>
                 )}
               </div>
               <div>
