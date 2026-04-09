@@ -43,5 +43,6 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          source: "dist/*"
+          source: "dist"
           target: "/home/${{ secrets.SSH_USER }}/domains/candidates247.com/public_html/"
+          strip_components: 1
