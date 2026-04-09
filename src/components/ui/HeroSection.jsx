@@ -34,7 +34,7 @@ const HeroSection = () => {
         >
           {/* On This Website - <br /> */}
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-orange-500 to-red-500">
-            Hire & Get Hired
+            Hire & Get Hiredd
           </span>
         </motion.h1>
 
