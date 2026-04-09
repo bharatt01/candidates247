@@ -1,4 +1,4 @@
-name: 🚀 Deploy React App to Hostinger
+name: 🚀 Deploy Vite App to Hostinger
 
 on:
   push:
@@ -11,49 +11,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout the repo
       - name: 🧩 Checkout Repository
         uses: actions/checkout@v3
 
-      # 2️⃣ Set up Node.js
       - name: ⚙️ Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      # 3️⃣ Install dependencies
       - name: 📦 Install Dependencies
-        run: npm ci
+        run: npm install
 
-      # 4️⃣ Build the React app with Vite
-      - name: 🏗️ Build Project
-        run: npx vite build
+      - name: 🏗️ Build Vite Project
+        run: npm run build
 
-      # 5️⃣ Clean old files on Hostinger but preserve .htaccess
-      - name: 🧹 Clean old files but preserve .htaccess
+      - name: 🧹 Clean old files on server
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
+          username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
+          port: 65002
           script: |
-            cd /home/${{ secrets.SSH_USER }}/domains/candidates247.com/public_html
-            # Move .htaccess temporarily
-            if [ -f .htaccess ]; then mv .htaccess ../.htaccess_backup; fi
-            # Delete everything else
-            rm -rf ./*
-            # Restore .htaccess
-            if [ -f ../.htaccess_backup ]; then mv ../.htaccess_backup .htaccess; fi
+                     rm -rf /home/u341560007/domains/candidates247.com/public_html/*
 
-      # 6️⃣ Deploy built files directly to public_html
-      - name: 📤 Deploy built files via SCP
-        uses: appleboy/scp-action@v0.1.6
+      - name: 📤 Deploy dist folder to Hostinger
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
+          username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          source: "dist/*"   # ⬅ copy only contents
-          target: "/home/${{ secrets.SSH_USER }}/domains/candidates247.com/public_html/"
-          recursive: true
+          source: "dist/*"
+          target: "/home/u341560007/domains/candidates247.com/public_html/"
+          strip_components: 1
