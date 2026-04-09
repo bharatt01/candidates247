@@ -44,5 +44,5 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           source: "dist/*"
-          target: "/home/${{ secrets.SSH_USER }}/domains/candidates247.com/public_html/"
+          target: "/home/${{ secrets.SSH_USER }}/domains/candidates247.com/public_html"
           recursive: true   # ⬅ important
