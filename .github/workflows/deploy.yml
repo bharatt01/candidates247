@@ -3,14 +3,14 @@ name: SSH Deploy Vite App
 on:
   push:
     branches:
-      - master   # or your branch
+      - master
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy to Server via SSH
+      - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -18,12 +18,30 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
+            # Create folder if not exists
+            mkdir -p /var/www/candidates247
             cd /var/www/candidates247
 
-            git pull origin main
+            # Clone repo if not exists
+            if [ ! -d ".git" ]; then
+              git clone git@github.com:bharatt01/candidates247.git .
+            else
+              git pull origin master
+            fi
 
+            # Install Node if missing
+            if ! command -v npm &> /dev/null
+            then
+              echo "Installing Node..."
+              curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+              apt install -y nodejs
+            fi
+
+            # Install & build
             npm install
             npm run build
 
+            # Deploy
+            mkdir -p /var/www/html
             rm -rf /var/www/html/*
             cp -r dist/* /var/www/html/
