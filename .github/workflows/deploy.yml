@@ -33,7 +33,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            rm -rf /home/${{ secrets.SSH_USER }}/domains/candidates247.com/public_html/*
+              cd /home/${{ secrets.SSH_USER }}/domains/candidates247.com/public_html
+              rm -rf *
 
       - name: 📤 Deploy to Hostinger via SCP
         uses: appleboy/scp-action@v0.1.4
