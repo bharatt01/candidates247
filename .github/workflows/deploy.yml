@@ -11,25 +11,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository
       - name: 🧩 Checkout Repository
         uses: actions/checkout@v3
 
-      # Setup Node.js
       - name: ⚙️ Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      # Install dependencies
       - name: 📦 Install Dependencies
         run: npm install
 
-      # Build React app
       - name: 🏗️ Build Project
         run: npm run build
 
-      # Clean old files on server
       - name: 🧹 Clean old files on server
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -40,7 +35,6 @@ jobs:
           script: |
             rm -rf /home/${{ secrets.SSH_USER }}/domains/candidates247.com/public_html/*
 
-      # Deploy only the contents of build folder
       - name: 📤 Deploy to Hostinger via SCP
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -48,6 +42,5 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          source: "dist/"    # the folder itself
+          source: "dist/*"
           target: "/home/${{ secrets.SSH_USER }}/domains/candidates247.com/public_html/"
-          strip_components: 1 # removes the top-level 'build' folder
