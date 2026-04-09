@@ -25,18 +25,11 @@ jobs:
       - name: 📦 Install Dependencies
         run: npm ci
 
-      # 4️⃣ Build the React app
+      # 4️⃣ Build the React app with Vite
       - name: 🏗️ Build Project
         run: npx vite build
 
-      # 5️⃣ Prepare temporary deploy folder
-      - name: 📁 Prepare temporary deploy folder
-        run: |
-          rm -rf .deploy_temp
-          mkdir .deploy_temp
-          cp -r build/* .deploy_temp/
-
-      # 6️⃣ Clean old files on Hostinger but preserve .htaccess
+      # 5️⃣ Clean old files on Hostinger but preserve .htaccess
       - name: 🧹 Clean old files but preserve .htaccess
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -53,7 +46,7 @@ jobs:
             # Restore .htaccess
             if [ -f ../.htaccess_backup ]; then mv ../.htaccess_backup .htaccess; fi
 
-      # 7️⃣ Deploy built files via SCP
+      # 6️⃣ Deploy built files directly to public_html
       - name: 📤 Deploy built files via SCP
         uses: appleboy/scp-action@v0.1.6
         with:
@@ -61,6 +54,6 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          source: ".deploy_temp/*"   # only deploy folder contents
+          source: "dist/*"   # ⬅ copy only contents
           target: "/home/${{ secrets.SSH_USER }}/domains/candidates247.com/public_html/"
           recursive: true

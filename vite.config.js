@@ -1,25 +1,14 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
-import componentTagger from "vite-plugin-component-tagger";
 
-export default defineConfig(({ mode }) => ({
-  base: "/",   // base path for root domain
+export default defineConfig({
+  base: "/",
   build: {
-    outDir: "build",  // ✅ name of the folder created locally; can be anything
+    outDir: "dist",  // default folder created locally
   },
-  server: {
-    host: "::",
-    port: 8080,
-    hmr: { overlay: false },
-  },
-  plugins: [
-    react(),
-    mode === "development" && componentTagger(),
-  ].filter(Boolean),
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
+    alias: { "@": path.resolve(__dirname, "./src") },
   },
-}));
+  plugins: [react()],
+});
