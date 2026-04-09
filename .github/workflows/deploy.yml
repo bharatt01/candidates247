@@ -34,7 +34,7 @@ jobs:
         run: |
           rm -rf .deploy_temp
           mkdir .deploy_temp
-          cp -r dist/* .deploy_temp/
+          cp -r build/* .deploy_temp/
 
       # 6️⃣ Clean old files on Hostinger but preserve .htaccess
       - name: 🧹 Clean old files but preserve .htaccess

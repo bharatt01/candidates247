@@ -4,14 +4,14 @@ import path from "path";
 import componentTagger from "vite-plugin-component-tagger";
 
 export default defineConfig(({ mode }) => ({
-
-  base: "/",   // ✅ ADD THIS LINE
+  base: "/",   // base path for root domain
+  build: {
+    outDir: "build",  // ✅ name of the folder created locally; can be anything
+  },
   server: {
     host: "::",
     port: 8080,
-    hmr: {
-      overlay: false,
-    },
+    hmr: { overlay: false },
   },
   plugins: [
     react(),
