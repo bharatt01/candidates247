@@ -26,7 +26,7 @@ jobs:
         run: npx vite build
 
       - name: 🧹 Clean old files on server
-        uses: appleboy/ssh-action@v1.0.0
+        uses: appleboy/ssh-action@v0.1.8
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
@@ -34,14 +34,14 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
               cd /home/${{ secrets.SSH_USER }}/domains/candidates247.com/public_html
-              rm -rf *
+              rm -rf ./*
 
       - name: 📤 Deploy to Hostinger via SCP
-        uses: appleboy/scp-action@v0.1.4
+        uses: appleboy/scp-action@v0.1.6
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          source: "dist/*"
+          source: "dist/*"   # ⬅ copy only contents
           target: "/home/${{ secrets.SSH_USER }}/domains/candidates247.com/public_html/"
