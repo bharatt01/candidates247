@@ -11,43 +11,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout the repo
       - name: 🧩 Checkout Repository
         uses: actions/checkout@v3
 
-      # 2️⃣ Set up Node.js
       - name: ⚙️ Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      # 3️⃣ Install dependencies
       - name: 📦 Install Dependencies
         run: npm ci
 
-      # 4️⃣ Build the React app with Vite
       - name: 🏗️ Build Project
         run: npx vite build
 
-      # 5️⃣ Clean old files on Hostinger
-      - name: 🧹 Clean old files on server
-        uses: appleboy/ssh-action@v1.0.0   # ✅ old version works with Hostinger
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}      # usually 2222 for Hostinger
-          script: |
-            cd /home/${{ secrets.SSH_USER }}/domains/candidates247.com/public_html
-            rm -rf ./*                        # delete old files
-
-      # 6️⃣ Deploy built files via SCP
-      - name: 📤 Deploy to Hostinger via SCP
-        uses: appleboy/scp-action@v0.1.4       # ✅ old version
+      - name: 🧹 Clean old files on Hostinger
+        uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          source: "dist/*"                      # ⬅ copy contents only
+          script: |
+            cd /home/${{ secrets.SSH_USER }}/domains/candidates247.com/public_html
+            rm -rf ./*
+
+      - name: 📤 Deploy built files via SCP
+        uses: appleboy/scp-action@v0.1.6
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "dist/*"
           target: "/home/${{ secrets.SSH_USER }}/domains/candidates247.com/public_html/"
+          recursive: true   # ⬅ important
