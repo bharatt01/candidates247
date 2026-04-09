@@ -1,41 +1,29 @@
-name: 🚀 Deploy Candidates247
+name: SSH Deploy Vite App
 
 on:
   push:
     branches:
-      - master
+      - master   # or your branch
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: ⚙️ Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Deploy to Server via SSH
+        uses: appleboy/ssh-action@v1.0.0
         with:
-          node-version: 18
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd /var/www/candidates247
 
-      # ✅ FIXED INSTALL
-      - name: 📦 Install Dependencies
-        run: npm ci
+            git pull origin main
 
-      # ✅ EXTRA SAFETY FIX
-      - name: 🔧 Fix Vite Permission
-        run: chmod +x node_modules/.bin/vite
+            npm install
+            npm run build
 
-      - name: 🏗️ Build Project
-        run: npm run build
-
-      - name: 🚀 Deploy via SSH
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.PORT }}   # ✅ FIX
-          source: "dist/*"
-          target: "public_html"
-          strip_components: 1
+            rm -rf /var/www/html/*
+            cp -r dist/* /var/www/html/
