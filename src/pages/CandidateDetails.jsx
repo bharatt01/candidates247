@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -28,6 +27,31 @@ import { db } from "@/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import useSubscription from "@/hooks/useSubscription";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  show: (i = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.07, duration: 0.4, ease: "easeOut" },
+  }),
+};
+
+const Section = ({ icon: Icon, title, children, delay = 0 }) => (
+  <motion.div
+    variants={fadeUp}
+    initial="hidden"
+    animate="show"
+    custom={delay}
+    className="glass-card rounded-xl p-4 sm:p-5 space-y-3"
+  >
+    <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+      {Icon && <Icon size={13} className="text-primary" />}
+      {title}
+    </h3>
+    {children}
+  </motion.div>
+);
 
 const CandidateDetails = () => {
   const { id } = useParams();
@@ -109,267 +133,329 @@ const CandidateDetails = () => {
   };
 
   if (loading)
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+          <span className="text-sm text-muted-foreground">Loading profile…</span>
+        </div>
+      </div>
+    );
+
   if (error || !candidate)
-    return <div className="min-h-screen flex items-center justify-center">{error}</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center px-6">
+        <p className="text-muted-foreground text-sm text-center">{error || "Something went wrong"}</p>
+      </div>
+    );
 
   const getAvatar = (name) =>
     name?.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase() || "?";
-console.log(candidate);
+
+  console.log(candidate);
+
   return (
     <div className="min-h-screen bg-background relative">
-      <div className="mesh-gradient absolute inset-0 opacity-20" />
+      <div className="mesh-gradient absolute inset-0 opacity-20 pointer-events-none" />
 
-      <div className="relative z-10 max-w-5xl mx-auto px-6 py-10">
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
 
         {/* BACK */}
-        <button
+        <motion.button
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
           onClick={() => navigate("/")}
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6"
+          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors group"
         >
-          <ArrowLeft size={18} /> Back
-        </button>
+          <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
+          Back
+        </motion.button>
 
-        {/* CARD */}
+        {/* HERO CARD */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-card rounded-2xl p-6 md:p-8"
+          transition={{ duration: 0.45, ease: "easeOut" }}
+          className="glass-card rounded-2xl p-5 sm:p-8 mb-6"
         >
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-5">
 
-          {/* HEADER */}
-          <div className="flex flex-col md:flex-row justify-between gap-6">
-
-            <div className="flex gap-5">
-              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-xl font-bold text-primary">
+            {/* AVATAR + META */}
+            <div className="flex gap-4 items-start">
+              {/* Avatar */}
+              <div className="shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-lg sm:text-xl font-bold text-primary border border-primary/10">
                 {getAvatar(candidate.fullName)}
               </div>
 
-              <div>
-                <h1 className="text-2xl font-bold">
+              {/* Info */}
+              <div className="min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold leading-tight truncate">
                   {candidate.fullName || "No Name"}
                 </h1>
 
-                <div className="flex gap-3 text-sm text-muted-foreground mt-2 flex-wrap">
-                  <span className="flex gap-1 items-center">
-                    <Briefcase size={14} />
-                    {candidate.roleTitle || "Role"}
-                  </span>
-                  <span className="flex gap-1 items-center">
-                    <MapPin size={14} />
-                    {candidate.location || "Location"}
-                  </span>
-                  <span>{candidate.experience || 0} yrs</span>
+                <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs sm:text-sm text-muted-foreground mt-1.5">
+                  {candidate.roleTitle && (
+                    <span className="flex gap-1 items-center">
+                      <Briefcase size={12} />
+                      {candidate.roleTitle}
+                    </span>
+                  )}
+                  {candidate.location && (
+                    <span className="flex gap-1 items-center">
+                      <MapPin size={12} />
+                      {candidate.location}
+                    </span>
+                  )}
+                  {candidate.experience !== undefined && (
+                    <span className="flex gap-1 items-center text-muted-foreground">
+                      {candidate.experience} yrs exp
+                    </span>
+                  )}
                 </div>
 
                 {candidate.salaryExpectation && (
-                  <div className="mt-2 text-primary font-semibold">
+                  <div className="mt-2 text-primary font-semibold text-sm sm:text-base">
                     ₹{candidate.salaryExpectation.toLocaleString()}
+                    <span className="text-xs text-muted-foreground font-normal ml-1">/ yr</span>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* CTA */}
-            <div className="flex flex-col items-end gap-2">
+            {/* CTA BADGES */}
+            <div className="flex sm:flex-col items-center sm:items-end gap-2 flex-wrap">
               {!unlocked ? (
                 <button
                   onClick={handleUnlock}
-                  className="px-5 py-2 rounded-lg bg-primary text-white text-sm flex gap-2 items-center"
+                  className="px-4 py-2 rounded-lg bg-primary text-white text-xs sm:text-sm flex gap-2 items-center font-medium hover:opacity-90 active:scale-95 transition-all shrink-0"
                 >
-                  <Lock size={14} />
+                  <Lock size={13} />
                   {hasActiveSubscription ? "Unlock Profile" : "Get Subscription"}
                 </button>
               ) : (
-                <span className="text-xs bg-green-500/20 text-green-600 px-2 py-1 rounded">
-                  Unlocked
+                <span className="text-xs bg-green-500/15 text-green-600 border border-green-500/20 px-2.5 py-1 rounded-full font-medium">
+                  ✓ Unlocked
                 </span>
               )}
 
               {candidate.skills?.length >= 4 && (
-                <span className="text-xs bg-secondary/20 text-secondary px-2 py-1 rounded flex gap-1 items-center">
-                  <Sparkles size={12} /> AI Verified
+                <span className="text-xs bg-secondary/20 text-secondary px-2.5 py-1 rounded-full flex gap-1 items-center border border-secondary/20">
+                  <Sparkles size={11} /> AI Verified
                 </span>
               )}
             </div>
           </div>
+        </motion.div>
 
-          {/* GRID */}
-          <div className="grid md:grid-cols-2 gap-6 mt-8">
+        {/* MAIN GRID */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
 
-            {/* LEFT */}
-            <div className="space-y-6">
+          {/* ─── LEFT COLUMN ─── */}
+          <div className="space-y-4 sm:space-y-5">
 
-              {/* CONTACT */}
-              <div className="glass-card p-5">
-                <h3 className="text-sm font-semibold mb-3">Contact</h3>
-
-                {hasActiveSubscription && unlocked ? (
-                  <>
-                    <p className="flex gap-2 text-sm items-center">
-                      <Phone size={14} /> {candidate.phone || "Not provided"}
-                    </p>
-                    <p className="flex gap-2 text-sm items-center">
-                      <Mail size={14} /> {candidate.email || "Not provided"}
-                    </p>
-                  </>
-                ) : (
-                  <p className="text-sm flex gap-2 items-center text-muted-foreground">
-                    <Lock size={14} /> Unlock to view contact
+            {/* CONTACT */}
+            <Section icon={Phone} title="Contact" delay={1}>
+              {hasActiveSubscription && unlocked ? (
+                <div className="space-y-2">
+                  <p className="flex gap-2.5 text-sm items-center">
+                    <span className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                      <Phone size={13} className="text-primary" />
+                    </span>
+                    {candidate.phone || "Not provided"}
                   </p>
-                )}
-              </div>
+                  <p className="flex gap-2.5 text-sm items-center">
+                    <span className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                      <Mail size={13} className="text-primary" />
+                    </span>
+                    {candidate.email || "Not provided"}
+                  </p>
+                </div>
+              ) : (
+                <div className="flex gap-2 items-center text-sm text-muted-foreground bg-muted/30 rounded-lg px-3 py-2.5 border border-dashed border-muted-foreground/20">
+                  <Lock size={13} />
+                  Unlock to view contact details
+                </div>
+              )}
+            </Section>
 
-              {/* SKILLS */}
-              <div className="glass-card p-5">
-                <h3 className="text-sm font-semibold mb-3">Skills</h3>
-                <div className="flex flex-wrap gap-2">
-                  {candidate.skills?.map((s, i) => (
-                    <span key={i} className="px-2 py-1 text-xs bg-primary/10 text-primary rounded">
+            {/* SKILLS */}
+            {candidate.skills?.length > 0 && (
+              <Section icon={Code} title="Skills" delay={2}>
+                <div className="flex flex-wrap gap-1.5">
+                  {candidate.skills.map((s, i) => (
+                    <span
+                      key={i}
+                      className="px-2.5 py-1 text-xs bg-primary/10 text-primary rounded-lg border border-primary/10 font-medium"
+                    >
                       {s}
                     </span>
                   ))}
                 </div>
-              </div>
-
-              {/* LANGUAGES */}
-              {candidate.languages?.length > 0 && (
-                <div className="glass-card p-5">
-                  <h3 className="text-sm font-semibold mb-3">Languages</h3>
-                  <div className="flex gap-2 flex-wrap text-sm">
-                    {candidate.languages.map((l, i) => (
-                      <span key={i} className="px-2 py-1 bg-secondary/20 rounded">
-                        {l}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* RIGHT */}
-            <div className="space-y-6">
-
-              {/* SUMMARY */}
-              {candidate.summary && (
-                <div className="glass-card p-5">
-                  <h3 className="text-sm font-semibold mb-3">Summary</h3>
-                  <p className="text-sm">{candidate.summary}</p>
-                </div>
-              )}
-
-              {/* EXPERIENCE */}
-              {candidate.workExperience && (
-                <div className="glass-card p-5">
-                  <h3 className="text-sm font-semibold mb-3">Experience</h3>
-                  <p className="text-sm whitespace-pre-wrap">
-                    {candidate.workExperience}
-                  </p>
-                </div>
-              )}
-
-              {/* EDUCATION */}
-              {candidate.education && (
-                <div className="glass-card p-5">
-                  <h3 className="text-sm font-semibold mb-3">Education</h3>
-                  <p className="text-sm whitespace-pre-wrap">
-                    {candidate.education}
-                  </p>
-                </div>
-              )}
-
-              {/* PROJECTS */}
-             {candidate.projects?.length > 0 && (
-  <div className="glass-card p-5">
-    <h3 className="text-sm font-semibold mb-4 flex gap-2 items-center">
-      <Code size={14} /> Projects
-    </h3>
-
-    <div className="space-y-4">
-      {candidate.projects.map((proj, i) => {
-        // ✅ handle both old + new data
-        const title =
-          typeof proj === "string" ? proj : proj.title || "Untitled Project";
-
-        const description =
-          typeof proj === "string"
-            ? null
-            : proj.description || "";
-
-        return (
-          <div
-            key={i}
-            className="border-l-2 border-primary/40 pl-4"
-          >
-            {/* TITLE */}
-            <p className="text-sm font-semibold text-foreground">
-              {title}
-            </p>
-
-            {/* DESCRIPTION */}
-            {description && (
-              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-                {description}
-              </p>
+              </Section>
             )}
-          </div>
-        );
-      })}
-    </div>
-  </div>
-)}
 
-              {/* CERTIFICATIONS */}
-              {candidate.certifications?.length > 0 && (
-                <div className="glass-card p-5">
-                  <h3 className="text-sm font-semibold mb-3 flex gap-2 items-center">
-                    <Award size={14} /> Certifications
-                  </h3>
-                  {candidate.certifications.map((c, i) => (
-                    <p key={i} className="text-sm">• {c}</p>
+            {/* LANGUAGES */}
+            {candidate.languages?.length > 0 && (
+              <Section icon={Globe} title="Languages" delay={3}>
+                <div className="flex gap-2 flex-wrap">
+                  {candidate.languages.map((l, i) => (
+                    <span
+                      key={i}
+                      className="px-2.5 py-1 text-xs bg-secondary/15 text-secondary rounded-lg border border-secondary/15"
+                    >
+                      {l}
+                    </span>
                   ))}
                 </div>
-              )}
+              </Section>
+            )}
 
-              {/* LINKS */}
-              {(candidate.github || candidate.linkedin || candidate.portfolio) && (
-                <div className="glass-card p-5">
-                  <h3 className="text-sm font-semibold mb-3">Links</h3>
-                  {candidate.github && <a href={candidate.github} target="_blank" className="block text-primary">GitHub</a>}
-                  {candidate.linkedin && <a href={candidate.linkedin} target="_blank" className="block text-primary">LinkedIn</a>}
-                  {candidate.portfolio && <a href={candidate.portfolio} target="_blank" className="block text-primary">Portfolio</a>}
+            {/* INTERESTS */}
+            {candidate.interests?.length > 0 && (
+              <Section icon={Globe} title="Interests" delay={4}>
+                <div className="flex gap-2 flex-wrap">
+                  {candidate.interests.map((interest, index) => (
+                    <span
+                      key={index}
+                      className="px-2.5 py-1 bg-muted/60 rounded-lg text-xs border border-muted"
+                    >
+                      {interest}
+                    </span>
+                  ))}
                 </div>
-              )}
-{candidate.interests?.length > 0 && (
-  <div className="glass-card p-5">
-    <h3 className="text-sm font-semibold mb-3 flex gap-2 items-center">
-      <Globe size={14} /> Interests
-    </h3>
-    <div className="flex gap-2 flex-wrap">
-      {candidate.interests.map((i, index) => (
-        <span key={index} className="px-2 py-1 bg-muted rounded text-sm">
-          {i}
-        </span>
-      ))}
-    </div>
-  </div>
-)}
-              {/* ACHIEVEMENTS */}
-              {candidate.achievements?.length > 0 && (
-                <div className="glass-card p-5">
-                  <h3 className="text-sm font-semibold mb-3 flex gap-2 items-center">
-                    <Star size={14} /> Achievements
-                  </h3>
-                 {candidate.achievements?.map((a, i) => (
-  <p key={i} className="text-sm">• {a}</p>
-))}
-                </div>
-              )}
+              </Section>
+            )}
 
-            </div>
+            {/* LINKS */}
+            {(candidate.github || candidate.linkedin || candidate.portfolio) && (
+              <Section icon={Globe} title="Links" delay={5}>
+                <div className="space-y-2">
+                  {candidate.github && (
+                    <a
+                      href={candidate.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-sm text-primary hover:underline underline-offset-2 truncate"
+                    >
+                      <span className="w-6 h-6 rounded bg-primary/10 flex items-center justify-center shrink-0 text-[10px] font-bold">GH</span>
+                      GitHub
+                    </a>
+                  )}
+                  {candidate.linkedin && (
+                    <a
+                      href={candidate.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-sm text-primary hover:underline underline-offset-2 truncate"
+                    >
+                      <span className="w-6 h-6 rounded bg-primary/10 flex items-center justify-center shrink-0 text-[10px] font-bold">LI</span>
+                      LinkedIn
+                    </a>
+                  )}
+                  {candidate.portfolio && (
+                    <a
+                      href={candidate.portfolio}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-sm text-primary hover:underline underline-offset-2 truncate"
+                    >
+                      <span className="w-6 h-6 rounded bg-primary/10 flex items-center justify-center shrink-0 text-[10px] font-bold">PF</span>
+                      Portfolio
+                    </a>
+                  )}
+                </div>
+              </Section>
+            )}
           </div>
 
-        </motion.div>
+          {/* ─── RIGHT COLUMN ─── */}
+          <div className="space-y-4 sm:space-y-5">
+
+            {/* SUMMARY */}
+            {candidate.summary && (
+              <Section icon={BookOpen} title="Summary" delay={1}>
+                <p className="text-sm leading-relaxed text-muted-foreground">{candidate.summary}</p>
+              </Section>
+            )}
+
+            {/* EXPERIENCE */}
+            {candidate.workExperience && (
+              <Section icon={Briefcase} title="Experience" delay={2}>
+                <p className="text-sm whitespace-pre-wrap leading-relaxed text-muted-foreground">
+                  {candidate.workExperience}
+                </p>
+              </Section>
+            )}
+
+            {/* EDUCATION */}
+            {candidate.education && (
+              <Section icon={BookOpen} title="Education" delay={3}>
+                <p className="text-sm whitespace-pre-wrap leading-relaxed text-muted-foreground">
+                  {candidate.education}
+                </p>
+              </Section>
+            )}
+
+            {/* PROJECTS */}
+            {candidate.projects?.length > 0 && (
+              <Section icon={Code} title="Projects" delay={4}>
+                <div className="space-y-4">
+                  {candidate.projects.map((proj, i) => {
+                    const title =
+                      typeof proj === "string" ? proj : proj.title || "Untitled Project";
+                    const description =
+                      typeof proj === "string" ? null : proj.description || "";
+
+                    return (
+                      <div
+                        key={i}
+                        className="border-l-2 border-primary/30 pl-3.5 py-0.5"
+                      >
+                        <p className="text-sm font-semibold text-foreground leading-snug">
+                          {title}
+                        </p>
+                        {description && (
+                          <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                            {description}
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </Section>
+            )}
+
+            {/* CERTIFICATIONS */}
+            {candidate.certifications?.length > 0 && (
+              <Section icon={Award} title="Certifications" delay={5}>
+                <div className="space-y-1.5">
+                  {candidate.certifications.map((c, i) => (
+                    <div key={i} className="flex gap-2 items-start text-sm">
+                      <span className="text-primary mt-0.5">•</span>
+                      <span>{c}</span>
+                    </div>
+                  ))}
+                </div>
+              </Section>
+            )}
+
+            {/* ACHIEVEMENTS */}
+            {candidate.achievements?.length > 0 && (
+              <Section icon={Star} title="Achievements" delay={6}>
+                <div className="space-y-1.5">
+                  {candidate.achievements.map((a, i) => (
+                    <div key={i} className="flex gap-2 items-start text-sm">
+                      <span className="text-primary mt-0.5">•</span>
+                      <span>{a}</span>
+                    </div>
+                  ))}
+                </div>
+              </Section>
+            )}
+          </div>
+        </div>
+
       </div>
     </div>
   );

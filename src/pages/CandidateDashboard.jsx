@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { User, MapPin, Briefcase, Edit3, Save, Plus, X, Phone, CheckCircle2, AlertCircle } from "lucide-react";
@@ -9,7 +8,6 @@ import { db } from "@/firebase";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 
 // ─── Profile completion config ────────────────────────────────────────────────
-// Each field has a weight (weights sum to 100).
 const COMPLETION_FIELDS = [
   { key: "fullName",       label: "Full name",              weight: 10 },
   { key: "phone",          label: "Phone number",           weight: 8  },
@@ -73,6 +71,8 @@ const getMessage = (pct) => {
   return "Your profile needs more info to appear in recruiter searches.";
 };
 // ──────────────────────────────────────────────────────────────────────────────
+
+const MAX_SKILL_WORDS = 10;
 
 const CandidateDashboard = () => {
   const { user, logout, loading } = useAuth();
@@ -172,7 +172,6 @@ const CandidateDashboard = () => {
     fetchData();
   }, [user, loading, navigate]);
 
-  // Derive completion from live candidateData — updates automatically after save
   const { percent, completed, missing } = calcCompletion(candidateData);
   const barColor = getBarColor(percent);
   const message = getMessage(percent);
@@ -210,9 +209,19 @@ const CandidateDashboard = () => {
     setEditSnapshot(null);
   };
 
+  // ── Skill add with 10-word limit ──────────────────────────────────────────
   const addSkill = () => {
-    if (skillInput.trim() && !skills.includes(skillInput.trim())) {
-      setSkills([...skills, skillInput.trim()]);
+    const trimmed = skillInput.trim();
+    if (!trimmed) return;
+
+    const wordCount = trimmed.split(/\s+/).length;
+    if (wordCount > MAX_SKILL_WORDS) {
+      toast.error(`Skill can't exceed ${MAX_SKILL_WORDS} words`);
+      return;
+    }
+
+    if (!skills.includes(trimmed)) {
+      setSkills([...skills, trimmed]);
       setSkillInput("");
     }
   };
@@ -299,7 +308,6 @@ const CandidateDashboard = () => {
         { merge: true }
       );
 
-      // Update local state — completion % recalculates automatically
       setCandidateData((prev) => ({
         ...prev,
         fullName, roleTitle, role: roleTitle,
@@ -321,6 +329,10 @@ const CandidateDashboard = () => {
       setSaving(false);
     }
   };
+
+  // Live word count for skill input
+  const skillWordCount = skillInput.trim() ? skillInput.trim().split(/\s+/).length : 0;
+  const skillWordLimitReached = skillWordCount > MAX_SKILL_WORDS;
 
   if (loading)
     return (
@@ -407,7 +419,6 @@ const CandidateDashboard = () => {
             </div>
           </div>
 
-          {/* Animated progress bar */}
           <div className="w-full h-2.5 rounded-full bg-muted/40 overflow-hidden">
             <motion.div
               className={`h-full rounded-full ${barColor}`}
@@ -419,7 +430,6 @@ const CandidateDashboard = () => {
 
           <p className="text-xs text-muted-foreground mt-2">{message}</p>
 
-          {/* Expandable checklist */}
           {showChecklist && percent < 100 && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
@@ -521,10 +531,29 @@ const CandidateDashboard = () => {
                 <p className="text-xs text-muted-foreground">Skills</p>
                 {editing ? (
                   <div className="mt-1">
-                    <div className="flex gap-2 mb-2">
-                      <input value={skillInput} onChange={(e) => setSkillInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())} placeholder="Add skill..." className="flex-1 px-3 py-2 rounded-lg bg-muted/30 text-foreground border border-border focus:border-secondary outline-none text-sm" />
-                      <button type="button" onClick={addSkill} className="px-3 py-2 rounded-lg btn-haptic text-secondary bg-secondary/10 border border-secondary/20"><Plus size={14} /></button>
+                    <div className="flex gap-2 mb-1">
+                      <input
+                        value={skillInput}
+                        onChange={(e) => setSkillInput(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())}
+                        placeholder="Add skill..."
+                        className={`flex-1 px-3 py-2 rounded-lg bg-muted/30 text-foreground border focus:outline-none text-sm transition-colors ${
+                          skillWordLimitReached ? "border-red-400 focus:border-red-400" : "border-border focus:border-secondary"
+                        }`}
+                      />
+                      <button
+                        type="button"
+                        onClick={addSkill}
+                        disabled={skillWordLimitReached}
+                        className="px-3 py-2 rounded-lg btn-haptic text-secondary bg-secondary/10 border border-secondary/20 disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        <Plus size={14} />
+                      </button>
                     </div>
+                    {/* Word count hint */}
+                    <p className={`text-xs mb-2 ${skillWordLimitReached ? "text-red-400" : "text-muted-foreground"}`}>
+                      {skillWordCount}/{MAX_SKILL_WORDS} words
+                    </p>
                     <div className="flex flex-wrap gap-1.5">
                       {skills.map((s) => (
                         <span key={s} className="glow-tag-cyan flex items-center gap-1.5">

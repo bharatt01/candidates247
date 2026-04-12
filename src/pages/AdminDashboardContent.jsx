@@ -28,7 +28,21 @@ const AdminDashboardContent = () => {
 
   const [activeTab, setActiveTab] = useState("subscriptions");
   const [search, setSearch] = useState("");
+const formatDate = (timestamp) => {
+  if (!timestamp) return "Old User";
 
+  try {
+    return timestamp.toDate().toLocaleString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return "Invalid Date";
+  }
+};
   // 🔥 FETCH DATA
   const fetchAdminData = async () => {
     try {
@@ -206,6 +220,10 @@ const AdminDashboardContent = () => {
                 </h3>
 
                 <p className="text-sm text-gray-400">{sub.company_email}</p>
+<p className="text-xs text-gray-500">
+  Requested: {formatDate(sub.createdAt)}
+</p>
+
 
                 <div className="flex gap-3 mt-4">
                   <button
@@ -238,6 +256,9 @@ const AdminDashboardContent = () => {
                     "Unknown Company"}
                 </h3>
                 <p className="text-sm text-gray-400">{sub.company_email}</p>
+                <p className="text-xs text-gray-500">
+  Created: {formatDate(sub.createdAt)}
+</p>
               </div>
             ))}
           </div>
@@ -251,6 +272,9 @@ const AdminDashboardContent = () => {
 
                 <h3>{c.fullName}</h3>
                 <p className="text-sm text-gray-400">{c.email}</p>
+                <p className="text-xs text-gray-500">
+  Joined: {formatDate(c.createdAt)}
+</p>
                 <p className="text-xs text-gray-500">
                   {c.phone || "No phone"}
                 </p>
