@@ -37,7 +37,7 @@ const HiringTrendsIndia = () => {
           <div className="flex gap-12 bg-white/70 backdrop-blur-xl px-10 py-8 rounded-[2rem] border border-[hsl(38,35%,86%)] shadow-[0_20px_60px_rgba(180,120,40,0.08)]">
             <div>
               <p className="text-[10px] uppercase tracking-[0.3em] text-[hsl(300,12%,45%)] mb-2">
-                Jobs Posted Today
+                New Profiles Uploaded
               </p>
               <p className="text-3xl font-semibold text-[hsl(32,88%,55%)]">
                 1,240+

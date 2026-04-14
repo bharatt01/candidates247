@@ -7,7 +7,7 @@ import { db } from "@/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useAuth } from "@/contexts/AuthContext";
 
-const MAX_SKILL_WORDS = 10;
+const MAX_SKILL_WORDS = 8;
 
 const CompleteProfile = () => {
   const [skills, setSkills] = useState([]);
