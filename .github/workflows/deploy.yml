@@ -12,18 +12,21 @@ jobs:
 
     steps:
       - name: 🧩 Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: ⚙️ Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
 
       - name: 📦 Install Dependencies
         run: npm ci
 
+      - name: 📋 Copy .htaccess into dist
+        run: cp .htaccess dist/.htaccess
+
       - name: 🏗️ Build Vite Project
-        run: npx vite build
+        run: npm run build
 
       - name: 🧹 Clean old files on server
         uses: appleboy/ssh-action@v1.0.0
@@ -31,9 +34,9 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 65002
+          port: ${{ secrets.SSH_PORT }}        # ✅ consistent
           script: |
-                     rm -rf /home/u341560007/domains/candidates247.com/public_html/*
+            rm -rf /home/u341560007/domains/candidates247.com/public_html/*
 
       - name: 📤 Deploy dist folder to Hostinger
         uses: appleboy/scp-action@v0.1.7
@@ -41,7 +44,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          source: "dist/* , .htaccess" 
+          port: ${{ secrets.SSH_PORT }}        # ✅ consistent
+          source: "dist/"                      # ✅ clean glob
           target: "/home/u341560007/domains/candidates247.com/public_html/"
           strip_components: 1
