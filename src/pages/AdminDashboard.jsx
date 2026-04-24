@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import AdminDashboardContent from "./AdminDashboardContent"; // your current dashboard JSX
+import AdminDashboardContent from "./AdminDashboardContent"; // ← your new dashboard
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -8,7 +8,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const isSuperAdmin = localStorage.getItem("isSuperAdmin");
     if (!isSuperAdmin) {
-      navigate("/superadmin"); // redirect to login if not logged in
+      navigate("/superadmin"); // redirect to login
     }
   }, [navigate]);
 

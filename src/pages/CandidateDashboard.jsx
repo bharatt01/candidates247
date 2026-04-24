@@ -23,6 +23,15 @@ const COMPLETION_FIELDS = [
   { key: "languages",      label: "Languages",              weight: 3  },
   { key: "references",     label: "References",             weight: 3  },
 ];
+// Helper to format decimal experience nicely
+const formatExperience = (exp) => {
+  if (!exp && exp !== 0) return "Not set";
+  const years = Math.floor(exp);
+  const months = Math.round((exp % 1) * 12);
+  if (years === 0) return `${months} month${months !== 1 ? "s" : ""}`;
+  if (months === 0) return `${years} yr${years !== 1 ? "s" : ""}`;
+  return `${years} yr${years !== 1 ? "s" : ""} ${months} mo`;
+};
 
 const calcCompletion = (data) => {
   if (!data) return { percent: 0, completed: [], missing: [] };
@@ -107,6 +116,8 @@ const CandidateDashboard = () => {
   const [references, setReferences] = useState("");
   const [fullName, setFullName] = useState("");
   const [editSnapshot, setEditSnapshot] = useState(null);
+const [expYears, setExpYears] = useState(0);
+const [expMonths, setExpMonths] = useState(0);
 
   useEffect(() => {
     if (loading) return;
@@ -137,7 +148,10 @@ const CandidateDashboard = () => {
           candidateRoleTitle = data.roleTitle || data.role || data.title || "";
 
           setRoleTitle(candidateRoleTitle);
-          setExperience(String(data.experience || ""));
+    // inside fetchData, after setExperience(...)
+const expVal = Number(data.experience || 0);
+setExpYears(Math.floor(expVal));
+setExpMonths(Math.round((expVal % 1) * 12));
           setLocation(data.location || "");
           setPhone(data.phone || "");
           setSkills(data.skills || []);
@@ -183,6 +197,7 @@ const CandidateDashboard = () => {
       projects: [...projects], certifications: [...certifications],
       achievements: [...achievements], languages: [...languages],
       interests: [...interests], references,
+       expYears, expMonths,
     });
     setEditing(true);
   };
@@ -204,6 +219,8 @@ const CandidateDashboard = () => {
       setLanguages(editSnapshot.languages);
       setInterests(editSnapshot.interests);
       setReferences(editSnapshot.references);
+      setExpYears(editSnapshot.expYears);
+setExpMonths(editSnapshot.expMonths);
     }
     setEditing(false);
     setEditSnapshot(null);
@@ -511,14 +528,41 @@ const CandidateDashboard = () => {
                   <p className="text-sm text-foreground font-medium">{candidateData?.roleTitle || candidateData?.role || candidateData?.title || roleTitle || "Not set"}</p>
                 )}
               </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Experience</p>
-                {editing ? (
-                  <input type="number" min={0} max={30} value={experience} onChange={(e) => setExperience(e.target.value)} placeholder="Years" className="w-full px-3 py-2 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary outline-none text-sm mt-1" />
-                ) : (
-                  <p className="text-sm text-foreground font-medium">{candidateData?.experience?.category} years</p>
-                )}
-              </div>
+             <div>
+  <p className="text-xs text-muted-foreground">Experience</p>
+  {editing ? (
+    <div className="grid grid-cols-2 gap-2 mt-1">
+      <div>
+        <label className="text-xs text-muted-foreground">Years</label>
+        <input
+          type="number" min={0} max={50}
+          value={expYears}
+          onChange={(e) => setExpYears(parseInt(e.target.value) || 0)}
+          placeholder="0"
+          className="w-full px-3 py-2 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary outline-none text-sm"
+        />
+      </div>
+      <div>
+        <label className="text-xs text-muted-foreground">Months</label>
+        <input
+          type="number" min={0} max={11}
+          value={expMonths}
+          onChange={(e) => {
+            let v = parseInt(e.target.value) || 0;
+            if (v > 11) v = 11;
+            setExpMonths(v);
+          }}
+          placeholder="0"
+          className="w-full px-3 py-2 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary outline-none text-sm"
+        />
+      </div>
+    </div>
+  ) : (
+    <p className="text-sm text-foreground font-medium">
+      {formatExperience(candidateData?.experience)}
+    </p>
+  )}
+</div>
               <div>
                 <p className="text-xs text-muted-foreground">Summary</p>
                 {editing ? (

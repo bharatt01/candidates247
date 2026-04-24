@@ -36,6 +36,14 @@ const fadeUp = {
     transition: { delay: i * 0.07, duration: 0.4, ease: "easeOut" },
   }),
 };
+const formatExperience = (exp) => {
+  if (!exp && exp !== 0) return null;
+  const years = Math.floor(exp);
+  const months = Math.round((exp % 1) * 12);
+  if (years === 0) return `${months} month${months !== 1 ? "s" : ""}`;
+  if (months === 0) return `${years} yr${years !== 1 ? "s" : ""}`;
+  return `${years} yr${years !== 1 ? "s" : ""} ${months} mo`;
+};
 
 const Section = ({ icon: Icon, title, children, delay = 0 }) => (
   <motion.div
@@ -208,7 +216,7 @@ const CandidateDetails = () => {
                   )}
                   {candidate.experience !== undefined && (
                     <span className="flex gap-1 items-center text-muted-foreground">
-                      {candidate.experience} yrs exp
+                    {formatExperience(candidate.experience)} exp
                     </span>
                   )}
                 </div>
