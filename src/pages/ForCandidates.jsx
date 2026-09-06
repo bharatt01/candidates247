@@ -114,10 +114,10 @@ const ForCandidates = () => {
 
   return (
     <>
-      <div className="h-screen overflow-hidden bg-background relative">
-        <div className="relative z-10 h-full grid lg:grid-cols-2">
+      <div className="min-h-screen lg:h-screen overflow-y-auto lg:overflow-hidden bg-background relative">
+        <div className="relative z-10 lg:h-full grid lg:grid-cols-2">
           {/* LEFT SIDE — Form */}
-          <div className="flex items-start justify-center px-6 py-6 lg:pt-10">
+          <div className="flex items-start justify-center px-4 sm:px-6 py-6 lg:pt-10">
             <div className="mesh-gradient" />
 
             <motion.div
@@ -125,10 +125,10 @@ const ForCandidates = () => {
               animate={{ opacity: 1, y: 0 }}
            className="w-full max-w-xl relative z-10"
             >
-<div className="bg-gray-50 border border-gray-200 shadow-xl rounded-2xl p-8">
+<div className="bg-gray-50 border border-gray-200 shadow-xl rounded-2xl p-5 sm:p-8">
                 {/* Header */}
                 <div className="mb-8 text-center">
-                  <h1 className="text-2xl font-semibold text-foreground">
+                  <h1 className="text-xl sm:text-2xl font-semibold text-foreground">
                     {mode === "signup"
                       ? "Hundreds of Candidates are Hired Every Day"
                       : "Welcome Back"}
@@ -141,7 +141,7 @@ const ForCandidates = () => {
                 </div>
 
                 {/* Toggle — Reduced gap + Icons */}
-                <div className="flex gap-2 p-1 rounded-xl mt-4 bg-muted/20">
+                <div className="flex flex-col sm:flex-row gap-2 p-1 rounded-xl mt-4 bg-muted/20">
                   <button
                     onClick={() => setMode("signup")}
                     className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all border-2 ${
@@ -150,8 +150,8 @@ const ForCandidates = () => {
                         : "bg-background text-muted-foreground border-border"
                     }`}
                   >
-                    <UserPlus size={16} />
-                    New Candidates Sign Up
+                    <UserPlus size={16} className="shrink-0" />
+                    <span className="whitespace-nowrap">New Candidates Sign Up</span>
                   </button>
 
                   <button
@@ -162,8 +162,8 @@ const ForCandidates = () => {
                         : "bg-background text-muted-foreground border-border"
                     }`}
                   >
-                    <LogIn size={16} />
-                    Existing Candidate Login
+                    <LogIn size={16} className="shrink-0" />
+                    <span className="whitespace-nowrap">Existing Candidate Login</span>
                   </button>
                 </div>
 
@@ -264,9 +264,9 @@ const ForCandidates = () => {
           </div>
 
           {/* ================= RIGHT SIDE ================= */}
-          <div className="flex flex-col justify-start px-6 lg:px-10 py-6 lg:pt-10">
+          <div className="flex flex-col justify-start px-4 sm:px-6 lg:px-10 py-6 lg:pt-10">
             {/* IMAGE */}
-            <div className="relative w-full h-[180px] lg:h-[220px] mb-5 overflow-hidden rounded-3xl border border-white/10 shadow-xl">
+            <div className="relative w-full h-[140px] sm:h-[180px] lg:h-[220px] mb-5 overflow-hidden rounded-3xl border border-white/10 shadow-xl">
               <img
                 src="/Images/forcompanies.jpg"
                 alt="Career Growth"
