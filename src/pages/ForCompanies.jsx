@@ -118,16 +118,16 @@ const ForCompanies = () => {
  <div className="relative z-10 grid lg:grid-cols-2">
 
       {/* ================= LEFT SIDE (FORM) ================= */}
-<div className="flex items-start justify-center px-6 py-6 lg:pt-2">
+<div className="flex items-start justify-center px-4 sm:px-6 py-6 lg:pt-2">
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
     className="w-full max-w-xl relative z-10"
         >
          
-         <div className="bg-gray-50 border border-gray-200 shadow-xl rounded-2xl p-8">
+         <div className="bg-gray-50 border border-gray-200 shadow-xl rounded-2xl p-5 sm:p-8">
                     <div className="mb-6">
-            <h1 className="text-2xl font-bold text-foreground mb-1">
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-1">
            Thousands of Companies are Hiring from Us
             </h1>
             <p className="text-sm text-muted-foreground">
@@ -138,7 +138,7 @@ const ForCompanies = () => {
           </div>
 
           {/* Toggle */}
-         <div className="flex gap-2 p-1 rounded-xl mt-4 bg-muted/20">
+         <div className="flex flex-col sm:flex-row gap-2 p-1 rounded-xl mt-4 bg-muted/20">
            <button
   onClick={() => setMode("signup")}
   className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all border-2 ${
@@ -147,7 +147,7 @@ const ForCompanies = () => {
       : "bg-background text-muted-foreground border-border"
   }`}
 >
-  <UserPlus size={16} />
+  <UserPlus size={16} className="shrink-0" />
   <span className="whitespace-nowrap">
     New Company Sign Up
   </span>
@@ -161,7 +161,7 @@ const ForCompanies = () => {
       : "bg-background text-muted-foreground border-border"
   }`}
 >
-  <LogIn size={16} />
+  <LogIn size={16} className="shrink-0" />
   <span className="whitespace-nowrap">
     Existing Company Login
   </span>
@@ -263,7 +263,7 @@ className="w-full py-3 rounded-xl font-medium bg-primary text-white hover:opacit
 
       {/* ================= RIGHT SIDE (WHY JOIN) ================= */}
     {/* ================= RIGHT SIDE ================= */}
-<div className="flex flex-col justify-start px-6 lg:px-12 py-6 lg:py-2">
+<div className="flex flex-col justify-start px-4 sm:px-6 lg:px-12 py-6 lg:py-2">
   {/* 🔥 IMAGE */}
 
 
@@ -272,7 +272,7 @@ className="w-full py-3 rounded-xl font-medium bg-primary text-white hover:opacit
 
     {/* RANDOM POLYGON */}
     <div className="relative w-full overflow-hidden rounded-3xl border border-white/10 shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
-     <div className="relative w-full h-[180px] lg:h-[240px] overflow-hidden">
+     <div className="relative w-full h-[140px] sm:h-[180px] lg:h-[240px] overflow-hidden">
   <img
     src="/Images/forcompanies.jpg"
     alt="Hiring"
