@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { Lock, Sparkles, Briefcase, MapPin, Phone, Mail, ArrowRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -24,8 +23,8 @@ const CandidateCard = ({ candidate, index, onClick }) => {
       whileHover={{ y: -4, boxShadow: "0 12px 40px rgba(255,130,40,0.25)", transition: { duration: 0.25 } }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className="bg-[hsl(42,45%,96%)] border border-orange-900/20 rounded-xl p-6 flex flex-col gap-4 cursor-pointer transition-all duration-300 w-full"
-    >
+      className="bg-[hsl(42,45%,96%)] border border-orange-900/20 rounded-xl p-6 flex flex-col gap-4 cursor-pointer transition-all duration-300 w-full h-full"
+     >
       {/* ===== PROFILE HEADER ===== */}
       <div className="flex items-start gap-4">
         <div className="w-14 h-14 rounded-lg bg-accent flex items-center justify-center text-lg font-bold text-[hsl(32,88%,55%)]">
@@ -40,10 +39,10 @@ const CandidateCard = ({ candidate, index, onClick }) => {
               </span>
             )}
           </div>
-         <p className="text-[15px] font-semibold text-foreground flex items-center gap-2 mt-1">
+          <p className="text-[15px] font-semibold text-foreground flex items-center gap-2 mt-1">
             <Briefcase size={14} className="text-primary shrink-0" /> {candidate.role}
           </p>
-      <p className="text-[14px] font-semibold text-foreground flex items-center gap-2 mt-0.5">
+          <p className="text-[14px] font-semibold text-foreground flex items-center gap-2 mt-0.5">
             <MapPin size={13} className="text-muted-foreground shrink-0" /> {candidate.location} · {formatExperience(candidate.experience)} exp
           </p>
         </div>
@@ -57,14 +56,22 @@ const CandidateCard = ({ candidate, index, onClick }) => {
           Skills
         </h4>
         <div className="flex flex-wrap gap-2">
-          {(candidate.skills || []).slice(0, 4).map((skill) => (
-            <span key={skill} className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[12px] font-semibold border border-[hsl(32,88%,55%)]/40 text-[hsl(32,88%,45%)] bg-[hsl(32,88%,55%)]/10"> 
-              <span className="w-2 h-2 rounded-full bg-[hsl(32,88%,55%)] animate-pulse"></span>
+          {(candidate.skills || []).slice(0, 5).map((skill, i) => (
+            <span 
+              key={`${skill}-${i}`} 
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold border border-[hsl(32,88%,55%)]/40 text-[hsl(32,88%,45%)] bg-[hsl(32,88%,55%)]/10"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[hsl(32,88%,55%)] shrink-0" />
               {skill}
             </span>
           ))}
-          {candidate.skills?.length > 4 && (
-            <span className="text-[11px] font-medium text-muted-foreground px-2 py-1">+{candidate.skills.length - 4} more</span>
+          {candidate.skills?.length > 5 && (
+            <span className="text-[11px] font-medium text-muted-foreground px-2 py-1">
+              +{candidate.skills.length - 5} more
+            </span>
+          )}
+          {(!candidate.skills || candidate.skills.length === 0) && (
+            <span className="text-[12px] text-muted-foreground">No skills listed</span>
           )}
         </div>
       </div>
@@ -83,7 +90,7 @@ const CandidateCard = ({ candidate, index, onClick }) => {
         </div>
       ) : (
         <div className="flex items-center font-semibold gap-2 text-sm text-foreground mt-2">
-          <Lock size={14} /> Subscribe to view contact details
+         
         </div>
       )}
 

@@ -85,19 +85,37 @@ const CompleteProfile = () => {
     fetchData();
   }, [user, navigate]);
 
-  // ── Skill add with 10-word limit ──────────────────────────────────────────
+  // ── Skill add with comma/newline separation + word limit ───────────────────
   const addSkill = () => {
-    const value = formatText(skillInput);
-    if (!value) return;
+    if (!skillInput.trim()) return;
 
-    const wordCount = value.trim().split(/\s+/).length;
-    if (wordCount > MAX_SKILL_WORDS) {
-      toast.error(`Skill can't exceed ${MAX_SKILL_WORDS} words`);
-      return;
-    }
+    // Split by comma, pipe, or newline — handles all user input styles
+    const rawSkills = skillInput
+      .split(/[,|\n]+/)
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
 
-    if (!skills.includes(value)) {
-      setSkills([...skills, value]);
+    const newSkills = [];
+    rawSkills.forEach((raw) => {
+      const wordCount = raw.split(/\s+/).length;
+      if (wordCount > MAX_SKILL_WORDS) {
+        toast.error(`"${raw}" exceeds ${MAX_SKILL_WORDS} words`);
+        return;
+      }
+      // Capitalize each word
+      const formatted = raw
+        .toLowerCase()
+        .split(" ")
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" ");
+
+      if (!skills.includes(formatted) && !newSkills.includes(formatted)) {
+        newSkills.push(formatted);
+      }
+    });
+
+    if (newSkills.length > 0) {
+      setSkills([...skills, ...newSkills]);
       setSkillInput("");
     }
   };
@@ -174,8 +192,9 @@ const CompleteProfile = () => {
     }
   };
 
-  // Live word count for skill input
-  const skillWordCount = skillInput.trim() ? skillInput.trim().split(/\s+/).length : 0;
+  // Live word count for skill input (first skill only, since we split)
+  const firstRawSkill = skillInput.split(/[,|\n]+/)[0]?.trim() || "";
+  const skillWordCount = firstRawSkill ? firstRawSkill.split(/\s+/).length : 0;
   const skillWordLimitReached = skillWordCount > MAX_SKILL_WORDS;
 
   return (
@@ -306,7 +325,7 @@ const CompleteProfile = () => {
               </div>
             </div>
 
-            {/* ── Skills (with word limit) ─────────────────────────────── */}
+            {/* ── Skills (with comma separation + word limit) ────────────── */}
             <div>
               <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider">Skills</label>
               <div className="flex gap-2 mb-1">
@@ -319,7 +338,12 @@ const CompleteProfile = () => {
                       addSkill();
                     }
                   }}
-                  placeholder="e.g. React, Node.js"
+                  onPaste={(e) => {
+                    e.preventDefault();
+                    const pasted = e.clipboardData.getData("text");
+                    setSkillInput(pasted);
+                  }}
+                  placeholder="e.g. React, Node.js, Python, AWS"
                   className={`flex-1 px-3 py-2 rounded-lg bg-muted/30 border text-sm outline-none transition-colors ${
                     skillWordLimitReached ? "border-red-400 focus:border-red-400" : "border-border focus:border-primary"
                   }`}
@@ -333,17 +357,25 @@ const CompleteProfile = () => {
                   <Plus size={14} />
                 </button>
               </div>
-              {/* Word count hint — only shows when user starts typing */}
-              {skillInput.trim() && (
-                <p className={`text-xs mb-2 ${skillWordLimitReached ? "text-red-400" : "text-muted-foreground"}`}>
-                  {skillWordCount}/{MAX_SKILL_WORDS} words{skillWordLimitReached ? " — too long" : ""}
+              {/* Hint + Word count */}
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[11px] text-muted-foreground">
+                  Separate skills with commas. Each skill max {MAX_SKILL_WORDS} words.
                 </p>
-              )}
+                {skillInput.trim() && (
+                  <p className={`text-xs ${skillWordLimitReached ? "text-red-400" : "text-muted-foreground"}`}>
+                    {skillWordCount}/{MAX_SKILL_WORDS} words
+                  </p>
+                )}
+              </div>
               <div className="flex flex-wrap gap-2">
                 {skills.map((item, i) => (
-                  <span key={i} className="px-3 py-1 rounded-full bg-green-500/10 text-green-600 text-xs border border-green-500/20 flex items-center gap-1.5">
+                  <span key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-medium border border-primary/20">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
                     {item}
-                    <button type="button" onClick={() => setSkills(skills.filter((_, idx) => idx !== i))}><X size={11} /></button>
+                    <button type="button" onClick={() => setSkills(skills.filter((_, idx) => idx !== i))} className="hover:text-foreground ml-0.5">
+                      <X size={11} />
+                    </button>
                   </span>
                 ))}
               </div>

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { auth } from "@/firebase";
 
 const SUPERADMIN_EMAIL = "superadmin@example.com";
-// const SUPERADMIN_PASSWORD = "YourSecurePassword123";
+// const SUPERADMIN_PASSWORD = "x";
 
 const SuperAdminLogin = () => {
   const navigate = useNavigate();

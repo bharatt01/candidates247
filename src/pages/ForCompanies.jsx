@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { doc, getDoc } from "firebase/firestore";
 import { db, auth } from "@/firebase";
 import { Briefcase, Sparkles } from "lucide-react";
-// ✅ Format Name / Company / Industry
+// ✅ Format Name / Company / Industry  
 const formatText = (text) => {
   return text
     .trim()
@@ -118,51 +118,60 @@ const ForCompanies = () => {
  <div className="relative z-10 grid lg:grid-cols-2">
 
       {/* ================= LEFT SIDE (FORM) ================= */}
-     <div className="flex items-center justify-center px-6 py-10 lg:py-6">
+<div className="flex items-start justify-center px-6 py-6 lg:pt-2">
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
-        className="w-full max-w-md glass-card p-6"
+    className="w-full max-w-xl relative z-10"
         >
-          <div className="mb-6">
+         
+         <div className="bg-gray-50 border border-gray-200 shadow-xl rounded-2xl p-8">
+                    <div className="mb-6">
             <h1 className="text-2xl font-bold text-foreground mb-1">
-              For Companies
+           Thousands of Companies are Hiring from Us
             </h1>
             <p className="text-sm text-muted-foreground">
               {mode === "signup"
-                ? "Create your company account to discover elite talent."
+                ? "Create your company account and start hiring."
                 : "Sign in to your company account."}
             </p>
           </div>
 
           {/* Toggle */}
-          <div className="flex gap-2 mb-6">
-            <button
-              onClick={() => setMode("signup")}
-              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
-                mode === "signup"
-                  ? "bg-primary text-white"
-                  : "bg-muted/40 text-muted-foreground border border-border"
-              }`}
-            >
-              <UserPlus size={14} className="inline mr-1.5" /> Sign Up
-            </button>
+         <div className="flex gap-2 p-1 rounded-xl mt-4 bg-muted/20">
+           <button
+  onClick={() => setMode("signup")}
+  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all border-2 ${
+    mode === "signup"
+      ? "bg-primary text-white border-primary shadow-md"
+      : "bg-background text-muted-foreground border-border"
+  }`}
+>
+  <UserPlus size={16} />
+  <span className="whitespace-nowrap">
+    New Company Sign Up
+  </span>
+</button>
 
-            <button
-              onClick={() => setMode("login")}
-              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
-                mode === "login"
-                  ? "bg-primary text-white"
-                  : "bg-muted/40 text-muted-foreground border border-border"
-              }`}
-            >
-              <LogIn size={14} className="inline mr-1.5" /> Log In
-            </button>
+<button
+  onClick={() => setMode("login")}
+  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all border-2 ${
+    mode === "login"
+      ? "bg-primary text-white border-primary shadow-md"
+      : "bg-background text-muted-foreground border-border"
+  }`}
+>
+  <LogIn size={16} />
+  <span className="whitespace-nowrap">
+    Existing Company Login
+  </span>
+</button>
           </div>
 
           {/* ===== FORMS ===== */}
           {mode === "login" ? (
-            <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleLogin} className="space-y-4 mt-6">
+
               <input
                 type="email"
                 required
@@ -199,7 +208,7 @@ const ForCompanies = () => {
               </motion.button>
             </form>
           ) : (
-            <form onSubmit={handleSignup} className="space-y-4">
+         <form onSubmit={handleSignup} className="space-y-4 mt-6">
               <input
                 type="text"
                 required
@@ -240,15 +249,16 @@ const ForCompanies = () => {
                 whileTap={{ scale: 0.97 }}
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3 rounded-lg font-semibold bg-primary text-white disabled:opacity-50"
-              >
+className="w-full py-3 rounded-xl font-medium bg-primary text-white hover:opacity-90 transition disabled:opacity-50"    >
                 {submitting
                   ? "Creating account..."
-                  : "Create Company Account"}
+                  : "Create Account"}
               </motion.button>
             </form>
           )}
+          </div>
         </motion.div>
+        
       </div>
 
       {/* ================= RIGHT SIDE (WHY JOIN) ================= */}
@@ -261,80 +271,29 @@ const ForCompanies = () => {
     <div className="absolute -inset-6 pointer-events-none bg-gradient-to-tr from-primary/30 via-purple-500/20 to-transparent blur-2xl opacity-40" />
 
     {/* RANDOM POLYGON */}
-    <div
-      className="relative w-full h-full overflow-hidden shadow-[0_30px_80px_rgba(0,0,0,0.45)]"
-      style={{
-        clipPath: `
-          polygon(
-            3% 12%,
-            18% 2%,
-            42% 6%,
-            68% 0%,
-            92% 10%,
-            100% 28%,
-            96% 55%,
-            100% 82%,
-            78% 100%,
-            52% 92%,
-            28% 100%,
-            8% 88%,
-            0% 60%,
-            6% 38%
-          )
-        `,
-      }}
-    >
-      <div className="relative w-full h-[140px] lg:h-[160px] mb-6 rounded-xl overflow-hidden">
-
+    <div className="relative w-full overflow-hidden rounded-3xl border border-white/10 shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
+     <div className="relative w-full h-[180px] lg:h-[240px] overflow-hidden">
   <img
     src="/Images/forcompanies.jpg"
     alt="Hiring"
     className="w-full h-full object-cover"
   />
 
-  {/* 🔥 COLOR BALANCE OVERLAY */}
-  <div className="absolute inset-0 bg-gradient-to-br from-background/70 via-background/40 to-primary/20" />
+  {/* Overlay */}
+  <div className="absolute inset-0 bg-gradient-to-br from-background/50 via-background/20 to-primary/10" />
+  <div className="absolute inset-0 bg-black/20" />
+  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 
-  {/* 🔥 DARK DEPTH OVERLAY */}
-  <div className="absolute inset-0 bg-black/30" />
-
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-    </div>
-
-    {/* BORDER */}
-    <div
-      className="absolute inset-0 border border-white/10 pointer-events-none"
-      style={{
-        clipPath: `
-          polygon(
-            3% 12%,
-            18% 2%,
-            42% 6%,
-            68% 0%,
-            92% 10%,
-            100% 28%,
-            96% 55%,
-            100% 82%,
-            78% 100%,
-            52% 92%,
-            28% 100%,
-            8% 88%,
-            0% 60%,
-            6% 38%
-          )
-        `,
-      }}
-    />
-
-    {/* TAGS */}
-    <div className="absolute top-4 left-4 bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-md text-[10px] sm:text-xs text-white">
-      ⚡ Smart Hiring
-    </div>
-
-    <div className="absolute bottom-4 right-4 bg-primary text-white px-3 py-1.5 rounded-md text-[10px] sm:text-xs shadow">
-      🚀 1000+ Companies
-    </div>
+  {/* Tags */}
+  <div className="absolute top-4 left-4 bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-lg text-xs text-white">
+    ⚡ Smart Hiring
   </div>
+
+  <div className="absolute bottom-4 right-4 bg-primary text-white px-3 py-1.5 rounded-lg text-xs shadow">
+    🚀 1000+ Companies
+  </div>
+</div>
+</div>
 
   {/* ================= UNIQUE TEXT ================= */}
 
@@ -342,39 +301,55 @@ const ForCompanies = () => {
 <div className="mt-0 max-w-md">
 
   {/* HEADING */}
-  <h2 className="text-4xl lg:text-5xl font-bold leading-[1.1]">
-    <span className="block text-foreground">Stop Wasting Time</span>
-    <span className="block text-primary">on Hiring</span>
-  </h2>
+  <div className="mt-3 max-w-md">
 
-  {/* HARD-HITTING LINES */}
-  <div className="mt-4 space-y-4">
+  <div className="space-y-3">
 
-    <p className="text-md lg:text-lg font-semibold text-foreground">
-      100+ Relevant Candidates. Not 1000 Random Resumes.
-    </p>
+    <div className="flex items-start gap-2">
+      <span className="text-primary font-bold">✓</span>
+      <p className="text-sm lg:text-base font-semibold text-foreground">
+        10 Relevant & Right Resumes Are Better Than 1000s of Random Resumes
+      </p>
+    </div>
 
-    <p className="text-md lg:text-lg font-semibold text-foreground">
-      See Skills. Experience. Projects. All in One View.
-    </p>
+    <div className="flex items-start gap-2">
+      <span className="text-primary font-bold">✓</span>
+      <p className="text-sm lg:text-base font-semibold text-foreground">
+        Filter Candidates According to Skills & Experience
+      </p>
+    </div>
 
-    <p className="text-md lg:text-lg font-semibold text-foreground">
-      Shortlist in Minutes. Not Days.
-    </p>
+    <div className="flex items-start gap-2">
+      <span className="text-primary font-bold">✓</span>
+      <p className="text-sm lg:text-base font-semibold text-foreground">
+        Shortlist Candidates in Minutes, Not Days
+      </p>
+    </div>
 
-    <p className="text-md lg:text-lg font-semibold text-primary">
-      Hire Faster. Spend Less.
-    </p>
+    <div className="flex items-start gap-2">
+      <span className="text-primary font-bold">✓</span>
+      <p className="text-sm lg:text-base font-semibold text-foreground">
+        Hire Faster & Smarter
+      </p>
+    </div>
+
+    <div className="flex items-start gap-2">
+      <span className="text-primary font-bold">✓</span>
+      <p className="text-sm lg:text-base font-semibold text-foreground">
+        Save More Time & Money
+      </p>
+    </div>
 
   </div>
 
-  {/* FINAL TRUST LINE */}
-  <div className="mt-6 text-lg font-bold text-foreground">
-    Built for companies that want results — not noise.
+  <div className="mt-5 pt-4 border-t border-border">
+    <p className="text-base lg:text-lg font-bold uppercase tracking-wide text-primary">
+      BUILT FOR COMPANIES THAT WANT RESULTS, NOT NOISE
+    </p>
   </div>
 
 </div>
-
+</div>
 </div>
     </div>
   </div>

@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { Users } from "lucide-react";
 
 const LiveCandidatesStrip = () => {
   const candidates = [
@@ -15,16 +16,24 @@ const navigate = useNavigate();
     <section className="relative py-24 bg-[hsl(38,70%,96%)] overflow-hidden">
 
       {/* Top Heading */}
-      <div className="max-w-6xl mx-auto px-6 mb-16">
+
     
 
-        <h2 className="text-4xl md:text-5xl font-medium tracking-tight">
-          Fresh Profiles
-          <span className="block text-[hsl(32,88%,55%)]">
-            Updated in Real-Time
-          </span>
-        </h2>
-      </div>
+   <div className="max-w-6xl mx-auto px-6 mb-16">
+  <div className="flex items-center gap-4">
+    <div className="w-11 h-11 bg-[hsl(32,88%,55%)] rounded-xl flex items-center justify-center flex-shrink-0">
+      <Users className="w-5 h-5 text-white" strokeWidth={2.5} />
+    </div>
+
+    <h2 className="text-4xl md:text-4xl font-semibold tracking-tight">
+      Recently Hired{" "}
+      <span className="text-[hsl(32,88%,55%)]">
+        Candidates
+      </span>
+    </h2>
+  </div>
+</div>
+        
 
       {/* Moving Strip */}
       <div className="relative w-full overflow-hidden">
@@ -61,11 +70,7 @@ const navigate = useNavigate();
       </div>
 
       {/* Bottom CTA */}
-      <div className="mt-16 text-center">
-        <button onClick={() => navigate("/browse-candidates")} className="px-8 py-3 bg-[hsl(32,88%,55%)] text-white rounded-xl font-semibold hover:brightness-95 transition">
-          View All Candidates
-        </button>
-      </div>
+    
     </section>
   );
 };
