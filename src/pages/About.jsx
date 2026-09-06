@@ -24,7 +24,7 @@ const About = () => {
           >
            <img src="/Images/logo.png" alt="Candidates247 Logo" className="h-12 w-auto object-contain scale-[6] origin-left -translate-x-10 mb-4" />
             <span className="block text-foreground text-2xl md:text-3xl mt-6 font-medium">
-              Where Talent Meets Opportunity
+              Where Talent Meets Opportunityy
             </span>
           </motion.h1>
 

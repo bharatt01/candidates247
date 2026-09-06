@@ -180,7 +180,15 @@ const ForCompanies = () => {
                 placeholder="Password"
                 className={inputClass}
               />
-
+<div className="flex justify-end">
+  <button
+    type="button"
+    onClick={() => navigate("/forgot-password")}
+    className="text-xs font-medium text-primary hover:underline"
+  >
+    Forgot Password?
+  </button>
+</div>
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 type="submit"

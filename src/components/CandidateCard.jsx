@@ -4,6 +4,15 @@ import { Lock, Sparkles, Briefcase, MapPin, Phone, Mail, ArrowRight } from "luci
 import { useAuth } from "@/contexts/AuthContext";
 
 const CandidateCard = ({ candidate, index, onClick }) => {
+  const formatExperience = (exp) => {
+    if (!exp && exp !== 0) return null;
+    const years = Math.floor(exp);
+    const months = Math.round((exp % 1) * 12);
+    if (years === 0) return `${months} month${months !== 1 ? "s" : ""}`;
+    if (months === 0) return `${years} yr${years !== 1 ? "s" : ""}`;
+    return `${years} yr${years !== 1 ? "s" : ""} ${months} mo`;
+  };
+   
   const { user } = useAuth();
   const hasSubscription = user?.company?.hasActiveSubscription;
 
@@ -35,7 +44,7 @@ const CandidateCard = ({ candidate, index, onClick }) => {
             <Briefcase size={14} className="text-primary shrink-0" /> {candidate.role}
           </p>
       <p className="text-[14px] font-semibold text-foreground flex items-center gap-2 mt-0.5">
-            <MapPin size={13} className="text-muted-foreground shrink-0" /> {candidate.location} · {candidate.experience} yrs
+            <MapPin size={13} className="text-muted-foreground shrink-0" /> {candidate.location} · {formatExperience(candidate.experience)} exp
           </p>
         </div>
       </div>

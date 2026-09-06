@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { User, MapPin, Briefcase, Edit3, Save, Plus, X, Phone, CheckCircle2, AlertCircle } from "lucide-react";
@@ -9,7 +8,6 @@ import { db } from "@/firebase";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 
 // ─── Profile completion config ────────────────────────────────────────────────
-// Each field has a weight (weights sum to 100).
 const COMPLETION_FIELDS = [
   { key: "fullName",       label: "Full name",              weight: 10 },
   { key: "phone",          label: "Phone number",           weight: 8  },
@@ -25,6 +23,15 @@ const COMPLETION_FIELDS = [
   { key: "languages",      label: "Languages",              weight: 3  },
   { key: "references",     label: "References",             weight: 3  },
 ];
+// Helper to format decimal experience nicely
+const formatExperience = (exp) => {
+  if (!exp && exp !== 0) return "Not set";
+  const years = Math.floor(exp);
+  const months = Math.round((exp % 1) * 12);
+  if (years === 0) return `${months} month${months !== 1 ? "s" : ""}`;
+  if (months === 0) return `${years} yr${years !== 1 ? "s" : ""}`;
+  return `${years} yr${years !== 1 ? "s" : ""} ${months} mo`;
+};
 
 const calcCompletion = (data) => {
   if (!data) return { percent: 0, completed: [], missing: [] };
@@ -74,6 +81,8 @@ const getMessage = (pct) => {
 };
 // ──────────────────────────────────────────────────────────────────────────────
 
+const MAX_SKILL_WORDS = 10;
+
 const CandidateDashboard = () => {
   const { user, logout, loading } = useAuth();
   const navigate = useNavigate();
@@ -107,6 +116,8 @@ const CandidateDashboard = () => {
   const [references, setReferences] = useState("");
   const [fullName, setFullName] = useState("");
   const [editSnapshot, setEditSnapshot] = useState(null);
+const [expYears, setExpYears] = useState(0);
+const [expMonths, setExpMonths] = useState(0);
 
   useEffect(() => {
     if (loading) return;
@@ -137,7 +148,10 @@ const CandidateDashboard = () => {
           candidateRoleTitle = data.roleTitle || data.role || data.title || "";
 
           setRoleTitle(candidateRoleTitle);
-          setExperience(String(data.experience || ""));
+    // inside fetchData, after setExperience(...)
+const expVal = Number(data.experience || 0);
+setExpYears(Math.floor(expVal));
+setExpMonths(Math.round((expVal % 1) * 12));
           setLocation(data.location || "");
           setPhone(data.phone || "");
           setSkills(data.skills || []);
@@ -172,7 +186,6 @@ const CandidateDashboard = () => {
     fetchData();
   }, [user, loading, navigate]);
 
-  // Derive completion from live candidateData — updates automatically after save
   const { percent, completed, missing } = calcCompletion(candidateData);
   const barColor = getBarColor(percent);
   const message = getMessage(percent);
@@ -184,6 +197,7 @@ const CandidateDashboard = () => {
       projects: [...projects], certifications: [...certifications],
       achievements: [...achievements], languages: [...languages],
       interests: [...interests], references,
+       expYears, expMonths,
     });
     setEditing(true);
   };
@@ -205,14 +219,26 @@ const CandidateDashboard = () => {
       setLanguages(editSnapshot.languages);
       setInterests(editSnapshot.interests);
       setReferences(editSnapshot.references);
+      setExpYears(editSnapshot.expYears);
+setExpMonths(editSnapshot.expMonths);
     }
     setEditing(false);
     setEditSnapshot(null);
   };
 
+  // ── Skill add with 10-word limit ──────────────────────────────────────────
   const addSkill = () => {
-    if (skillInput.trim() && !skills.includes(skillInput.trim())) {
-      setSkills([...skills, skillInput.trim()]);
+    const trimmed = skillInput.trim();
+    if (!trimmed) return;
+
+    const wordCount = trimmed.split(/\s+/).length;
+    if (wordCount > MAX_SKILL_WORDS) {
+      toast.error(`Skill can't exceed ${MAX_SKILL_WORDS} words`);
+      return;
+    }
+
+    if (!skills.includes(trimmed)) {
+      setSkills([...skills, trimmed]);
       setSkillInput("");
     }
   };
@@ -299,7 +325,6 @@ const CandidateDashboard = () => {
         { merge: true }
       );
 
-      // Update local state — completion % recalculates automatically
       setCandidateData((prev) => ({
         ...prev,
         fullName, roleTitle, role: roleTitle,
@@ -321,6 +346,10 @@ const CandidateDashboard = () => {
       setSaving(false);
     }
   };
+
+  // Live word count for skill input
+  const skillWordCount = skillInput.trim() ? skillInput.trim().split(/\s+/).length : 0;
+  const skillWordLimitReached = skillWordCount > MAX_SKILL_WORDS;
 
   if (loading)
     return (
@@ -407,7 +436,6 @@ const CandidateDashboard = () => {
             </div>
           </div>
 
-          {/* Animated progress bar */}
           <div className="w-full h-2.5 rounded-full bg-muted/40 overflow-hidden">
             <motion.div
               className={`h-full rounded-full ${barColor}`}
@@ -419,7 +447,6 @@ const CandidateDashboard = () => {
 
           <p className="text-xs text-muted-foreground mt-2">{message}</p>
 
-          {/* Expandable checklist */}
           {showChecklist && percent < 100 && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
@@ -501,14 +528,41 @@ const CandidateDashboard = () => {
                   <p className="text-sm text-foreground font-medium">{candidateData?.roleTitle || candidateData?.role || candidateData?.title || roleTitle || "Not set"}</p>
                 )}
               </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Experience</p>
-                {editing ? (
-                  <input type="number" min={0} max={30} value={experience} onChange={(e) => setExperience(e.target.value)} placeholder="Years" className="w-full px-3 py-2 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary outline-none text-sm mt-1" />
-                ) : (
-                  <p className="text-sm text-foreground font-medium">{candidateData?.experience?.category} years</p>
-                )}
-              </div>
+             <div>
+  <p className="text-xs text-muted-foreground">Experience</p>
+  {editing ? (
+    <div className="grid grid-cols-2 gap-2 mt-1">
+      <div>
+        <label className="text-xs text-muted-foreground">Years</label>
+        <input
+          type="number" min={0} max={50}
+          value={expYears}
+          onChange={(e) => setExpYears(parseInt(e.target.value) || 0)}
+          placeholder="0"
+          className="w-full px-3 py-2 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary outline-none text-sm"
+        />
+      </div>
+      <div>
+        <label className="text-xs text-muted-foreground">Months</label>
+        <input
+          type="number" min={0} max={11}
+          value={expMonths}
+          onChange={(e) => {
+            let v = parseInt(e.target.value) || 0;
+            if (v > 11) v = 11;
+            setExpMonths(v);
+          }}
+          placeholder="0"
+          className="w-full px-3 py-2 rounded-lg bg-muted/30 text-foreground border border-border focus:border-primary outline-none text-sm"
+        />
+      </div>
+    </div>
+  ) : (
+    <p className="text-sm text-foreground font-medium">
+      {formatExperience(candidateData?.experience)}
+    </p>
+  )}
+</div>
               <div>
                 <p className="text-xs text-muted-foreground">Summary</p>
                 {editing ? (
@@ -521,10 +575,29 @@ const CandidateDashboard = () => {
                 <p className="text-xs text-muted-foreground">Skills</p>
                 {editing ? (
                   <div className="mt-1">
-                    <div className="flex gap-2 mb-2">
-                      <input value={skillInput} onChange={(e) => setSkillInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())} placeholder="Add skill..." className="flex-1 px-3 py-2 rounded-lg bg-muted/30 text-foreground border border-border focus:border-secondary outline-none text-sm" />
-                      <button type="button" onClick={addSkill} className="px-3 py-2 rounded-lg btn-haptic text-secondary bg-secondary/10 border border-secondary/20"><Plus size={14} /></button>
+                    <div className="flex gap-2 mb-1">
+                      <input
+                        value={skillInput}
+                        onChange={(e) => setSkillInput(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())}
+                        placeholder="Add skill..."
+                        className={`flex-1 px-3 py-2 rounded-lg bg-muted/30 text-foreground border focus:outline-none text-sm transition-colors ${
+                          skillWordLimitReached ? "border-red-400 focus:border-red-400" : "border-border focus:border-secondary"
+                        }`}
+                      />
+                      <button
+                        type="button"
+                        onClick={addSkill}
+                        disabled={skillWordLimitReached}
+                        className="px-3 py-2 rounded-lg btn-haptic text-secondary bg-secondary/10 border border-secondary/20 disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        <Plus size={14} />
+                      </button>
                     </div>
+                    {/* Word count hint */}
+                    <p className={`text-xs mb-2 ${skillWordLimitReached ? "text-red-400" : "text-muted-foreground"}`}>
+                      {skillWordCount}/{MAX_SKILL_WORDS} words
+                    </p>
                     <div className="flex flex-wrap gap-1.5">
                       {skills.map((s) => (
                         <span key={s} className="glow-tag-cyan flex items-center gap-1.5">
