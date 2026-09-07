@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { FaLinkedin, FaTwitter, FaGithub } from "react-icons/fa";
+import { FaLinkedin, FaTwitter, FaGithub, FaPhoneAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 const PremiumFooterDarkWithIcons = () => {
   const links = [
@@ -104,6 +104,14 @@ const navigate = useNavigate();
               <FaGithub />
             </a>
           </div>
+
+          <a
+            href="tel:+919871428686"
+            className="flex items-center gap-2 text-[hsl(38,35%,86%)] hover:text-[hsl(32,88%,55%)] transition-colors duration-300 mb-4"
+          >
+            <FaPhoneAlt className="text-[1rem]" />
+            <span className="text-sm">+91 98714 28686</span>
+          </a>
 
           <p className="text-[hsl(38,35%,86%)] text-sm">
             © {new Date().getFullYear()} Candidates247. All rights reserved.

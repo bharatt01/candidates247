@@ -168,15 +168,21 @@ const CandidateDetails = () => {
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10 w-full">
 
         {/* BACK */}
-        <motion.button
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          onClick={() => navigate("/browse-candidates")}
-          className="flex items-center gap-2 text-sm text-foreground hover:text-foreground mb-6 transition-colors group"
-        >
-          <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
-          Back
-        </motion.button>
+       <motion.button
+  initial={{ opacity: 0, x: -10 }}
+  animate={{ opacity: 1, x: 0 }}
+ onClick={() => {
+  if (window.history.state && window.history.state.idx > 0) {
+    navigate(-1);
+  } else {
+    navigate("/browse-candidates");
+  }
+}}
+  className="flex items-center gap-2 text-sm text-foreground hover:text-foreground mb-6 transition-colors group"
+>
+  <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
+  Back
+</motion.button>
 
         {/* HERO CARD */}
         <motion.div
