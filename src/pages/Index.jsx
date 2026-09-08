@@ -176,20 +176,19 @@ const Index = () => {
   </div>
 </h2>
 
-      <div className="grid md:grid-cols-3 gap-5">
-        {featuredCandidates.map((candidate) => (
-          <div key={candidate.id} className="relative">
-            <CandidateCard
-              candidate={candidate}
-              onClick={() => navigate(`/candidate/${candidate.id}`)}
-            />
-
-            <span className="absolute top-3 right-3 text-xs bg-primary text-white px-2 py-1 rounded-full z-10">
-              Latest
-            </span>
-          </div>
-        ))}
-      </div>
+     <div className="grid md:grid-cols-3 gap-5">
+  {featuredCandidates.map((candidate) => (
+    <div key={candidate.id} className="relative min-w-0">
+      <CandidateCard
+        candidate={candidate}
+        onClick={() => navigate(`/candidate/${candidate.id}`)}
+      />
+      <span className="absolute top-3 right-3 text-xs bg-primary text-white px-2 py-1 rounded-full z-10">
+        Latest
+      </span>
+    </div>
+  ))}
+</div>
     </div>
   </section>
 )}
@@ -223,16 +222,15 @@ const Index = () => {
               </div>
             ) : browseCandidates.length > 0 ? (
               <div className="grid md:grid-cols-3 gap-5">
-                {browseCandidates.map((candidate) => (
-                  <CandidateCard
-                    key={candidate.id}
-                    candidate={candidate}
-                    onClick={() =>
-                      navigate(`/candidate/${candidate.id}`)
-                    }
-                  />
-                ))}
-              </div>
+  {browseCandidates.map((candidate) => (
+    <div key={candidate.id} className="min-w-0">
+      <CandidateCard
+        candidate={candidate}
+        onClick={() => navigate(`/candidate/${candidate.id}`)}
+      />
+    </div>
+  ))}
+</div>
             ) : (
               <p className="text-center text-muted-foreground mt-6">
                 No candidates found.
