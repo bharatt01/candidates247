@@ -129,24 +129,10 @@ const BrowseCandidate = () => {
               Browse <span className="text-primary">Candidates</span>
             </h1>
             <p className="text-muted-foreground mt-2 font-medium">
-              Connecting elite healthcare professionals with premier institutions.
+             Enter the main role like sales or marketing or web development or accountant etc. and then filter below according to your specific requirements.
             </p>
           </div>
-          <div className="flex items-center gap-2 bg-white dark:bg-card p-1.5 rounded-2xl border shadow-sm h-fit">
-            {["latest", "exp", "salary"].map((type) => (
-              <button
-                key={type}
-                onClick={() => setSortBy(type)}
-                className={`px-5 py-2 text-xs font-bold uppercase tracking-wider rounded-xl transition-all ${
-                  sortBy === type
-                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-                    : "text-muted-foreground hover:bg-slate-50"
-                }`}
-              >
-                {type}
-              </button>
-            ))}
-          </div>
+    
         </div>
 
         <div className="mt-8 max-w-3xl border rounded-2xl bg-white dark:bg-card shadow-sm">

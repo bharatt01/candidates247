@@ -1,12 +1,4 @@
 {
-<<<<<<< HEAD
-  "hash": "2f8aafb4",
-  "configHash": "81036ab5",
-  "lockfileHash": "e3b0c442",
-  "browserHash": "0f87003a",
-  "optimized": {},
-  "chunks": {}
-=======
   "hash": "9685f225",
   "configHash": "81036ab5",
   "lockfileHash": "07b14675",
@@ -96,5 +88,4 @@
       "file": "chunk-4MBMRILA.js"
     }
   }
->>>>>>> dev
 }

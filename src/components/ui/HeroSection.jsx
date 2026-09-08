@@ -30,7 +30,7 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
-          className="text-6xl md:text-7xl lg:text-7xl font-medium text-white leading-tight mb-6 drop-shadow-[0_0_20px_rgba(0,0,0,0.7)]"
+          className="text-7xl md:text-8xl lg:text-8xl font-medium text-white leading-tight mb-6 drop-shadow-[0_0_20px_rgba(0,0,0,0.7)]"
         >
           {/* On This Website - <br /> */}
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-orange-500 to-red-500">
@@ -43,13 +43,13 @@ const HeroSection = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 0.3 }}
-          className="text-gray-200 text-lg md:text-2xl font-light mb-12 leading-relaxed drop-shadow-[0_0_10px_rgba(0,0,0,0.6)]"
+          className="text-gray-200 text-xl md:text-4xl font-light mb-12 leading-relaxed drop-shadow-[0_0_10px_rgba(0,0,0,0.6)]"
         >
           <span className="block mb-4">
-            Companies can view and browse candidates freely.<br />Hire highly cost-effectively.
+            Companies can view and browse candidates freely.<br />
           </span>
           <span className="block text-amber-400">
-            Candidates can build their ATS-friendly profile and be seen & hired.
+            Candidates can build their ATS-friendly resumes and be hired.
           </span>
         </motion.p>
 

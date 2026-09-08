@@ -6,6 +6,12 @@ const allSkills = [
   "AWS", "MongoDB", "Java", "Flutter", "Kubernetes", "SQL",
 ];
 
+// ✅ Safely format a number, falling back to a default if NaN/undefined
+const safeNumber = (value, fallback = 0) => {
+  const num = Number(value);
+  return Number.isFinite(num) ? num : fallback;
+};
+
 const FilterSidebar = ({ isOpen, onClose, filters, onFiltersChange }) => {
   const toggleSkill = (skill) => {
     const selected = filters.selectedSkills.includes(skill)
@@ -13,6 +19,12 @@ const FilterSidebar = ({ isOpen, onClose, filters, onFiltersChange }) => {
       : [...filters.selectedSkills, skill];
     onFiltersChange({ ...filters, selectedSkills: selected });
   };
+
+  // ✅ Fallback-safe values used throughout
+  const minSalary = safeNumber(filters.minSalary, 0);
+  const maxSalary = safeNumber(filters.maxSalary, 5000000);
+  const minExperience = safeNumber(filters.minExperience, 0);
+  const maxExperience = safeNumber(filters.maxExperience, 15);
 
   return (
     <AnimatePresence>
@@ -48,17 +60,21 @@ const FilterSidebar = ({ isOpen, onClose, filters, onFiltersChange }) => {
                 Salary Range (₹ LPA)
               </label>
               <div className="flex items-center gap-3">
-                <span className="text-xs text-muted-foreground w-8">{(filters.minSalary / 100000).toFixed(0)}L</span>
+                <span className="text-xs text-muted-foreground w-8">
+                  {(minSalary / 100000).toFixed(0)}L
+                </span>
                 <input
                   type="range"
                   min={0}
                   max={5000000}
                   step={100000}
-                  value={filters.maxSalary}
+                  value={maxSalary}
                   onChange={(e) => onFiltersChange({ ...filters, maxSalary: Number(e.target.value) })}
                   className="flex-1 accent-primary"
                 />
-                <span className="text-xs text-muted-foreground w-8">{(filters.maxSalary / 100000).toFixed(0)}L</span>
+                <span className="text-xs text-muted-foreground w-8">
+                  {(maxSalary / 100000).toFixed(0)}L
+                </span>
               </div>
             </div>
 
@@ -68,17 +84,17 @@ const FilterSidebar = ({ isOpen, onClose, filters, onFiltersChange }) => {
                 Experience (Years)
               </label>
               <div className="flex items-center gap-3">
-                <span className="text-xs text-muted-foreground w-4">{filters.minExperience}</span>
+                <span className="text-xs text-muted-foreground w-4">{minExperience}</span>
                 <input
                   type="range"
                   min={0}
                   max={15}
                   step={1}
-                  value={filters.maxExperience}
+                  value={maxExperience}
                   onChange={(e) => onFiltersChange({ ...filters, maxExperience: Number(e.target.value) })}
                   className="flex-1 accent-secondary"
                 />
-                <span className="text-xs text-muted-foreground w-4">{filters.maxExperience}</span>
+                <span className="text-xs text-muted-foreground w-4">{maxExperience}</span>
               </div>
             </div>
 
@@ -128,7 +144,3 @@ const FilterSidebar = ({ isOpen, onClose, filters, onFiltersChange }) => {
 };
 
 export default FilterSidebar;
-
-
-
-
